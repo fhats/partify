@@ -1,0 +1,30 @@
+{% from "_util.html" import css_include %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <!-- Blueprint CSS -->
+    {{ css_include('css/blueprint/screen.css') }}
+    {{ css_include('css/blueprint/print.css') }}
+    <!--[if lt IE 8]>
+    {{ css_include('css/blueprint/ie.css') }}
+    <![endif]-->
+
+    <!-- Google Web Fonts -->
+    <link href='http://fonts.googleapis.com/css?family=Patrick+Hand' rel='stylesheet' type='text/css'>
+
+    <!-- Custom theming -->
+    {{ css_include('css/partify.css') }}
+
+    {% block css_head %}{% endblock %}
+
+    {% block js_head %}{% endblock %}
+
+    {% block head %}
+    <title>{% block title %}{% endblock %}</title>
+    {% endblock %}
+</head>
+<body>
+    {% block super_body %}
+    {% endblock %}
+</body>
+</html>

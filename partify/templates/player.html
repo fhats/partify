@@ -1,0 +1,107 @@
+{% extends "i_love_this_web_thing.html" %}
+{% from "_util.html" import css_include, js_include %}
+
+{% block css_head %}
+    {{ css_include('css/jquery-ui/partify/jquery-ui-1.8.14.custom.css') }}
+    {{ css_include('css/player.css') }}
+{% endblock %}
+
+{% block js_head %}
+    {{ js_include('js/lib/jquery-1.6.2.js') }}
+    {{ js_include('js/lib/jquery-ui-1.8.14.custom.min.js') }}
+    {{ js_include('js/player.js') }}
+{% endblock %}
+
+{% block title %}
+Player - Partify
+{% endblock %}
+
+{% block super_body %}
+
+<div class="container">
+    <!-- Topbar - Logo & account settings -->
+    <div id="topbar" class="span-24 last">
+        <div id="topbar_logo" class="span-12">
+            <h3 class="logo">Partify - Social Music at Your Control</h3>
+        </div>
+        <div class="span-12 last">
+            <p class="small right">Account settings</p>
+        </div>
+    </div>
+
+    <!-- Player status - shows what's playing and how long it's been playing for -->
+    <div id="player_status" class="span-24 append-bottom last">
+        <!-- The labels hanging out about the player and the played by cols -->
+        <div class="player_header span-16"><i>Now Playing...</i></div>
+        <div class="player_header span-8 last"><i>Played By</i></div>
+
+        <div id="player_container" class="span-16">
+            <div id="player_image_container" class="span-3">
+                <img class="span-3" src="http://userserve-ak.last.fm/serve/85/17631399.jpg" />
+            </div>
+            <div id="player_status_container" class="span-13 last">
+                <div id="player_track_info" class="span-13 append-bottom last">
+                    <div class="track_details">
+                        <b>Artist:</b> Circa Survive<br />
+                        <b>Track:</b> Holding Someone's Hair Back
+                    </div>
+                    <div class="track_details">
+                        <b>Album:</b> Juturna<br />
+                        <b>Year:</b> 2006
+                    </div>
+                </div>
+                <div id="player_progress" class="span-13 last"></div>
+            </div>
+        </div>
+
+        <div id="played_by_container" class="span-8 last">
+            <div><img src="http://userserve-ak.last.fm/serve/85/19666107.jpg" /></div>
+            <div>Fred<br/>Love/Hate</div>
+        </div>
+    </div>
+
+    <!-- The content view -->
+    <div id="tabs_container" class="span-16">
+        <div id="tabs">
+            <ul>
+                <li><a href="#edit_queue">My Queue</a></li>
+                <li><a href="#whos_here">Who's Here</a></li>
+            </ul>
+            <div id="edit_queue">
+                Things
+            </div>
+            <div id="whos_here">
+                Stuff
+            </div>
+        </div>
+    </div>
+
+    <!-- Party's play queue -->
+    <div id="party_queue_container" class="span-8 last">
+        <div><h3 class="logo">Party Queue</h3></div>
+        <div id="party_queue" class="span-8 last">
+            <div class="party_queue_item span-8 last">
+                <div>
+                    <img src="http://userserve-ak.last.fm/serve/85/19666107.jpg" />
+                </div>
+                <div>
+                    Circa Survive<br />
+                    Holding Someone's Hair Back
+                </div>
+            </div>
+            <div class="party_queue_item span-8 last">
+                <div>
+                    <img src="http://userserve-ak.last.fm/serve/85/19666107.jpg" />
+                </div>
+                <div>
+                    Circa Survive<br />
+                    Holding Someone's Hair Back
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,25 @@
+/* basic styles */
+
+body {
+    background-color: #272822;
+    color: #F8F8F2;
+}
+
+a {
+    color: #A6E22E;
+}
+a:hover{
+    color: #A6E22E;
+}
+
+.logo {
+    color: #FD971F;
+    font-family: "Patrick Hand";
+}
+
+/* Not-logged-in styles */
+
+div#unauth_container{
+    text-align: center;
+    margin-left: auto; margin-right: auto;
+}

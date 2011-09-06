@@ -1,0 +1,20 @@
+{% extends "i_love_this_web_thing.html" %}
+
+{% block title %} 
+{% block sub_title %}{% endblock %} - Partify
+{% endblock %}
+
+{% block super_body %}
+
+<div id="unauth_container" class="container">
+
+    <div id="unauth_header" class="prepend-top prepend-6 span-12 append-6 last">
+        <h1 class="logo">Partify</h1>
+        <h3 class="logo">Social Music at Your Control</h3>
+    </div>
+
+    {% block body %}
+    {% endblock %}
+</div>
+
+{% endblock %}

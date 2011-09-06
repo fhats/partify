@@ -1,0 +1,34 @@
+div.track_details {
+    float: left;
+}
+div.track_details + div.track_details {
+    padding-left: 1em;    
+}
+
+div#player_progress {
+    height: 12px;
+}
+
+div#played_by_container > div {
+    float:left;
+    display: inline;
+}
+div#played_by_container > div + div{
+    padding-left: 1em;
+}
+
+div.party_queue_item > div{
+    display: inline;
+    float: left;
+}
+div.party_queue_item > div + div{
+    padding-left: 1em;
+}
+
+/* override some of the retarded jQuery UI styles */
+.ui-progressbar{
+    border: 1px solid #49483E;
+}
+.ui-progressbar-value{
+    background: #FD971F;
+}
