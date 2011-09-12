@@ -1,19 +1,17 @@
 from mpd import MPDClient
 
 class mpd_client(object):
-    def __init__(self, host="ubuntu.local", port=6600):
+    def __init__(self, host="10.0.1.33", port=6600):
         self.host = host
         self.port = port
         self.c = MPDClient()
         self.c.connect(host=self.host, port=self.port)
     
-    def __del__(self):
-        self.c.disconnect()
-    
     def __enter__(self):
         return self.c
     
     def __exit__(self, type, value, traceback):
+        self.c.disconnect()
         if type is not None:
             raise Exception("%s,%s,%s" % (type, value, traceback))
 

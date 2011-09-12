@@ -1,0 +1,625 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/Users/fhats/projects/partify/partify/playback.py",
+			"settings":
+			{
+				"buffer_size": 630,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/Users/fhats/projects/partify/partify/decorators.py",
+			"settings":
+			{
+				"buffer_size": 328,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/Users/fhats/projects/partify/partify/mpd_client.py",
+			"settings":
+			{
+				"buffer_size": 804,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/Users/fhats/projects/partify/partify/player.py",
+			"settings":
+			{
+				"buffer_size": 956,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/Users/fhats/projects/partify/partify/templates/player.html",
+			"settings":
+			{
+				"buffer_size": 3832,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/Users/fhats/projects/partify/partify/__init__.py",
+			"settings":
+			{
+				"buffer_size": 976,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/Users/fhats/projects/partify/run.py",
+			"settings":
+			{
+				"buffer_size": 361,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/Users/fhats/projects/partify/partify/js/player/player.coffee",
+			"settings":
+			{
+				"buffer_size": 1031,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 254,
+		"selected_items":
+		[
+			[
+				"Package Control: ",
+				"Package Control: Remove Package"
+			]
+		],
+		"width": 449
+	},
+	"console":
+	{
+		"height": 115
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": true,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/fhats/projects/partify/partify/js/player/player.coffee",
+		"/Users/fhats/projects/partify/partify/static/js/player.js",
+		"/Users/fhats/projects/partify/run.py",
+		"/Users/fhats/talks/git_talk/dev/util.py",
+		"/Users/fhats/talks/git_talk/dev/main.py",
+		"/Users/fhats/talks/git_talk/dev/untitled",
+		"/Volumes/eecslinab.case.edu/EECS325/project_1/eecs325_project1.sublime-project",
+		"/Volumes/eecslinab/EECS325/project_1/src/proj1.cpp",
+		"/Volumes/eecslinab/eecs325_project1.sublime-project",
+		"/Volumes/dev16/pg/loc/yelp/testing/factories/ach_factory.py",
+		"/Volumes/dev16/pg/loc/batch/MDBatch.py",
+		"/Volumes/eecslinab/EECS325/project_1/src/proj1.c",
+		"/Volumes/dev16/pg/loc/batch/error_harvester.py",
+		"/Volumes/dev16/pg/loc/yelp/testing/factories/user_factory.py",
+		"/Volumes/dev16/pg/loc/yelp/testing/factories/error_detail_factory.py",
+		"/Volumes/dev16/pg/loc/yelp/logic/error_details.py",
+		"/Volumes/dev16/pg/loc/yelp/testing/factories/factory_base.py",
+		"/Users/fhats/Library/Application Support/Sublime Text 2/Packages/Default/Default (OSX).sublime-keymap",
+		"/Volumes/dev16/pg/loc/yelp/logic/photo.py",
+		"/Volumes/dev16/pg/loc/util/cdncontrol.py",
+		"/Volumes/dev16/pg/loc/batch/cdn_flush_objects.py",
+		"/Users/fhats/Downloads/ccuapi.wsdl",
+		"/Volumes/dev16/pg/loc/batch/adhoc/metrics_analytics/metrics_analytics.py",
+		"/Volumes/dev16/pg/loc/batch/adhoc/metrics_analytics/mr_metrics_analytics.py",
+		"/Volumes/dev16/pg/loc/yelp/util/trigger_finger/triggers/sit_rep.py",
+		"/Volumes/dev16/pg/loc/batch/hadoop_batch_examples/log_line_len.py",
+		"/Volumes/dev16/pg/loc/batch/hadoop_batch_examples/mr_log_line_len.py",
+		"/Volumes/dev16/pg/loc/batch/hadoop_batch.py",
+		"/Volumes/dev16/pg/loc/yelp/util/sit_rep.py",
+		"/Volumes/dev16/pg/loc/batch/adhoc/cdn_stats.py",
+		"/Volumes/dev16/adhoc/cdn_sxs.py",
+		"/Volumes/dev16/pg/loc/batch/adhoc/mr_cdn_stats.py",
+		"/Volumes/dev16/pg/loc/yelp_lib/numeric.py",
+		"/Volumes/dev16/pg/loc/yelp/util/trigger_finger/trigger_finger.py",
+		"/Volumes/dev16/pg/loc/batch/mr_cdn_stats.py",
+		"/Volumes/Untitled/autorun.inf",
+		"/Volumes/dev3sj/pg/loc/yelp/tests/util/trigger_finger_test.py",
+		"/Volumes/dev3sj/pg/loc/yelp/util/trigger_finger/triggers/sit_rep.py",
+		"/Volumes/dev3sj/pg/loc/config/trigger_finger.yaml",
+		"/Volumes/dev3sj/pg/loc/util/cdncontrol.py"
+	],
+	"find":
+	{
+		"height": 33
+	},
+	"find_in_files":
+	{
+		"height": 85,
+		"include_history":
+		[
+		],
+		"location_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"Html",
+			"request",
+			"e\\.",
+			"e",
+			"logic",
+			"self.logic",
+			"int",
+			"safe_mean",
+			"--date",
+			"sorted_values",
+			"get_event_dictionary",
+			"domready",
+			"time_to_event",
+			"true",
+			"sit_rep"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+			"HTML",
+			"error_entry.",
+			"error_entry",
+			"error_entry.",
+			"True"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 3,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/Users/fhats/projects/partify/partify/playback.py",
+					"settings":
+					{
+						"buffer_size": 630,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0,
+						"translation.y": 0,
+						"zoom_level": 1
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/Users/fhats/projects/partify/partify/decorators.py",
+					"settings":
+					{
+						"buffer_size": 328,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0,
+						"translation.y": 0,
+						"zoom_level": 1
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/Users/fhats/projects/partify/partify/mpd_client.py",
+					"settings":
+					{
+						"buffer_size": 804,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								587,
+								587
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0,
+						"translation.y": 0,
+						"zoom_level": 1
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/Users/fhats/projects/partify/partify/player.py",
+					"settings":
+					{
+						"buffer_size": 956,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								415,
+								415
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0,
+						"translation.y": 0,
+						"zoom_level": 1
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/Users/fhats/projects/partify/partify/templates/player.html",
+					"settings":
+					{
+						"buffer_size": 3832,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								410,
+								410
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0,
+						"translation.y": 0,
+						"zoom_level": 1
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/Users/fhats/projects/partify/partify/__init__.py",
+					"settings":
+					{
+						"buffer_size": 976,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								481,
+								481
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0,
+						"translation.y": 0,
+						"zoom_level": 1
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/Users/fhats/projects/partify/run.py",
+					"settings":
+					{
+						"buffer_size": 361,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								361,
+								361
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0,
+						"translation.y": 0,
+						"zoom_level": 1
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/Users/fhats/projects/partify/partify/js/player/player.coffee",
+					"settings":
+					{
+						"buffer_size": 1031,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								751,
+								751
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CoffeeScript/Syntaxes/CoffeeScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0,
+						"translation.y": 0,
+						"zoom_level": 1
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0
+	},
+	"input":
+	{
+		"height": 27
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0,
+			1
+		],
+		"rows":
+		[
+			0,
+			1
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 62
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0,
+		"selected_items":
+		[
+			[
+				"coffee",
+				"partify/js/player/player.coffee"
+			],
+			[
+				"jsplayer",
+				"partify/js/player/player.coffee"
+			],
+			[
+				"js",
+				"partify/static/js/player.js"
+			],
+			[
+				"run",
+				"run.py"
+			],
+			[
+				"partify",
+				"partify/__init__.py"
+			],
+			[
+				"jsplayerjs",
+				"partify/static/js/player.js"
+			],
+			[
+				"templates",
+				"partify/templates/player.html"
+			],
+			[
+				"",
+				"partify/player.py"
+			],
+			[
+				"mpdclient",
+				"partify/mpd_client.py"
+			],
+			[
+				"decorator",
+				"partify/decorators.py"
+			],
+			[
+				"main",
+				"main.py"
+			],
+			[
+				"pro",
+				"EECS325/project_1/src/proj1.cpp"
+			],
+			[
+				"proj1.cpp",
+				"EECS325/project_1/src/proj1.cpp"
+			],
+			[
+				"yelptestingfactorybase",
+				"yelp/testing/factories/factory_base.py"
+			],
+			[
+				"yelptestingfactories",
+				"yelp/testing/factories/activity_feed_factory.py"
+			],
+			[
+				"yelptestingactories",
+				"yelp/testing/factories/ach_factory.py"
+			],
+			[
+				"batch/mdbatch",
+				"batch/MDBatch.py"
+			],
+			[
+				"proj1.c",
+				"EECS325/project_1/src/proj1.c"
+			],
+			[
+				"proj1.cp",
+				"EECS325/project_1/src/proj1.cpp"
+			],
+			[
+				"factory",
+				"yelp/testing/factories/ach_factory.py"
+			],
+			[
+				"logicphoto",
+				"yelp/logic/photo.py"
+			],
+			[
+				"utilcdncontrol",
+				"util/cdncontrol.py"
+			],
+			[
+				"batchcdnflush",
+				"batch/cdn_flush_objects.py"
+			],
+			[
+				"batcherrorharvester",
+				"batch/error_harvester.py"
+			],
+			[
+				"logicerrordetails",
+				"yelp/logic/error_details.py"
+			],
+			[
+				"factories/factory_base",
+				"yelp/testing/factories/factory_base.py"
+			],
+			[
+				"hadoopbat",
+				"batch/hadoop_batch.py"
+			],
+			[
+				"yelputilsitrep",
+				"yelp/util/sit_rep.py"
+			],
+			[
+				"triggers/sitrep",
+				"yelp/util/trigger_finger/triggers/sit_rep.py"
+			],
+			[
+				"yelplib/numeric",
+				"yelp_lib/numeric.py"
+			],
+			[
+				"trigger_finger/",
+				"yelp/util/trigger_finger/trigger_finger.py"
+			],
+			[
+				"batchhadoopexamples",
+				"batch/hadoop_batch_examples/log_line_len.py"
+			],
+			[
+				"yaml",
+				"config/trigger_finger.yaml"
+			],
+			[
+				"yelptestsutiltrigger",
+				"yelp/tests/util/trigger_finger_test.py"
+			],
+			[
+				"cdncontrol",
+				"util/cdncontrol.py"
+			],
+			[
+				"triggerssitrep",
+				"yelp/util/trigger_finger/triggers/sit_rep.py"
+			]
+		],
+		"width": 0
+	},
+	"select_project":
+	{
+		"height": 0,
+		"selected_items":
+		[
+		],
+		"width": 0
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150,
+	"status_bar_visible": true
+}

@@ -9,7 +9,7 @@
 {% block js_head %}
     {{ js_include('js/lib/jquery-1.6.2.js') }}
     {{ js_include('js/lib/jquery-ui-1.8.14.custom.min.js') }}
-    {{ js_include('js/player.js') }}
+    {{ js_include('js/partify/player.js') }}
 {% endblock %}
 
 {% block title %}
@@ -42,12 +42,12 @@ Player - Partify
             <div id="player_status_container" class="span-13 last">
                 <div id="player_track_info" class="span-13 append-bottom last">
                     <div class="track_details">
-                        <b>Artist:</b> Circa Survive<br />
-                        <b>Track:</b> Holding Someone's Hair Back
+                        <b>Artist:</b> <span id="player_info_artist">Circa Survive</span><br />
+                        <b>Track:</b> <span id="player_info_track">Holding Someone's Hair Back</span>
                     </div>
                     <div class="track_details">
-                        <b>Album:</b> Juturna<br />
-                        <b>Year:</b> 2006
+                        <b>Album:</b> <span id="player_info_album">Juturna</span><br />
+                        <b>Year:</b> <span id="player_info_year">2006</span>
                     </div>
                 </div>
                 <div id="player_progress" class="span-13 last"></div>

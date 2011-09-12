@@ -16,7 +16,7 @@ def main():
 
 @app.route("/cmd/<cmd>")
 def exc_cmd(cmd):
-    with mpd_client("192.168.1.138", 6600) as mpd:
+    with mpd_client("ubuntu.local", 6600) as mpd:
         f = getattr(mpd, cmd)
         response = f()
         return jsonify(response=response)
