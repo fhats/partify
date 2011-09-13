@@ -25,7 +25,7 @@ div.party_queue_item > div + div{
     padding-left: 1em;
 }
 
-/* override some of the retarded jQuery UI styles */
+/* override some of the bad jQuery UI styles */
 .ui-progressbar{
     border: 1px solid #49483E;
 }
