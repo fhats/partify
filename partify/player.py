@@ -33,9 +33,9 @@ def _get_status(mpd):
 
 	status = {}
 	for key in ('title', 'artist', 'album', 'date', 'file', 'time'):
-		status[key] = current_song[key]
+		status[key] = current_song.get(key, 0 if key == 'time' else '')
 	for key in ('state', 'volume', 'elapsed'):
-		status[key] = player_status[key]
+		status[key] = player_status.get(key, 0 if key == 'elapsed' else '')
 
 	# Throw in a timestamp to assist synchronization
 	status['response_time'] = time.time()
