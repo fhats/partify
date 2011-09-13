@@ -77,8 +77,9 @@ class Player
         , 1000
             
     _playerLocalUpdate: () ->
-        @info.elapsed = if Math.round(@info.elapsed) < @info.time then @info.elapsed + 1 else @info.elapsed
-        this.updatePlayerProgress()
+        if @info.state == 'play'
+            @info.elapsed = if Math.round(@info.elapsed) < @info.time then @info.elapsed + 1 else @info.elapsed
+            this.updatePlayerProgress()
 
     updatePlayerInfo: (data) -> 
         info = for key, value of @info

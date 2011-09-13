@@ -19,7 +19,7 @@
 			"file": "/Users/fhats/projects/partify/partify/decorators.py",
 			"settings":
 			{
-				"buffer_size": 328,
+				"buffer_size": 379,
 				"line_ending": "Windows"
 			}
 		},
@@ -27,7 +27,7 @@
 			"file": "/Users/fhats/projects/partify/partify/mpd_client.py",
 			"settings":
 			{
-				"buffer_size": 804,
+				"buffer_size": 777,
 				"line_ending": "Windows"
 			}
 		},
@@ -35,15 +35,31 @@
 			"file": "/Users/fhats/projects/partify/partify/player.py",
 			"settings":
 			{
-				"buffer_size": 956,
+				"buffer_size": 1087,
 				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/Users/fhats/projects/partify/partify/js/player/player.coffee",
+			"settings":
+			{
+				"buffer_size": 3417,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/Users/fhats/projects/partify/partify/js/player/workers/player_event.coffee",
+			"settings":
+			{
+				"buffer_size": 272,
+				"line_ending": "Unix"
 			}
 		},
 		{
 			"file": "/Users/fhats/projects/partify/partify/templates/player.html",
 			"settings":
 			{
-				"buffer_size": 3832,
+				"buffer_size": 3992,
 				"line_ending": "Windows"
 			}
 		},
@@ -59,15 +75,7 @@
 			"file": "/Users/fhats/projects/partify/run.py",
 			"settings":
 			{
-				"buffer_size": 361,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/Users/fhats/projects/partify/partify/js/player/player.coffee",
-			"settings":
-			{
-				"buffer_size": 1031,
+				"buffer_size": 431,
 				"line_ending": "Windows"
 			}
 		}
@@ -75,7 +83,7 @@
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 254,
+		"height": 64,
 		"selected_items":
 		[
 			[
@@ -100,6 +108,8 @@
 	},
 	"file_history":
 	[
+		"/Users/fhats/projects/cwru-hactalks/cwru_hactalks.py",
+		"/Users/fhats/projects/partify/partify/static/css/player.css",
 		"/Users/fhats/projects/partify/partify/js/player/player.coffee",
 		"/Users/fhats/projects/partify/partify/static/js/player.js",
 		"/Users/fhats/projects/partify/run.py",
@@ -160,6 +170,8 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"([A-Za-z_]+) = \\(",
+			"_updatePlayerInfo",
 			"Html",
 			"request",
 			"e\\.",
@@ -182,6 +194,7 @@
 		"regex": true,
 		"replace_history":
 		[
+			"\\1: (",
 			"HTML",
 			"error_entry.",
 			"error_entry",
@@ -197,7 +210,7 @@
 	"groups":
 	[
 		{
-			"selected": 3,
+			"selected": 4,
 			"sheets":
 			[
 				{
@@ -231,15 +244,15 @@
 					"file": "/Users/fhats/projects/partify/partify/decorators.py",
 					"settings":
 					{
-						"buffer_size": 328,
+						"buffer_size": 379,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								379,
+								379
 							]
 						],
 						"settings":
@@ -257,15 +270,15 @@
 					"file": "/Users/fhats/projects/partify/partify/mpd_client.py",
 					"settings":
 					{
-						"buffer_size": 804,
+						"buffer_size": 777,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								587,
-								587
+								95,
+								95
 							]
 						],
 						"settings":
@@ -285,15 +298,15 @@
 					"file": "/Users/fhats/projects/partify/partify/player.py",
 					"settings":
 					{
-						"buffer_size": 956,
+						"buffer_size": 1087,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								415,
-								415
+								871,
+								871
 							]
 						],
 						"settings":
@@ -309,18 +322,72 @@
 				},
 				{
 					"buffer": 4,
-					"file": "/Users/fhats/projects/partify/partify/templates/player.html",
+					"file": "/Users/fhats/projects/partify/partify/js/player/player.coffee",
 					"settings":
 					{
-						"buffer_size": 3832,
+						"buffer_size": 3417,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								410,
-								410
+								3127,
+								3127
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CoffeeScript/Syntaxes/CoffeeScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0,
+						"translation.y": 607,
+						"zoom_level": 1
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/Users/fhats/projects/partify/partify/js/player/workers/player_event.coffee",
+					"settings":
+					{
+						"buffer_size": 272,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								98,
+								98
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CoffeeScript/Syntaxes/CoffeeScript.tmLanguage"
+						},
+						"translation.x": 0,
+						"translation.y": 0,
+						"zoom_level": 1
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/Users/fhats/projects/partify/partify/templates/player.html",
+					"settings":
+					{
+						"buffer_size": 3992,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2292,
+								2292
 							]
 						],
 						"settings":
@@ -330,13 +397,13 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0,
-						"translation.y": 0,
+						"translation.y": 560,
 						"zoom_level": 1
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 7,
 					"file": "/Users/fhats/projects/partify/partify/__init__.py",
 					"settings":
 					{
@@ -347,8 +414,8 @@
 						"selection":
 						[
 							[
-								481,
-								481
+								218,
+								218
 							]
 						],
 						"settings":
@@ -364,52 +431,24 @@
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 8,
 					"file": "/Users/fhats/projects/partify/run.py",
 					"settings":
 					{
-						"buffer_size": 361,
+						"buffer_size": 431,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								361,
-								361
+								429,
+								429
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/Python/Python.tmLanguage"
-						},
-						"translation.x": 0,
-						"translation.y": 0,
-						"zoom_level": 1
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "/Users/fhats/projects/partify/partify/js/player/player.coffee",
-					"settings":
-					{
-						"buffer_size": 1031,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								751,
-								751
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CoffeeScript/Syntaxes/CoffeeScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0,
 						"translation.y": 0,
@@ -461,6 +500,14 @@
 		"height": 0,
 		"selected_items":
 		[
+			[
+				"css",
+				"partify/static/css/player.css"
+			],
+			[
+				"jsplayerworkers",
+				"partify/js/player/workers/player_event.coffee"
+			],
 			[
 				"coffee",
 				"partify/js/player/player.coffee"
