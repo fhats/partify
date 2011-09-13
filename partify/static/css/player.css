@@ -1,8 +1,8 @@
 div.track_details {
-    float: left;
+    
 }
 div.track_details + div.track_details {
-    padding-left: 1em;    
+    
 }
 
 div#player_progress {
