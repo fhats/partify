@@ -31,8 +31,8 @@ class Track(Base):
     def __repr__(self):
         return "<%r by %r (from %r) - %r>" % (self.title, self.artist, self.album, self.spotify_url)
 
-class PlayQueue(Base):
-    __tablename__ = "play_queue"
+class PlayQueueEntry(Base):
+    __tablename__ = "play_queue_entry"
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     track_id = Column(Integer, ForeignKey('track.id'))

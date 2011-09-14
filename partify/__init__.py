@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, redirect, render_template, session, url_for
+from flask import Flask, jsonify, redirect, session, url_for
 
 from partify.mpd_client import mpd_client
 from partify.database import db_session
@@ -8,11 +8,7 @@ app.config.from_object("config")
 
 @app.route("/")
 def main():
-    if 'user' in session:
-        # User is logged in
-        return render_template("player.html")
-    else:
-        return redirect(url_for('login_form'))
+    return redirect(url_for('player'))
 
 @app.route("/cmd/<cmd>")
 def exc_cmd(cmd):

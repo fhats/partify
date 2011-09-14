@@ -72,10 +72,14 @@ Player - Partify
                 <li><a href="#whos_here">Who's Here</a></li>
             </ul>
             <div id="edit_queue">
-                Things
+                <ul>
+                    {% for queue_entry in user_play_queue %}
+                    <li>{{queue_entry.track.artist}} - {{queue_entry.track.title}}</li>
+                    {% endfor %}
+                </ul>
             </div>
-            <div id="whos_here">
-                Stuff
+            <div id="add_track">
+                Add a track!
             </div>
         </div>
     </div>
@@ -84,24 +88,17 @@ Player - Partify
     <div id="party_queue_container" class="span-8 last">
         <div><h3 class="logo">Party Queue</h3></div>
         <div id="party_queue" class="span-8 last">
+            {% for queue_entry in global_play_queue %}
             <div class="party_queue_item span-8 last">
                 <div>
                     <img src="http://userserve-ak.last.fm/serve/85/19666107.jpg" />
                 </div>
                 <div>
-                    Circa Survive<br />
-                    Holding Someone's Hair Back
+                    {{queue_entry.track.artist}}<br />
+                    {{queue_entry.track.title}}
                 </div>
             </div>
-            <div class="party_queue_item span-8 last">
-                <div>
-                    <img src="http://userserve-ak.last.fm/serve/85/19666107.jpg" />
-                </div>
-                <div>
-                    Circa Survive<br />
-                    Holding Someone's Hair Back
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
 
