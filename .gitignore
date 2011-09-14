@@ -1,4 +1,5 @@
 *.pyc
+*.key
 tmp/*
 config.py
 partify/static/js/partify/*
