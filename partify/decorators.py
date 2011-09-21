@@ -2,7 +2,7 @@ import logging
 import time
 from functools import wraps
 
-from flask import jsonify, session
+from flask import jsonify, redirect, session, url_for
 
 from mpd_client import mpd_client
 from partify import app
@@ -20,12 +20,12 @@ def with_authentication(f):
 		if 'user' in session:
 			return f()
 		else:
-			return redirect_url('login_form')
+			return redirect(url_for('login_form'))
 	return wrapped
 
 def with_mpd(f):
     @wraps(f)
-    def wrapped():
+    def wrapped(*args, **kwargs):
         with mpd_client() as mpd:
-            return f(mpd)
+            return f(mpd, *args, **kwargs)
     return wrapped

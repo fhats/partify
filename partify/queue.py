@@ -2,8 +2,10 @@
 import json
 import logging
 import urllib2
+from itertools import izip_longest
 
 from flask import redirect, request, session, url_for
+from sqlalchemy.event import listens_for
 
 from database import db_session
 from decorators import with_authentication
@@ -33,7 +35,8 @@ def add_to_queue():
         track_info = {
             'title': response['track']['name'],
             'artist': ', '.join(artist['name'] for artist in response['track']['artists']),
-            'album': response['track']['album']['name']
+            'album': response['track']['album']['name'],
+            'spotify_url': spotify_uri
         }
         track = Track(**track_info)
         db_session.add( track )
@@ -46,6 +49,38 @@ def add_to_queue():
 
     return redirect(url_for('player'))
 
-def _ensure_mpd_playlist_consistency():
-    """I think this will go here...?"""
-    pass
+@listens_for(PlayQueueEntry, 'after_insert')
+@with_mpd
+def _ensure_mpd_playlist_consistency(mpd, const, table, added_track):
+    """This function is responsible for maintaining consistency between the Mopidy play queue and the Partify play queue.
+
+    * The partify play queue should be authoritative. That is, Mopidy's playlist should match Paritfy's, NOT the other way around.
+    * Tracks should only be added/deleted if necessary to ensure smoothness on the Mopidy side of things. To start, it will be easiest to NEVER remove
+      the currently playing track since we won't need to mess with player state that way.
+    """
+    playlist_tracks = mpd.playlistinfo()
+    queued_tracks = PlayQueueEntry.query.order_by(PlayQueueEntry.playback_priority).all()
+    mpd_playlist_length = len(playlist_tracks)
+    position = 0
+    diverged = False
+    for (queued_track, playlist_track) in izip_longest(queued_tracks, playlist_tracks):
+        # Violating constraint #2
+        # TODO: A better diffing algorithm that has to do less Mopidy work,
+        # This is really pretty ugly but I'm tired.
+
+        if not diverged:
+            playlist_track_spotify_url = playlist_track.get('file', None) if playlist_track is not None else None
+            # find the first point at which the two lists diverge
+            if queued_track.track.spotify_url != playlist_track_spotify_url:
+                # Remove all entries after this position in the MPD playlist
+                if mpd_playlist_length > 0:
+                    mpd.delete("%d:" % position)
+                diverged = True
+        if diverged:
+            app.logger.debug("Adding %r" % queued_track.track.spotify_url)
+            mpd.add(queued_track.track.spotify_url)
+
+        position += 1
+
+    # If the player is not playing... start it!
+    mpd.play()
