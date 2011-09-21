@@ -24,6 +24,7 @@ def shutdown_session(exception=None):
 # having these imports here is kind of weird and I'm not totally sure why they are needed
 # they will stay here until a point when something more elegant makes itself known.
 
+from partify import queue
 from partify import playback
 from partify import player
 from partify import user

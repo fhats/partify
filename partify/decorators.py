@@ -2,7 +2,7 @@ import logging
 import time
 from functools import wraps
 
-from flask import jsonify
+from flask import jsonify, redirect, session, url_for
 
 from mpd_client import mpd_client
 from partify import app
@@ -13,9 +13,19 @@ def default_json(f):
         return jsonify(status=f())
     return wrapped
 
+# This is really poor authentication. Good thing it doesn't really matter!
+def with_authentication(f):
+	@wraps(f)
+	def wrapped():
+		if 'user' in session:
+			return f()
+		else:
+			return redirect(url_for('login_form'))
+	return wrapped
+
 def with_mpd(f):
     @wraps(f)
-    def wrapped():
+    def wrapped(*args, **kwargs):
         with mpd_client() as mpd:
-            return f(mpd)
+            return f(mpd, *args, **kwargs)
     return wrapped

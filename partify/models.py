@@ -1,9 +1,11 @@
 import datetime
 
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import func
 from sqlalchemy.orm import relationship
 
 from database import Base
+from database import db_session
 
 class User(Base):
     __tablename__ = "user"
@@ -40,8 +42,8 @@ class PlayQueueEntry(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship("User")
     time_added = Column(DateTime, default=datetime.datetime.now)
-    user_priority = Column(Integer)
-    playback_priority = Column(BigInteger, unique=True)
+    user_priority = Column(Integer, default=lambda: (db_session.query(func.max(PlayQueueEntry.user_priority)).first()[0] or 0) + 1)
+    playback_priority = Column(BigInteger, unique=True, default=lambda: (db_session.query(func.max(PlayQueueEntry.playback_priority)).first()[0] or 0) + 1)
 
     def __repr__(self):
         return "<Track %r queued by %r at %r with priority %r (queue position %r)>" % (self.track, self.user, self.time_added, self.user_priority, self.playback_priority)

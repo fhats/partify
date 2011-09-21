@@ -5,12 +5,13 @@ import time
 
 from flask import Response, jsonify, redirect, render_template, session, url_for
 
-from decorators import with_mpd
+from decorators import with_authentication, with_mpd
 from partify import app
 from partify.models import PlayQueueEntry
 from partify.models import Track
 
 @app.route('/player', methods=['GET'])
+@with_authentication
 def player():
     if 'user' in session:
         # User is logged in

@@ -69,7 +69,7 @@ Player - Partify
         <div id="tabs">
             <ul>
                 <li><a href="#edit_queue">My Queue</a></li>
-                <li><a href="#whos_here">Who's Here</a></li>
+                <li><a href="#add_track">Add a Track</a></li>
             </ul>
             <div id="edit_queue">
                 <ul>
@@ -79,7 +79,12 @@ Player - Partify
                 </ul>
             </div>
             <div id="add_track">
-                Add a track!
+                <p>Add a track to your queue:</p>
+                <form action="/queue/add" method="POST">
+                    <label for='spotify_uri'>Spotify URI:</label>
+                    <input type="text" name="spotify_uri" />
+                    <input type="submit" value="Add!" />
+                </form>
             </div>
         </div>
     </div>
