@@ -8,26 +8,10 @@ app.config.from_object("config")
 
 @app.route("/")
 def main():
+    """The 'default' route when you hit the index of the app.
+    Just sweeps the user off to the player page (which redirects to login if there is no user authenticated)."""
     return redirect(url_for('player'))
-
-@app.route("/cmd/<cmd>")
-def exc_cmd(mpd, cmd):
-    with mpd_client("partify.local", 6600) as mpd:
-        f = getattr(mpd, cmd)
-        response = f()
-        return jsonify(response=response)
 
 @app.teardown_request
 def shutdown_session(exception=None):
     db_session.remove()
-
-# having these imports here is kind of weird and I'm not totally sure why they are needed
-# they will stay here until a point when something more elegant makes itself known.
-
-from partify import queue
-from partify import playback
-from partify import player
-from partify import user
-
-if __name__ == "__main__":
-    app.run()

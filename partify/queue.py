@@ -21,7 +21,7 @@ from partify.player import _get_status
 @with_authentication
 @with_mpd
 def add_to_queue(mpd):
-    """For right now, just take a spotfy URL and add the track to the play queue..."""
+    """Takes a Spotify URL and adds it to the current play queue."""
 
     spotify_uri = request.form['spotify_uri']
     
@@ -41,7 +41,7 @@ def add_to_queue(mpd):
     return redirect(url_for('player'))
 
 def track_from_spotify_url(spotify_url):
-
+    """Returns a Track object from the Spotify metadata associated with the given Spotify URI."""
     existing_tracks = Track.query.filter(Track.spotify_url == spotify_url).all()
 
     if len(existing_tracks) == 0:
@@ -59,6 +59,7 @@ def track_from_spotify_url(spotify_url):
     return track
 
 def track_info_from_spotify_url(spotify_url):
+    """Returns track information from the Spotify metadata API from the given Spotify URI."""
     spotify_request_url = "http://ws.spotify.com/lookup/1/.json?uri=%s" % spotify_url
     raw_response = urllib2.urlopen(spotify_request_url).read()
 
@@ -76,6 +77,7 @@ def track_info_from_spotify_url(spotify_url):
 
 @with_mpd
 def ensure_mpd_playlist_consistency(mpd):
+    """A wrapper for _ensure_mpd_playlist_consistency that grabs an MPD client."""
     _ensure_mpd_playlist_consistency(mpd)
 
 def _ensure_mpd_playlist_consistency(mpd):
@@ -111,6 +113,7 @@ def _ensure_mpd_playlist_consistency(mpd):
 
 @with_mpd
 def on_playlist_update(mpd):
+    """The subprocess that continuously IDLEs against the Mopidy server and ensures playlist consistency on playlist update."""
     while True:
         changed = mpd.idle()
         if changed[0] == 'playlist':

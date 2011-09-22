@@ -1,3 +1,5 @@
+"""A collection of endpoints used for debugging the application. Each of these controls an aspect of playback."""
+
 from decorators import default_json
 from decorators import with_mpd
 from mpd_client import mpd_client

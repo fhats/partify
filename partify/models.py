@@ -1,3 +1,4 @@
+"""Database->Python Class ORM mappings."""
 import datetime
 
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String, Text
@@ -8,11 +9,12 @@ from database import Base
 from database import db_session
 
 class User(Base):
+    """Represents a User of Partify."""
     __tablename__ = "user"
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(64))
     username = Column(String(36), unique=True)
-    password = Column(String(256))
+    password = Column(String(256))  # TODO: This needs to be encrypted. See issue #3 (https://github.com/fxh32/partify/issues/3)
 
     def __init__(self, name=None, username=None, password=None):
         self.name = name
@@ -23,6 +25,7 @@ class User(Base):
         return "<User %r>" % (self.name)
 
 class Track(Base):
+    """Represents track metadata. Used as a foreign key in PlayQueueEntry."""
     __tablename__ = "track"
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(Text)
@@ -34,6 +37,7 @@ class Track(Base):
         return "<%r by %r (from %r) - %r>" % (self.title, self.artist, self.album, self.spotify_url)
 
 class PlayQueueEntry(Base):
+    """Represents a playlist queue entry."""
     __tablename__ = "play_queue_entry"
     
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -50,6 +54,7 @@ class PlayQueueEntry(Base):
         return "<Track %r (MPD %r) queued by %r at %r with priority %r (queue position %r)>" % (self.track, self.mpd_id, self.user, self.time_added, self.user_priority, self.playback_priority)
 
 class ConfigurationField(Base):
+    """Represents a configuration field."""
     __tablename__ = "configuration_field"
 
     id = Column(Integer, primary_key=True, autoincrement=True)

@@ -1,11 +1,13 @@
 $ = jQuery
 
 $ ->
+    # Initial setup of the Player object and namespacing within front-end
     window.Partify = {}
     window.Partify.Player = new Player()
     window.Partify.Player.init()
 
 class Player
+    # Class responsible for the functions of the "player", which displays information about the currently playing track
     constructor: () ->
         @info =
             artist: ''
@@ -24,6 +26,7 @@ class Player
 
     initPlayerVisuals: () ->
         $("#player_progress").progressbar value: 0
+        # This is not really related to the player and should move elsewhere eventually.
         $("#tabs").tabs()
 
     initPlayerUpdating: () ->
@@ -48,6 +51,7 @@ class Player
         worker.postMessage 'Start checking push'
 
     _initPlayerSynchroPolling: (poll_frequency) ->
+        # Initializes and is responsible for running polling updates with the server
         this._synchroPollAndSchedule()
 
         # poll_frequnecy is in ms
@@ -56,6 +60,7 @@ class Player
         , poll_frequency
 
     _synchroPollAndSchedule: () ->
+        # Performs the polling updates with the server
         $.ajax(
             url: 'player/status/poll'
             method: 'GET'
@@ -72,39 +77,47 @@ class Player
         )
 
     _initPlayerLocalUpdate: () ->
+        # Sets up the timer that updates the player's progressbar every second
         setInterval () =>
             this._playerLocalUpdate()
         , 1000
             
     _playerLocalUpdate: () ->
+        # Updates the player to stay in sync with the Mopidy server without actually polling it.
         if @info.state == 'play'
             @info.elapsed = if Math.round(@info.elapsed) < @info.time then @info.elapsed + 1 else @info.elapsed
             this.updatePlayerProgress()
 
     updatePlayerInfo: (data) -> 
+        # Takes an array of data items and populates the appropriate HTML elements
         info = for key, value of @info
             @info[key] = data[key]
         this._updatePlayerTextFromInfo text for text in ['artist', 'title', 'album', 'year']
         this.updatePlayerProgress()
 
     _updatePlayerTextFromInfo: (info_key) -> 
+        # Responsible for updating player text from info in the player class
         this._updatePlayerText info_key, @info[info_key]
 
     _updatePlayerText: (info_key, data) ->
+        # Responsible for updating text associated with the player
         info_span = $("#player_info_" + info_key).first()
         info_span.text data
 
     updatePlayerProgress: () ->
+        # Update the actual progressbar element
         progress = Math.round( (@info.elapsed / @info.time) * 100 )
         $("#player_progress").progressbar value: progress
         this._updatePlayerText 'elapsed', secondsToTimeString @info['elapsed']
         this._updatePlayerText 'time', secondsToTimeString @info['time']
 
 secondsToTimeString = (seconds) ->
+    # Converts a number of seconds to a string representing a human-readable time (eg. MM:SS)
     seconds = Math.round(seconds)
     minutes = Math.floor( seconds / 60 )
     seconds = (seconds % 60)
     time_s = "" + minutes + ":"
+    # zero-padding
     time_s += if seconds < 10 then '0' else ''
     time_s += seconds
     time_s
