@@ -100,7 +100,8 @@ Player - Partify
                 </div>
                 <div>
                     {{queue_entry.track.artist}}<br />
-                    {{queue_entry.track.title}}
+                    {{queue_entry.track.title}}<br />
+                    MPD ID: {{queue_entry.mpd_id}}
                 </div>
             </div>
             {% endfor %}

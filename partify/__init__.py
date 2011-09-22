@@ -11,8 +11,8 @@ def main():
     return redirect(url_for('player'))
 
 @app.route("/cmd/<cmd>")
-def exc_cmd(cmd):
-    with mpd_client("ubuntu.local", 6600) as mpd:
+def exc_cmd(mpd, cmd):
+    with mpd_client("partify.local", 6600) as mpd:
         f = getattr(mpd, cmd)
         response = f()
         return jsonify(response=response)

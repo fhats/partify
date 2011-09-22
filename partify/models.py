@@ -41,12 +41,13 @@ class PlayQueueEntry(Base):
     track = relationship("Track")
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship("User")
+    mpd_id = Column(Integer, unique=True)
     time_added = Column(DateTime, default=datetime.datetime.now)
     user_priority = Column(Integer, default=lambda: (db_session.query(func.max(PlayQueueEntry.user_priority)).first()[0] or 0) + 1)
-    playback_priority = Column(BigInteger, unique=True, default=lambda: (db_session.query(func.max(PlayQueueEntry.playback_priority)).first()[0] or 0) + 1)
+    playback_priority = Column(BigInteger, default=lambda: (db_session.query(func.max(PlayQueueEntry.playback_priority)).first()[0] or 0) + 1)
 
     def __repr__(self):
-        return "<Track %r queued by %r at %r with priority %r (queue position %r)>" % (self.track, self.user, self.time_added, self.user_priority, self.playback_priority)
+        return "<Track %r (MPD %r) queued by %r at %r with priority %r (queue position %r)>" % (self.track, self.mpd_id, self.user, self.time_added, self.user_priority, self.playback_priority)
 
 class ConfigurationField(Base):
     __tablename__ = "configuration_field"

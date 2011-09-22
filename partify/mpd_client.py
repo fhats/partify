@@ -1,7 +1,7 @@
 from mpd import MPDClient
 
 class mpd_client(object):
-    def __init__(self, host="partify.local", port=6600):
+    def __init__(self, host="ubuntu.local", port=6600):
         self.host = host
         self.port = port
         self.c = MPDClient()
