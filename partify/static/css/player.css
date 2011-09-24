@@ -49,9 +49,14 @@ div.party_queue_item > div + div{
 }
 
 thead th{
-    background: #49483E;
+    background: #676862;
     text-align: left;
     font-weight: normal;
+}
+
+tbody tr:nth-child(even) td, 
+tbody tr.even td{
+    background: #49483E;
 }
 /* override some of the bad jQuery UI styles */
 .ui-progressbar{
