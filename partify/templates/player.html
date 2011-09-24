@@ -18,97 +18,139 @@ Player - Partify
 
 {% block super_body %}
 
-<div class="container">
-    <!-- Topbar - Logo & account settings -->
-    <div id="topbar" class="span-24 last">
-        <div id="topbar_logo" class="span-12">
+
+<!-- Topbar - Logo & account settings -->
+<div id="topbar" style="width:100%; height:44px">
+    <div class="container">
+    <div class="prepend-top span-24 last">
+        <div id="topbar_logo" class="span-16">
             <h3 class="logo">Partify - Social Music at Your Control</h3>
         </div>
-        <div class="span-12 last">
-            <p class="small right">Account settings</p>
+        <div class="prepend-1 span-7 last">
+            <p class="small left">Account settings</p>
         </div>
     </div>
-
-    <!-- Player status - shows what's playing and how long it's been playing for -->
-    <div id="player_status" class="span-24 append-bottom last">
-        <!-- The labels hanging out about the player and the played by cols -->
-        <div class="player_header span-16"><i>Now Playing...</i></div>
-        <div class="player_header span-8 last"><i>Played By</i></div>
-
-        <div id="player_container" class="span-16">
-            <div id="player_image_container" class="span-3">
-                <img class="span-3" src="http://userserve-ak.last.fm/serve/85/17631399.jpg" />
-            </div>
-            <div id="player_status_container" class="span-13 last">
-                <div id="player_track_info" class="span-13 append-bottom last">
-                    <div class="track_details span-7">
-                        <b>Artist:</b> <span id="player_info_artist"></span><br />
-                        <b>Track:</b> <span id="player_info_title"></span>
-                    </div>
-                    <div class="track_details span-6 last">
-                        <b>Album:</b> <span id="player_info_album"></span><br />
-                        <b>Year:</b> <span id="player_info_year"></span>
-                    </div>
-                </div>
-                <div id="player_track_times" class="span-13 last">
-                    <span id="player_info_elapsed" class="left"></span>
-                    <span id="player_info_time" class="right"></span>
-                </div>
-                <div id="player_progress" class="span-13 last"></div>
-            </div>
-        </div>
-
-        <div id="played_by_container" class="span-8 last">
-            <div><img src="http://userserve-ak.last.fm/serve/85/19666107.jpg" /></div>
-            <div>Fred<br/>Love/Hate</div>
-        </div>
     </div>
-
-    <!-- The content view -->
-    <div id="tabs_container" class="span-16">
-        <div id="tabs">
-            <ul>
-                <li><a href="#edit_queue">My Queue</a></li>
-                <li><a href="#add_track">Add a Track</a></li>
-            </ul>
-            <div id="edit_queue">
-                <ul>
-                    {% for queue_entry in user_play_queue %}
-                    <li>{{queue_entry.track.artist}} - {{queue_entry.track.title}}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div id="add_track">
-                <p>Add a track to your queue:</p>
-                <form action="/queue/add" method="POST">
-                    <label for='spotify_uri'>Spotify URI:</label>
-                    <input type="text" name="spotify_uri" />
-                    <input type="submit" value="Add!" />
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Party's play queue -->
-    <div id="party_queue_container" class="span-8 last">
-        <div><h3 class="logo">Party Queue</h3></div>
-        <div id="party_queue" class="span-8 last">
-            {% for queue_entry in global_play_queue %}
-            <div class="party_queue_item span-8 last">
-                <div>
-                    <img src="http://userserve-ak.last.fm/serve/85/19666107.jpg" />
-                </div>
-                <div>
-                    {{queue_entry.track.artist}}<br />
-                    {{queue_entry.track.title}}<br />
-                    MPD ID: {{queue_entry.mpd_id}}
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-
 </div>
 
+<div id="content_all" style="width:100%; height:100%">
+    <div class="container prepend-top" id="content_container">
+        <div class="span-24 last">
+            <!-- Player status - shows what's playing and how long it's been playing for -->
+            <div id="player_status" class="append-bottom span-24 last">
+                <!-- The labels hanging out about the player and the played by cols -->
+                <!--<div class="player_header span-16"><i>Now Playing...</i></div>
+                <div class="player_header span-8 last"><i>Played By</i></div>-->
+
+                <div id="player_container" class="span-16">
+                    <div id="player_image_container" class="span-3">
+                        <img class="span-3" src="http://userserve-ak.last.fm/serve/85/17631399.jpg" />
+                    </div>
+                    <div id="player_status_container" class="span-13 last">
+                        <div id="player_track_info" class="span-13 last">
+                            <div class="track_details span-7">
+                                <b>Artist:</b> <span id="player_info_artist"></span><br />
+                                <b>Track:</b> <span id="player_info_title"></span>
+                            </div>
+                            <div class="track_details span-6 last">
+                                <b>Album:</b> <span id="player_info_album"></span><br />
+                                <b>Year:</b> <span id="player_info_year"></span>
+                            </div>
+                        </div>
+                        <div id="player_track_times" class="span-13 last">
+                            <span id="player_info_elapsed" class="player_time left"></span>
+                            <span id="player_info_time" class="player_time right"></span>
+                        </div>
+                        <div id="player_progress" class="span-13 last"></div>
+                    </div>
+                </div>
+                <div class="span-1">
+                &nbsp;
+                </div>
+                <div id="played_by_container" class="span-7 last">
+                    <div><img src="http://userserve-ak.last.fm/serve/85/19666107.jpg" /></div>
+                    <div>Fred<br/>Love/Hate</div>
+                </div>
+                <div id="on_deck" class="span-24 last">
+                    <span class="logo">Up Next: </span>
+                    {% set count = 3 %}
+                    {% if global_play_queue|length < 3 %}
+                        {% set count = global_play_queue|length %}
+                    {% endif %}
+                    {% for track in global_play_queue[:count] %}
+                        {{track.track.artist}} - {{track.track.title}}, 
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- The content view -->
+            <div id="tabs_container" class="span-24 last">
+                <div id="tabs">
+                    <ul>
+                        <li><a href="#edit_queue">My Queue</a></li>
+                        <li><a href="#add_track">Add a Track</a></li>
+                        <li><a href="#party_queue">Party Queue</a></li>
+                    </ul>
+                    <div id="edit_queue">
+                        &nbsp;
+                        <ul>
+                            {% for queue_entry in user_play_queue %}
+                            <li>{{queue_entry.track.artist}} - {{queue_entry.track.title}}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div id="add_track">
+                        <div class="span-24 append-bottom last">
+                            <form id="track_search_form" method="GET">
+                                <label for='search_artist'>Artist:</label>
+                                <input type="text" name="search_artist" id="search_artist" /><br />                  
+                                <label for='search_title'>Title:</label>
+                                <input type="text" name="search_title" id="search_title" /><br />
+                                <label for='search_album'>Album:</label>
+                                <input type="text" name="search_album" id="search_album" /><br />
+
+                                <input type="submit" value="Search" />
+                            </form>
+                        </div>
+                        <div class="container span-24 last">
+                            <table id="results_table" class="span-23 last">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Artist</th>
+                                        <th>Album</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="small">Get Out</td>
+                                        <td class="small">Circa Survive</td>
+                                        <td class="small">Blue Sky Noise</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="party_queue">
+                        {% for queue_entry in global_play_queue %}
+                        <div class="party_queue_item span-24 last">
+                            <div>
+                                <img src="http://userserve-ak.last.fm/serve/85/19666107.jpg" />
+                            </div>
+                            <div>
+                                {{queue_entry.track.artist}}<br />
+                                {{queue_entry.track.title}}<br />
+                                MPD ID: {{queue_entry.mpd_id}}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="penguin">&nbsp;</div>
 
 {% endblock %}

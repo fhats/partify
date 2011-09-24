@@ -8,15 +8,17 @@ Register
 
 {% block body %}
 
-<div id="unauth_registration_form" class="prepend-6 span-12 append-6 last">
-    <form method="POST" action="{{url_for('register_post')}}">
-        {{ render_field(form.name) }}
-        {{ render_field(form.username) }}
-        {{ render_field(form.password) }}
-        <input type="submit" value="Register">
-    </form>
-</div>
-<div id="unauth_login_footer" class="prepend-top prepend-6 span-12 append-6 last">
-    <p class="small"><a href="{{url_for('login_form')}}">Login</a></p>
+<div id="unauth_form_container" class="container prepend-top">
+    <div id="unauth_registration_form" class="prepend-6 span-12 append-6 last">
+        <form method="POST" action="{{url_for('register_post')}}">
+            {{ render_field(form.name) }}
+            {{ render_field(form.username) }}
+            {{ render_field(form.password) }}
+            <input type="submit" value="Register">
+        </form>
+    </div>
+    <div id="unauth_login_footer" class="prepend-top prepend-6 span-12 append-6 last">
+        <p class="small"><a href="{{url_for('login_form')}}">Login</a></p>
+    </div>
 </div>
 {% endblock %}

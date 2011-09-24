@@ -1,7 +1,9 @@
 /* basic styles */
 
 body {
-    background-color: #272822;
+    background: url('/static/img/player/bg.png') #1f1f1f;
+    background-repeat:no-repeat;
+    background-position: top center;
     color: #F8F8F2;
 }
 
@@ -14,7 +16,12 @@ a:hover{
 
 .logo {
     color: #FD971F;
-    font-family: "Patrick Hand";
+    font-family: "Comfortaa", sans-serif;
+}
+
+div#topbar {
+    background-color: #272822;
+    border-bottom: 1px solid #6A4A00;
 }
 
 /* Not-logged-in styles */
@@ -22,4 +29,8 @@ a:hover{
 div#unauth_container{
     text-align: center;
     margin-left: auto; margin-right: auto;
+}
+
+div#unauth_form_container{
+    background: #272822;
 }

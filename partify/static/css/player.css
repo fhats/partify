@@ -1,3 +1,26 @@
+div#content_container{
+    background: #272822;
+    padding: 0px;
+}
+
+div#penguin {
+    background: url('/static/img/penguin.png');
+    background-repeat: no-repeat;
+
+    width: 172px;
+    height: 215px;
+    position: absolute;
+    margin-left: 100%;
+    margin-top: 100%;
+    top: -215px;
+    left: -172px;
+    z-index: -10;
+}
+
+.player_time {
+    font-style:italic;
+}
+
 div.track_details {
     
 }
@@ -25,6 +48,11 @@ div.party_queue_item > div + div{
     padding-left: 1em;
 }
 
+thead th{
+    background: #49483E;
+    text-align: left;
+    font-weight: normal;
+}
 /* override some of the bad jQuery UI styles */
 .ui-progressbar{
     border: 1px solid #49483E;
