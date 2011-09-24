@@ -5,6 +5,8 @@ from werkzeug.serving import run_simple
 from partify import app
 from partify.queue import on_playlist_update
 
+from partify import player, queue, track, user
+
 if __name__ == "__main__":
     """Starts the WebApp."""
 

@@ -2,7 +2,7 @@ $ = jQuery
 
 $ ->
     # Initial setup of the Player object and namespacing within front-end
-    window.Partify = {}
+    window.Partify = window.Partify || {}
     window.Partify.Player = new Player()
     window.Partify.Player.init()
 
