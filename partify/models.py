@@ -4,6 +4,7 @@ import datetime
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy import func
 from sqlalchemy.orm import relationship
+from werkzeug.security import generate_password_hash
 
 from database import Base
 from database import db_session
@@ -14,12 +15,12 @@ class User(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(64))
     username = Column(String(36), unique=True)
-    password = Column(String(256))  # TODO: This needs to be encrypted. See issue #3 (https://github.com/fxh32/partify/issues/3)
+    password = Column(String(256))
 
     def __init__(self, name=None, username=None, password=None):
         self.name = name
         self.username = username
-        self.password = password
+        self.password = generate_password_hash(password)
 
     def __repr__(self):
         return "<User %r>" % (self.name)

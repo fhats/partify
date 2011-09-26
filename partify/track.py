@@ -1,5 +1,3 @@
-from time import mktime,strptime
-
 from flask import jsonify, request, session, url_for
 
 from partify import app
