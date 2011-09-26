@@ -1,24 +1,20 @@
 div#content_container{
     background: #272822;
     padding: 0px;
-}
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -khtml-border-radius: 4px;
+    border-radius: 4px;
 
-div#penguin {
-    background: url('/static/img/penguin.png');
-    background-repeat: no-repeat;
-
-    width: 172px;
-    height: 215px;
-    position: absolute;
-    margin-left: 100%;
-    margin-top: 100%;
-    top: -215px;
-    left: -172px;
-    z-index: -10;
+    border: 1px solid #000000;
 }
 
 .player_time {
     font-style:italic;
+}
+
+div#player_status {
+    margin: 12px;
 }
 
 div.track_details {
@@ -48,16 +44,41 @@ div.party_queue_item > div + div{
     padding-left: 1em;
 }
 
+table {
+    border: 1px solid #49483E;
+}
+
 thead th{
     background: #676862;
     text-align: left;
     font-weight: normal;
 }
 
+tbody tr td {
+    background: #313131;
+}
+
 tbody tr:nth-child(even) td, 
 tbody tr.even td{
-    background: #49483E;
+    background: #383838;
 }
+
+tbody tr.disabled,
+tbody tr.disabled td {
+    background: #9a9a9a;
+}
+
+td.results_empty {
+    background: #272822;
+}
+
+button.add_btn{
+    height: 19px;
+    width: 18px;
+    vertical-align: middle;
+    border: 1px solid #1f1f1f !important;
+}
+
 /* override some of the bad jQuery UI styles */
 .ui-progressbar{
     border: 1px solid #49483E;

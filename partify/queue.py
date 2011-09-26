@@ -5,7 +5,7 @@ import select
 import urllib2
 from itertools import izip_longest
 
-from flask import redirect, request, session, url_for
+from flask import jsonify, redirect, request, session, url_for
 from sqlalchemy import not_
 from sqlalchemy.event import listens_for
 
@@ -38,7 +38,7 @@ def add_to_queue(mpd):
 
     _ensure_mpd_playlist_consistency(mpd)
 
-    return redirect(url_for('player'))
+    return jsonify(status='ok', file=spotify_uri)
 
 def track_from_spotify_url(spotify_url):
     """Returns a Track object from the Spotify metadata associated with the given Spotify URI."""
@@ -110,6 +110,10 @@ def _ensure_mpd_playlist_consistency(mpd):
             db_session.add(new_track_entry)
 
     db_session.commit()
+
+    status = _get_status(mpd)
+    if status['state'] != 'play':
+        mpd.play()
 
 @with_mpd
 def on_playlist_update(mpd):

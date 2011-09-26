@@ -52,14 +52,14 @@ class Player
 
     _initPlayerSynchroPolling: (poll_frequency) ->
         # Initializes and is responsible for running polling updates with the server
-        this._synchroPollAndSchedule()
+        this._synchroPoll()
 
         # poll_frequnecy is in ms
         setInterval () => 
-            this._synchroPollAndSchedule()
+            this._synchroPoll()
         , poll_frequency
 
-    _synchroPollAndSchedule: () ->
+    _synchroPoll: () ->
         # Performs the polling updates with the server
         $.ajax(
             url: 'player/status/poll'
@@ -87,6 +87,8 @@ class Player
         if @info.state == 'play'
             @info.elapsed = if Math.round(@info.elapsed) < @info.time then @info.elapsed + 1 else @info.elapsed
             this.updatePlayerProgress()
+            if @info.elapsed == @info.time
+                this._synchroPoll()
 
     updatePlayerInfo: (data) -> 
         # Takes an array of data items and populates the appropriate HTML elements

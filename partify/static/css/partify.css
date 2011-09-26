@@ -34,3 +34,21 @@ div#unauth_container{
 div#unauth_form_container{
     background: #272822;
 }
+
+div#penguin {
+    background: url('/static/img/penguin.png');
+    background-repeat: no-repeat;
+    width: 172px;
+    height: 215px;
+    position: absolute;
+    z-index: -10;
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    margin: 0 auto;
+    background-position: bottom right;
+}
+
+.ui-icon-loading {
+    background-image: url('/static/img/loading.gif') !important;
+}

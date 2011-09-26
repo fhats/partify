@@ -35,9 +35,9 @@ Player - Partify
 
 <div id="content_all" style="width:100%; height:100%">
     <div class="container prepend-top" id="content_container">
-        <div class="span-24 last">
+        <div class="span-24 last" id="content">
             <!-- Player status - shows what's playing and how long it's been playing for -->
-            <div id="player_status" class="append-bottom span-24 last">
+            <div id="player_status" class="append-bottom span-23 last">
                 <!-- The labels hanging out about the player and the played by cols -->
                 <!--<div class="player_header span-16"><i>Now Playing...</i></div>
                 <div class="player_header span-8 last"><i>Played By</i></div>-->
@@ -67,18 +67,18 @@ Player - Partify
                 <div class="span-1">
                 &nbsp;
                 </div>
-                <div id="played_by_container" class="span-7 last">
+                <div id="played_by_container" class="span-6 last">
                     <div><img src="http://userserve-ak.last.fm/serve/85/19666107.jpg" /></div>
                     <div>Fred<br/>Love/Hate</div>
                 </div>
-                <div id="on_deck" class="span-24 last">
-                    <span class="logo">Up Next: </span>
+                <div id="on_deck" class="span-23 last">
+                    <span class="logo">&nbsp; &nbsp;Up Next: </span>
                     {% set count = 3 %}
                     {% if global_play_queue|length < 3 %}
                         {% set count = global_play_queue|length %}
                     {% endif %}
                     {% for track in global_play_queue[:count] %}
-                        {{track.track.artist}} - {{track.track.title}}, 
+                        {{track.track.artist}} - {{track.track.title}}{% if not loop.last %},{% endif %}
                     {% endfor %}
                 </div>
             </div>
@@ -102,14 +102,14 @@ Player - Partify
                     <div id="add_track">
                         <div class="span-24 append-bottom last">
                             <form id="track_search_form" method="GET">
-                                <label for='search_artist'>Artist:</label>
-                                <input type="text" name="search_artist" id="search_artist" /><br />                  
-                                <label for='search_title'>Title:</label>
-                                <input type="text" name="search_title" id="search_title" /><br />
-                                <label for='search_album'>Album:</label>
-                                <input type="text" name="search_album" id="search_album" /><br />
-
-                                <input type="submit" value="Search" />
+                                <span style="float: left; margin-right: 10px"><label for='search_artist'>Artist:</label><br />
+                                <input type="text" name="search_artist" id="search_artist" /></span>
+                                <span style="float: left; margin-right: 10px"><label for='search_title'>Title:</label><br />
+                                <input type="text" name="search_title" id="search_title" /></span>
+                                <span style="float: left"><label for='search_album'>Album:</label><br />
+                                <input type="text" name="search_album" id="search_album" /></span>
+                                <div style="clear: both">
+                                <input style="clear: both" type="submit" value="Search" /></div>
                             </form>
                         </div>
                         <div class="container span-24 last">
@@ -119,13 +119,12 @@ Player - Partify
                                         <th>Title</th>
                                         <th>Artist</th>
                                         <th>Album</th>
+                                        <th>Add</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td class="small">Get Out</td>
-                                        <td class="small">Circa Survive</td>
-                                        <td class="small">Blue Sky Noise</td>
+                                        <td colspan="4" class="small results_empty"><center><em>No results yet. You can search using the form at the top of the tab.</em></center></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -150,7 +149,5 @@ Player - Partify
         </div>
     </div>
 </div>
-
-<div id="penguin">&nbsp;</div>
 
 {% endblock %}
