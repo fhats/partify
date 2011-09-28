@@ -5,7 +5,7 @@ from flask import request
 from flask import session
 from flask import url_for
 from sqlalchemy import and_
-from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash
 
 from database import db_session
 from models import User
@@ -45,8 +45,8 @@ def login_post():
     """Reads input from the login form and performs the authentication."""
     form = LoginForm(request.form)
     if form.validate():
-        result = User.query.filter(and_(User.username==form.username.data, User.password==generate_password_hash(form.password.data))).first()
-        if result is not None:
+        result = User.query.filter((User.username==form.username.data)).first()
+        if result is not None and check_password_hash(result.password, form.password.data):
             session['user'] = dict((k, getattr(result, k)) for k in ('name', 'id', 'username'))
         return redirect(url_for('main'))
     else:
