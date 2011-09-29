@@ -5,6 +5,8 @@ $ ->
     window.Partify = window.Partify || {}
     window.Partify.Player = new Player()
     window.Partify.Player.init()
+    window.Partify.Queues = window.Partify.Queues || {}
+    window.Partify.Queues.GlobalQueue = window.Partify.Queues.GlobalQueue || {}
 
 class Player
     # Class responsible for the functions of the "player", which displays information about the currently playing track
@@ -19,10 +21,14 @@ class Player
             volume: 0
             state: 'pause'
             file: ''
+            last_global_playlist_update: 0
+        @config =
+            up_next_items = 3
 
     init: () -> 
         this.initPlayerVisuals()
         this.initPlayerUpdating()
+        @info.last_global_playlist_update = (new Date()).getMilliseconds()
 
     initPlayerVisuals: () ->
         $("#player_progress").progressbar value: 0
@@ -64,6 +70,8 @@ class Player
         $.ajax(
             url: 'player/status/poll'
             method: 'GET'
+            data: 
+                current: @info.last_global_playlist_update
             success: (data) =>
                 # Compensate for any appreciable lag between the server's response time and the time of the reception of the data
                 # (network lag)
@@ -74,7 +82,44 @@ class Player
                 data.elapsed = parseFloat(data.elapsed) + parseFloat(lag)
 
                 this.updatePlayerInfo data
+                if data.global_queue
+                    this._updateGlobalQueue data.global_queue
         )
+
+    _updateGlobalQueue: (tracks) ->
+        window.Partify.Queues.GlobalQueue = new Array()
+        window.Partify.Queues.GlobalQueue.push new Track(track) for track in tracks
+        this._updateGlobalQueueDisplay()
+
+    _updateGlobalQueueDisplay: () ->
+        queue_div = $("#party_queue")
+        up_next_span = $("#up_next_tracks")
+        queue_div.empty()
+        queue_div.append this._buildGlobalQueueDisplayItem(track) for track in window.Partify.Queues.GlobalQueue[1..-1]
+        up_next_span.empty()
+        up_next_dsp = window.Partify.Queues.GlobalQueue[1..3]
+        up_next_span.append this._buildUpNextDisplayItem(track, track.id==up_next_dsp[-1..-1][0].id) for track in up_next_dsp
+
+    _buildUpNextDisplayItem: (track, last) ->
+        html = "
+        #{track.artist} - #{track.title}"
+        if last == false
+            html += ","
+        
+        html
+
+    _buildGlobalQueueDisplayItem: (track) ->
+        html = "
+        <div class='party_queue_item span-24 last'>
+            <div>
+                <img src='http://userserve-ak.last.fm/serve/85/19666107.jpg' />
+            </div>
+            <div>
+                #{track.artist}<br />
+                #{track.title}<br />
+            </div>
+        </div>
+        "
 
     _initPlayerLocalUpdate: () ->
         # Sets up the timer that updates the player's progressbar every second

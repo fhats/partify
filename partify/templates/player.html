@@ -72,7 +72,8 @@ Player - Partify
                     <div>Fred<br/>Love/Hate</div>
                 </div>
                 <div id="on_deck" class="span-23 last">
-                    <span class="logo">&nbsp; &nbsp;Up Next: </span>
+                    <span class="logo">Up Next: </span>
+                    <span id="up_next_tracks">
                     {% set count = 3 %}
                     {% if global_play_queue|length < 3 %}
                         {% set count = global_play_queue|length %}
@@ -80,6 +81,7 @@ Player - Partify
                     {% for track in global_play_queue[:count] %}
                         {{track.track.artist}} - {{track.track.title}}{% if not loop.last %},{% endif %}
                     {% endfor %}
+                    </span>
                 </div>
             </div>
 

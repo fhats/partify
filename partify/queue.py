@@ -2,6 +2,7 @@
 import json
 import logging
 import select
+import time
 import urllib2
 from itertools import izip_longest
 
@@ -12,7 +13,7 @@ from sqlalchemy.event import listens_for
 from database import db_session
 from decorators import with_authentication
 from decorators import with_mpd
-from partify import app
+from partify import app, last_updated
 from partify.models import PlayQueueEntry
 from partify.models import Track
 from partify.player import _get_status
@@ -116,9 +117,15 @@ def _ensure_mpd_playlist_consistency(mpd):
         mpd.play()
 
 @with_mpd
-def on_playlist_update(mpd):
+def on_playlist_update(mpd, last_updated_dict):
     """The subprocess that continuously IDLEs against the Mopidy server and ensures playlist consistency on playlist update."""
     while True:
         changed = mpd.idle()
+        app.logger.debug("Received change event from Mopidy: %s" % changed)
         if changed[0] == 'playlist':
             _ensure_mpd_playlist_consistency(mpd)
+
+        # Update the dict which assists caching
+        for changed_system in changed:
+            last_updated_dict[changed_system] = time.time()
+            app.logger.debug(last_updated_dict)

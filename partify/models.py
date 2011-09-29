@@ -36,7 +36,7 @@ class Track(Base):
 
     def __repr__(self):
         return "<%r by %r (from %r) - %r>" % (self.title, self.artist, self.album, self.spotify_url)
-
+    
 class PlayQueueEntry(Base):
     """Represents a playlist queue entry."""
     __tablename__ = "play_queue_entry"
@@ -53,6 +53,14 @@ class PlayQueueEntry(Base):
 
     def __repr__(self):
         return "<Track %r (MPD %r) queued by %r at %r with priority %r (queue position %r)>" % (self.track, self.mpd_id, self.user, self.time_added, self.user_priority, self.playback_priority)
+
+    def as_dict(self):
+        # I'm not sure why a list comprehension into a dict doesn't work here...
+        d = {}
+        for attr in ('id', 'title', 'artist', 'album', 'spotify_url'):
+            d[attr] = getattr(self.track, attr)
+        return d
+
 
 class ConfigurationField(Base):
     """Represents a configuration field."""
