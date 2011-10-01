@@ -17,7 +17,7 @@ class Player
             album: ''
             elapsed: 0
             time: 100
-            year: 1970
+            date: 1970
             volume: 0
             state: 'pause'
             file: ''
@@ -98,7 +98,7 @@ class Player
         queue_div.append this._buildGlobalQueueDisplayItem(track) for track in window.Partify.Queues.GlobalQueue[1..-1]
         up_next_span.empty()
         up_next_dsp = window.Partify.Queues.GlobalQueue[1..3]
-        up_next_span.append this._buildUpNextDisplayItem(track, track.id==up_next_dsp[-1..-1][0].id) for track in up_next_dsp
+        up_next_span.append this._buildUpNextDisplayItem(track, track.mpd_id==up_next_dsp[-1..-1][0].mpd_id) for track in up_next_dsp
 
     _buildUpNextDisplayItem: (track, last) ->
         html = "
@@ -117,6 +117,7 @@ class Player
             <div>
                 #{track.artist}<br />
                 #{track.title}<br />
+                #{track.mpd_id}<br />
             </div>
         </div>
         "
@@ -138,8 +139,9 @@ class Player
     updatePlayerInfo: (data) -> 
         # Takes an array of data items and populates the appropriate HTML elements
         info = for key, value of @info
+            data[key] or= @info[key] # Fills in data with information from info in case that key does not exist in data. Prevents nasty undefineds everywhere
             @info[key] = data[key]
-        this._updatePlayerTextFromInfo text for text in ['artist', 'title', 'album', 'year']
+        this._updatePlayerTextFromInfo text for text in ['artist', 'title', 'album', 'date']
         this.updatePlayerProgress()
 
     _updatePlayerTextFromInfo: (info_key) -> 

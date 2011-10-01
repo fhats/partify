@@ -41,6 +41,32 @@ def add_to_queue(mpd):
 
     return jsonify(status='ok', file=spotify_uri)
 
+@app.route('/queue/remove', methods=['POST', 'GET'])
+@with_authentication
+@with_mpd
+def remove_from_queue(mpd):
+    track_id = request.form.get('track_id', None)
+    track_id = request.args.get('track_id', None)
+
+    if track_id is None:
+        return jsonify(status='error', message="No track specified for removal!")
+    
+    track_id = int(track_id)
+
+    # Pull the track from the play queue
+    track = PlayQueueEntry.query.filter(PlayQueueEntry.mpd_id == track_id).first()
+    if track is None:
+        return jsonify(status='error', message="Could not find track with id %d" % track_id)
+
+    if track.user.id != session['user']['id']:
+        return jsonify(status='error', message="You are not authorized to remove this track!")
+    
+    # Remove the track! All of the details will follow for now.... later we'll need to be watching the reordering of tracks (#20)
+    mpd.deleteid(track_id)
+
+    return jsonify(status='ok')
+
+
 def track_from_spotify_url(spotify_url):
     """Returns a Track object from the Spotify metadata associated with the given Spotify URI."""
     existing_tracks = Track.query.filter(Track.spotify_url == spotify_url).all()
@@ -71,10 +97,19 @@ def track_info_from_spotify_url(spotify_url):
         'title': response['track']['name'],
         'artist': ', '.join(artist['name'] for artist in response['track']['artists']),
         'album': response['track']['album']['name'],
-        'spotify_url': spotify_url
+        'spotify_url': spotify_url,
+        'date': raw_info_from_spotify_url(response['track']['album']['href'])['album']['released']
     }
 
     return track_info
+
+def raw_info_from_spotify_url(spotify_url):
+    spotify_request_url = "http://ws.spotify.com/lookup/1/.json?uri=%s" % spotify_url
+    raw_response = urllib2.urlopen(spotify_request_url).read()
+
+    response = json.loads(raw_response)
+
+    return response
 
 @with_mpd
 def ensure_mpd_playlist_consistency(mpd):

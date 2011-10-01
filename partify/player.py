@@ -36,6 +36,10 @@ def status(mpd):
         response['global_queue'] = [track.as_dict() for track in get_global_queue()]
         response['last_global_playlist_update'] = ceil(last_updated['playlist'])
         app.logger.debug("Issuing playlist update for user %r" % session['user']['name'])
+        app.logger.debug("Client current with %r, we have %r" % (client_current, last_updated['playlist']))
+    # else:
+    #     app.logger.debug("Total wtfxx!!")
+    #     app.logger.debug("Client current with %r, we have %r" % (client_current, last_updated['playlist']))
 
     return jsonify(response)
 

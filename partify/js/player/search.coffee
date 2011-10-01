@@ -135,7 +135,7 @@ class Track
     @file = ""
     @time = ""
     @date = ""
-    @id = 0
+    @mpd_id = 0
 
     constructor: (data) ->
         @title = data.title
@@ -145,5 +145,5 @@ class Track
         @file = data.file
         @time = data.time
         @date = data.date
-        if data.id
-            @id = data.id
+        if data.mpd_id
+            @mpd_id = data.mpd_id

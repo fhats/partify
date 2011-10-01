@@ -32,6 +32,7 @@ class Track(Base):
     title = Column(Text)
     artist = Column(Text)
     album = Column(Text)
+    date = Column(Text)
     spotify_url = Column(Text, unique=True)
 
     def __repr__(self):
@@ -57,8 +58,11 @@ class PlayQueueEntry(Base):
     def as_dict(self):
         # I'm not sure why a list comprehension into a dict doesn't work here...
         d = {}
-        for attr in ('id', 'title', 'artist', 'album', 'spotify_url'):
+        for attr in ('id', 'title', 'artist', 'album', 'spotify_url', 'date'):
             d[attr] = getattr(self.track, attr)
+        for attr in ('mpd_id', 'playback_priority', 'user_priority'):
+            d[attr] = getattr(self, attr)
+        d['time_added'] = self.time_added.ctime()
         return d
 
 
