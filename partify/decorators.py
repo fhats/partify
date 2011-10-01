@@ -4,7 +4,8 @@ from functools import wraps
 
 from flask import jsonify, redirect, session, url_for
 
-from mpd_client import mpd_client
+from config import mpd_server
+from mpd import MPDClient
 from partify import app
 
 def with_authentication(f):
@@ -25,6 +26,9 @@ def with_mpd(f):
     """A decorator that establishes and MPD connection Mopidy and passes it into the wrapped function."""
     @wraps(f)
     def wrapped(*args, **kwargs):
-        with mpd_client() as mpd:
-            return f(mpd, *args, **kwargs)
+        mpd_client = MPDClient()
+        mpd_client.connect(**mpd_server)
+        return_value = f(mpd_client, *args, **kwargs)
+        mpd_client.disconnect()
+        return return_value
     return wrapped
