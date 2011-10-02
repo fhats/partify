@@ -13,10 +13,11 @@ from sqlalchemy.event import listens_for
 from database import db_session
 from decorators import with_authentication
 from decorators import with_mpd
-from partify import app, last_updated
+import partify
+from partify import app
 from partify.models import PlayQueueEntry
 from partify.models import Track
-from partify.player import _get_status
+from partify.player import get_user_queue, _get_status
 
 @app.route('/queue/add', methods=['POST'])
 @with_authentication
@@ -34,6 +35,7 @@ def add_to_queue(mpd):
     mpd_id = mpd.addid(spotify_uri)
 
     # Add the track to the play queue
+    # Disabling this for now since the playlist consistency function should figure it out
     db_session.add( PlayQueueEntry(track=track, user_id=session['user']['id'], mpd_id=mpd_id) )
     db_session.commit()
 
@@ -41,12 +43,11 @@ def add_to_queue(mpd):
 
     return jsonify(status='ok', file=spotify_uri)
 
-@app.route('/queue/remove', methods=['POST', 'GET'])
+@app.route('/queue/remove', methods=['POST'])
 @with_authentication
 @with_mpd
 def remove_from_queue(mpd):
     track_id = request.form.get('track_id', None)
-    track_id = request.args.get('track_id', None)
 
     if track_id is None:
         return jsonify(status='error', message="No track specified for removal!")
@@ -66,7 +67,13 @@ def remove_from_queue(mpd):
 
     return jsonify(status='ok')
 
+@app.route('/queue/list', methods=['GET'])
+@with_authentication
+def list_user_queue():
+    user_queue = get_user_queue(session['user']['id'])
+    return jsonify(status="ok", result=user_queue)
 
+# These *_from_spotify_url functions should probably move to a kind of util file
 def track_from_spotify_url(spotify_url):
     """Returns a Track object from the Spotify metadata associated with the given Spotify URI."""
     existing_tracks = Track.query.filter(Track.spotify_url == spotify_url).all()
@@ -98,7 +105,8 @@ def track_info_from_spotify_url(spotify_url):
         'artist': ', '.join(artist['name'] for artist in response['track']['artists']),
         'album': response['track']['album']['name'],
         'spotify_url': spotify_url,
-        'date': raw_info_from_spotify_url(response['track']['album']['href'])['album']['released']
+        'date': raw_info_from_spotify_url(response['track']['album']['href'])['album']['released'],
+        'length': response['track']['length']
     }
 
     return track_info
@@ -152,7 +160,7 @@ def _ensure_mpd_playlist_consistency(mpd):
         mpd.play()
 
 @with_mpd
-def on_playlist_update(mpd, last_updated_dict):
+def on_playlist_update(mpd, last_updated_dict, manager):
     """The subprocess that continuously IDLEs against the Mopidy server and ensures playlist consistency on playlist update."""
     while True:
         changed = mpd.idle()

@@ -10,7 +10,7 @@ app.config.from_object("config")
 
 # Contains timestamps with the time of the last change in a certain system
 # This is going to be updated from a different thread. Need some kind of synchronization mechanism to assist
-last_updated = (Manager()).dict()
+last_updated = None
 
 @app.route("/")
 def main():

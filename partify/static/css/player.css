@@ -36,12 +36,45 @@ div#played_by_container > div + div{
     padding-left: 1em;
 }
 
-div.party_queue_item > div{
-    display: inline;
-    float: left;
+ul.queue{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
-div.party_queue_item > div + div{
-    padding-left: 1em;
+
+li.queue_header {
+    margin-bottom: .2em;
+    height: 24px;
+    line-height: 24px;
+}
+
+li.queue_item{
+    margin-bottom: .1em;
+    height: 24px;
+    line-height: 24px;
+}
+
+li.queue_item > span{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+span.grip{
+    margin-top: .3em;
+    margin-right: .2em;
+}
+
+li.queue_header > span.padder{
+    background: #272822;
+    margin-top: .3em;
+    width: 0px;
+}
+
+li.queue_item > span.padder{
+    background: #272822 !important;
+    margin-top: .3em;
+    width: 0px;
 }
 
 table {
@@ -77,6 +110,26 @@ button.add_btn{
     width: 18px;
     vertical-align: middle;
     border: 1px solid #1f1f1f !important;
+}
+button.rm_btn{
+    height: 18px;
+    width: 18px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    border: 1px solid #1f1f1f !important;
+}
+
+.queue-placeholder {
+    height: 24px;
+    line-height: 24px;
+    width: 910px;
+    float: left;
+    background: #272822;
+}
+
+.ui-state-highlight {
+    height: 24px;
+    line-height: 24px;
 }
 
 /* override some of the bad jQuery UI styles */

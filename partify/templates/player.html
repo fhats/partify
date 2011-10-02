@@ -74,13 +74,7 @@ Player - Partify
                 <div id="on_deck" class="span-23 last">
                     <span class="logo">Up Next: </span>
                     <span id="up_next_tracks">
-                    {% set count = 3 %}
-                    {% if global_play_queue|length < 3 %}
-                        {% set count = global_play_queue|length %}
-                    {% endif %}
-                    {% for track in global_play_queue[:count] %}
-                        {{track.track.artist}} - {{track.track.title}}{% if not loop.last %},{% endif %}
-                    {% endfor %}
+                    
                     </span>
                 </div>
             </div>
@@ -89,17 +83,16 @@ Player - Partify
             <div id="tabs_container" class="span-24 last">
                 <div id="tabs">
                     <ul>
-                        <li><a href="#edit_queue">My Queue</a></li>
+                        <li><a href="#user_queue_tab">My Queue</a></li>
                         <li><a href="#add_track">Add a Track</a></li>
-                        <li><a href="#party_queue">Party Queue</a></li>
+                        <li><a href="#party_queue_tab">Party Queue</a></li>
                     </ul>
-                    <div id="edit_queue">
-                        &nbsp;
-                        <ul>
-                            {% for queue_entry in user_play_queue %}
-                            <li>{{queue_entry.track.artist}} - {{queue_entry.track.title}}</li>
-                            {% endfor %}
-                        </ul>
+                    <div id="user_queue_tab">
+                        <div class="container">
+                            <ul id="user_queue" class="span-23 last">
+                                
+                            </ul>
+                        </div>
                     </div>
                     <div id="add_track">
                         <div class="span-24 append-bottom last">
@@ -132,19 +125,12 @@ Player - Partify
                             </table>
                         </div>
                     </div>
-                    <div id="party_queue">
-                        {% for queue_entry in global_play_queue %}
-                        <div class="party_queue_item span-24 last">
-                            <div>
-                                <img src="http://userserve-ak.last.fm/serve/85/19666107.jpg" />
-                            </div>
-                            <div>
-                                {{queue_entry.track.artist}}<br />
-                                {{queue_entry.track.title}}<br />
-                                MPD ID: {{queue_entry.mpd_id}}
-                            </div>
+                    <div id="party_queue_tab">
+                        <div class="container">
+                            <ul id="party_queue" class="span-23 last">
+                                
+                            </ul>
                         </div>
-                        {% endfor %}
                     </div>
                 </div>
             </div>

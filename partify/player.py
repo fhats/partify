@@ -7,7 +7,8 @@ from math import ceil
 from flask import Response, jsonify, redirect, render_template, request, session, url_for
 
 from decorators import with_authentication, with_mpd
-from partify import app, last_updated
+import partify
+from partify import app
 from partify.models import PlayQueueEntry
 from partify.models import Track
 
@@ -32,14 +33,13 @@ def status(mpd):
 
     response = _get_status(mpd)
 
-    if client_current is None or client_current < last_updated['playlist']:
-        response['global_queue'] = [track.as_dict() for track in get_global_queue()]
-        response['last_global_playlist_update'] = ceil(last_updated['playlist'])
+    playlist_last_updated = partify.last_updated['playlist']
+
+    if client_current is None or client_current < playlist_last_updated:
+        response['global_queue'] = get_global_queue()
+        response['last_global_playlist_update'] = ceil(playlist_last_updated)
         app.logger.debug("Issuing playlist update for user %r" % session['user']['name'])
-        app.logger.debug("Client current with %r, we have %r" % (client_current, last_updated['playlist']))
-    # else:
-    #     app.logger.debug("Total wtfxx!!")
-    #     app.logger.debug("Client current with %r, we have %r" % (client_current, last_updated['playlist']))
+        app.logger.debug("Client current with %r, we have %r" % (client_current, playlist_last_updated))
 
     return jsonify(response)
 
@@ -59,10 +59,12 @@ def idle(mpd):
     return Response(event, mimetype='text/event-stream', direct_passthrough=True)
 
 def get_global_queue():
-    return PlayQueueEntry.query.order_by(PlayQueueEntry.playback_priority).all()
+    db_queue = PlayQueueEntry.query.order_by(PlayQueueEntry.playback_priority).all()
+    return [track.as_dict() for track in db_queue]
 
 def get_user_queue(user):
-    return PlayQueueEntry.query.filter(PlayQueueEntry.user_id == user)
+    db_queue = PlayQueueEntry.query.filter(PlayQueueEntry.user_id == user)
+    return [track.as_dict() for track in db_queue]
 
 def _get_status(mpd):
     """Get the entire player status needed for the front end."""

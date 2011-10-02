@@ -32,6 +32,7 @@ class Track(Base):
     title = Column(Text)
     artist = Column(Text)
     album = Column(Text)
+    length = Column(Integer)
     date = Column(Text)
     spotify_url = Column(Text, unique=True)
 
@@ -47,7 +48,7 @@ class PlayQueueEntry(Base):
     track = relationship("Track")
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship("User")
-    mpd_id = Column(Integer, unique=True)
+    mpd_id = Column(Integer)    # This SHOULD be unique... but since ensuring consistency isn't atomic yet we'll have to just best-effort it
     time_added = Column(DateTime, default=datetime.datetime.now)
     user_priority = Column(Integer, default=lambda: (db_session.query(func.max(PlayQueueEntry.user_priority)).first()[0] or 0) + 1)
     playback_priority = Column(BigInteger, default=lambda: (db_session.query(func.max(PlayQueueEntry.playback_priority)).first()[0] or 0) + 1)
@@ -58,11 +59,12 @@ class PlayQueueEntry(Base):
     def as_dict(self):
         # I'm not sure why a list comprehension into a dict doesn't work here...
         d = {}
-        for attr in ('id', 'title', 'artist', 'album', 'spotify_url', 'date'):
+        for attr in ('title', 'artist', 'album', 'spotify_url', 'date', 'length'):
             d[attr] = getattr(self.track, attr)
-        for attr in ('mpd_id', 'playback_priority', 'user_priority'):
+        for attr in ('id', 'mpd_id', 'playback_priority', 'user_priority'):
             d[attr] = getattr(self, attr)
         d['time_added'] = self.time_added.ctime()
+        d['user'] = getattr(self.user, 'name', 'Anonymous')
         return d
 
 

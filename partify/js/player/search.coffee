@@ -58,6 +58,8 @@ class Search
                 if data.status == 'ok'
                     btn.button 'option', 'icons',
                         primary: 'ui-icon-check'
+                    # Update the user's play queue (global updates will come with the synchropoll)
+                    window.Partify.Player._synchroPoll()
                 else
                     this._addTrackFail(btn)
             error: () =>
@@ -126,8 +128,8 @@ class Search
         </tr>
         ")
 
-# TODO: Need a Track class to hold track result information that isn't necessarily displayed (like Spotify URI...)
 class Track
+    @id = 0
     @title = ""
     @artist = ""
     @album = ""
@@ -135,9 +137,12 @@ class Track
     @file = ""
     @time = ""
     @date = ""
+    @length = ""
+    @user = ""
     @mpd_id = 0
 
     constructor: (data) ->
+        @id = data.id
         @title = data.title
         @artist = data.artist
         @album = data.album
@@ -145,5 +150,7 @@ class Track
         @file = data.file
         @time = data.time
         @date = data.date
+        @length = data.length
+        @user = data.user
         if data.mpd_id
             @mpd_id = data.mpd_id
