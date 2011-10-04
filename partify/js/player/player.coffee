@@ -85,6 +85,8 @@ class Player
 
                 if data.global_queue
                     window.Partify.Queues.GlobalQueue.update(data.global_queue)
+                if data.user_queue
+                    window.Partify.Queues.UserQueue.update data.user_queue
         )
 
     _initPlayerLocalUpdate: () ->
@@ -98,8 +100,9 @@ class Player
         if @info.state == 'play'
             @info.elapsed = if Math.round(@info.elapsed) < @info.time then @info.elapsed + 1 else @info.elapsed
             this.updatePlayerProgress()
-            if @info.elapsed == @info.time
+            if @info.elapsed >= @info.time
                 this._synchroPoll()
+                window.Partify.Queues.UserQueue.loadPlayQueue()
 
     updatePlayerInfo: (data) -> 
         # Takes an array of data items and populates the appropriate HTML elements
@@ -139,5 +142,5 @@ secondsToTimeString = (seconds) ->
     time_s += if seconds < 10 then '0' else ''
     time_s += seconds
     time_s
-    
+
 Array::remove = (e) -> @[t..t] = [] if (t = @indexOf(e)) > -1

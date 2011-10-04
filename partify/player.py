@@ -37,6 +37,7 @@ def status(mpd):
 
     if client_current is None or client_current < playlist_last_updated:
         response['global_queue'] = get_global_queue()
+        response['user_queue'] = get_user_queue(session['user']['id'])
         response['last_global_playlist_update'] = ceil(playlist_last_updated)
         app.logger.debug("Issuing playlist update for user %r" % session['user']['name'])
         app.logger.debug("Client current with %r, we have %r" % (client_current, playlist_last_updated))
@@ -63,7 +64,7 @@ def get_global_queue():
     return [track.as_dict() for track in db_queue]
 
 def get_user_queue(user):
-    db_queue = PlayQueueEntry.query.filter(PlayQueueEntry.user_id == user)
+    db_queue = PlayQueueEntry.query.filter(PlayQueueEntry.user_id == user).order_by(PlayQueueEntry.user_priority)
     return [track.as_dict() for track in db_queue]
 
 def _get_status(mpd):

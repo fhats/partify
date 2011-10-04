@@ -7,7 +7,7 @@ import urllib2
 from itertools import izip_longest
 
 from flask import jsonify, redirect, request, session, url_for
-from sqlalchemy import not_
+from sqlalchemy import and_, func, not_
 from sqlalchemy.event import listens_for
 
 from database import db_session
@@ -41,7 +41,7 @@ def add_to_queue(mpd):
 
     _ensure_mpd_playlist_consistency(mpd)
 
-    return jsonify(status='ok', file=spotify_uri)
+    return jsonify(status='ok', queue=get_user_queue(session['user']['id']), file=spotify_uri)
 
 @app.route('/queue/remove', methods=['POST'])
 @with_authentication
@@ -65,7 +65,37 @@ def remove_from_queue(mpd):
     # Remove the track! All of the details will follow for now.... later we'll need to be watching the reordering of tracks (#20)
     mpd.deleteid(track_id)
 
-    return jsonify(status='ok')
+    return jsonify(status='ok', queue=get_user_queue(session['user']['id']))
+
+@app.route('/queue/reorder', methods=['POST'])
+@with_authentication
+def reorder_queue():
+    """Reorders the user's play queue.
+
+    I *think* for right now this can essentially take a list of PlayQueueEntry IDs and new priorities and write to the DB.
+    I guess then track order ends up being ensured as part of the consistency function...? In which case the first comment is no longer true."""
+    # I think this logic will probably change based on plug-and-play queue management schemes...
+
+    new_order_list = request.form.get('track_list')
+
+    # expecting a dictionary of request parameters with the key as the PQE id and the value as the new priority
+    # Note that I'm not doing any error checking here because 500ing is good enough right now
+    # Should probably put a try...catch block around the cast to int
+    for pqe_id, new_priority in request.form.iteritems():
+        pqe = PlayQueueEntry.query.get(pqe_id)
+
+        # TODO: This auth checking should move into its own function!
+        if pqe.user.id != session['user']['id']:
+            return jsonify(status='error', message="You are not authorized to modify this track!")
+
+        pqe.user_priority = new_priority
+
+        db_session.commit()
+
+    ensure_mpd_playlist_consistency()
+
+    # TODO: This returning the queue thing should probably get moved to a decorator or something
+    return jsonify(status='ok', queue=get_user_queue(session['user']['id']))
 
 @app.route('/queue/list', methods=['GET'])
 @with_authentication
@@ -138,6 +168,7 @@ def _ensure_mpd_playlist_consistency(mpd):
     purge_entries = PlayQueueEntry.query.filter(not_(PlayQueueEntry.mpd_id.in_(playlist_ids))).all()
     for purge_entry in purge_entries:
         db_session.delete(purge_entry)
+        app.logger.debug("Removing Play Queue Entry %r" % purge_entry)
     db_session.commit()
 
     for track in playlist_tracks:
@@ -146,6 +177,7 @@ def _ensure_mpd_playlist_consistency(mpd):
 
         if queue_track is not None:
             # Do some checking here to make sure that all of the information is correct...
+            # Ensure that the playback position is correct
             queue_track.playback_priority = track['pos']
         else:
             # We need to add the track to the Partify representation of the Play Queue
@@ -154,6 +186,16 @@ def _ensure_mpd_playlist_consistency(mpd):
             db_session.add(new_track_entry)
 
     db_session.commit()
+
+    for track in sorted(playlist_tracks, key=lambda d: d['pos']):
+        queue_track = PlayQueueEntry.query.filter(PlayQueueEntry.mpd_id == track['id']).first() # Don't need to worry about dups since this field is unique in the DB
+
+        if queue_track is not None and queue_track.user is not None:
+            # Ensure that the user's queue positions are consistent
+            user_id = queue_track.user_id
+            user_max_track = PlayQueueEntry.query.filter(and_(PlayQueueEntry.playback_priority < queue_track.playback_priority, PlayQueueEntry.user_id == user_id)).order_by(PlayQueueEntry.playback_priority.desc()).first()
+            user_max_priority_at_pos = 0 if user_max_track is None  else user_max_track.user_priority
+            queue_track.user_priority = user_max_priority_at_pos + 1
 
     status = _get_status(mpd)
     if status['state'] != 'play':
