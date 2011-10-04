@@ -60,6 +60,7 @@ class Search
                         primary: 'ui-icon-check'
                     # Update the user's play queue (global updates will come with the synchropoll)
                     window.Partify.Player._synchroPoll()
+                    window.Partify.Queues.UserQueue.update data.queue
                 else
                     this._addTrackFail(btn)
             error: () =>
@@ -139,6 +140,8 @@ class Track
     @date = ""
     @length = ""
     @user = ""
+    @playback_priority = 0
+    @user_priority = 0
     @mpd_id = 0
 
     constructor: (data) ->
@@ -152,5 +155,7 @@ class Track
         @date = data.date
         @length = data.length
         @user = data.user
+        @playback_priority = data.playback_priority
+        @user_priority = data.user_priority
         if data.mpd_id
             @mpd_id = data.mpd_id

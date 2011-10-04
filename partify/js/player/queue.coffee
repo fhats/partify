@@ -29,7 +29,7 @@ class Queue
     updateDisplay: () ->
         @queue_div.empty()
         @queue_div.append this._buildDisplayHeader()
-        @queue_div.append this._buildDisplayItem(track) for track in @tracks[1..-1]
+        @queue_div.append this._buildDisplayItem(track) for track in @tracks[1..-1] when @tracks.length > 1
     
     _buildDisplayHeader: () ->
     	"
@@ -101,12 +101,32 @@ class GlobalQueue extends Queue
 class UserQueue extends Queue
 	constructor: (queue_div) ->
 		super queue_div
-		# Load the user's queue on page load
-		@queue_div.bind 'sortupdate', (e, ui) ->
-			console.log "Sort event!"
-			console.log e
-			console.log ui
+		@queue_div.bind 'sortupdate', (e, ui) =>
+			track_list = {}
+			priority = 1
+			for track in @queue_div.children("li.queue_item").children('input')
+				do (track) =>
+					target_track_id = parseInt($(track).val())
+					track_obj = t for t in @tracks when t.id == target_track_id
+					track_list[track_obj.id] = priority
+					priority++
+			console.log track_list
 
+			$.ajax(
+				url: 'queue/reorder'
+				type: 'POST'
+				data: track_list
+				success: (data) ->
+					if data.status == 'ok'
+						console.log 'Everything worked out'
+					else
+						this.error()
+				error: () =>
+					alert 'Error reordering the queue!'
+					this.loadPlayQueue()
+			)
+
+		# Load the user's queue on page load
 		this.loadPlayQueue()
 	
 	loadPlayQueue: () ->
@@ -139,6 +159,7 @@ class UserQueue extends Queue
     _buildDisplayItem: (track) ->
         html = "
         <li class='queue_item ui-state-default small span-23 last'>
+        	<input type='hidden' name='id' value='#{track.id}'>
         	<span class='span-1 ui-icon ui-icon-grip-dotted-vertical grip'>&nbsp;</span>
             <span class='span-7'>#{track.title}</span>
 	        <span class='span-6'>#{track.artist}</span>
