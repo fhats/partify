@@ -6,4 +6,8 @@ player.js:
 
 continuous:
 	coffee --watch -o static/js/partify/workers/player_event.js -c js/player/workers/player_event.coffee
-	coffee --watch --join static/js/partify/player.js -c js/player/*.coffee	
+	coffee --watch --join static/js/partify/player.js -c js/player/*.coffee
+
+clean:
+	rm -rf static/js/partify/workers/*.js
+	rm -rf static/js/partify/player.js
