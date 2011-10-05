@@ -122,7 +122,7 @@ class UserQueue extends Queue
 					else
 						this.error()
 				error: () =>
-					alert 'Error reordering the queue!'
+					console.log 'Error reordering the queue!'
 					this.loadPlayQueue()
 			)
 
@@ -137,7 +137,7 @@ class UserQueue extends Queue
 				if data.status == "ok"
 					this.update data.result
 			error: () =>
-				alert "Failed to populate user play queue!"
+				console.log "Failed to populate user play queue!"
 		)
 	
 	updateDisplay: () ->
@@ -179,7 +179,7 @@ class UserQueue extends Queue
     				@tracks.remove(track)
     				this.updateDisplay()
     		error: () =>
-    			alert "Could not contact the server!"
+    			console.log "Could not contact the server!"
     	)
 
 	_createRemoveButtons: () ->

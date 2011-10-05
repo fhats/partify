@@ -20,4 +20,4 @@ if __name__ == "__main__":
     mpd_event_listener = Process(target=on_playlist_update, args=(partify.last_updated,manager))
     mpd_event_listener.start()
 
-    app.run(debug=True)
+    app.run(debug=False)
