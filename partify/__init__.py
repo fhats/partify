@@ -2,7 +2,6 @@ from multiprocessing import Manager
 
 from flask import Flask, jsonify, redirect, session, url_for
 
-from partify.mpd_client import mpd_client
 from partify.database import db_session
 
 app = Flask("partify")
