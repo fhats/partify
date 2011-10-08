@@ -14,8 +14,8 @@ from sqlalchemy.event import listens_for
 from database import db_session
 from decorators import with_authentication
 from decorators import with_mpd
-import partify
 from partify import app
+from partify import ipc
 from partify.models import PlayQueueEntry
 from partify.models import Track
 from partify.models import User
@@ -204,7 +204,7 @@ def _ensure_mpd_playlist_consistency(mpd):
         # First, grab a list of all users that currently have PlayQueueEntrys (we can interpret this as active users)
         # TODO: This is dumb and slow and can be improved by doing a better DB query. Right now I'm just avoiding learning how to do this query with the ORM (if it can be done).
         users = set([pqe.user for pqe in PlayQueueEntry.query.all()])
-        unique_users = users = sorted(users, key=lambda d: d.username)
+        unique_users = users = sorted(users, key=lambda d: getattr(d, 'username'))
         # Turn the sorted user list into a cycle for repeated iteration
         users = itertools.cycle(users)
         current_user = (PlayQueueEntry.query.filter(PlayQueueEntry.playback_priority == 0).first()).user
@@ -254,7 +254,7 @@ def _ensure_mpd_playlist_consistency(mpd):
         mpd.play()
 
 @with_mpd
-def on_playlist_update(mpd, last_updated_dict, manager):
+def on_playlist_update(mpd):
     """The subprocess that continuously IDLEs against the Mopidy server and ensures playlist consistency on playlist update."""
     while True:
         changed = mpd.idle()
@@ -264,5 +264,5 @@ def on_playlist_update(mpd, last_updated_dict, manager):
 
         # Update the dict which assists caching
         for changed_system in changed:
-            last_updated_dict[changed_system] = time.time()
-            app.logger.debug(last_updated_dict)
+            ipc.update_time('playlist', time.time())
+            app.logger.debug(ipc.get_time('playlist'))

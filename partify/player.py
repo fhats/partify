@@ -7,10 +7,11 @@ from math import ceil
 from flask import Response, jsonify, redirect, render_template, request, session, url_for
 
 from decorators import with_authentication, with_mpd
-import partify
 from partify import app
+from partify import ipc
 from partify.models import PlayQueueEntry
 from partify.models import Track
+from partify.models import User
 
 @app.route('/player', methods=['GET'])
 @with_authentication
@@ -21,7 +22,7 @@ def player():
     users_tracks = get_user_queue(session['user']['id'])
     global_queue = get_global_queue()
 
-    return render_template("player.html", user_play_queue=users_tracks, global_play_queue=global_queue)
+    return render_template("player.html", user=User.query.get(session['user']['id']), user_play_queue=users_tracks, global_play_queue=global_queue)
 
 @app.route('/player/status/poll', methods=['GET'])
 @with_mpd
@@ -33,7 +34,7 @@ def status(mpd):
 
     response = _get_status(mpd)
 
-    playlist_last_updated = partify.last_updated['playlist']
+    playlist_last_updated = ipc.get_time('playlist')
 
     if client_current is None or client_current < playlist_last_updated:
         response['global_queue'] = get_global_queue()
