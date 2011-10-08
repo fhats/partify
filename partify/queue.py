@@ -204,7 +204,7 @@ def _ensure_mpd_playlist_consistency(mpd):
         # First, grab a list of all users that currently have PlayQueueEntrys (we can interpret this as active users)
         # TODO: This is dumb and slow and can be improved by doing a better DB query. Right now I'm just avoiding learning how to do this query with the ORM (if it can be done).
         users = set([pqe.user for pqe in PlayQueueEntry.query.all()])
-        unique_users = users = sorted(users, key=lambda d: getattr(d, 'username'))
+        unique_users = users = sorted(users, key=lambda d: getattr(d, 'username', 'anonymous'))
         # Turn the sorted user list into a cycle for repeated iteration
         users = itertools.cycle(users)
         current_user = (PlayQueueEntry.query.filter(PlayQueueEntry.playback_priority == 0).first()).user
