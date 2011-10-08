@@ -29,7 +29,7 @@ class Queue
     updateDisplay: () ->
         @queue_div.empty()
         @queue_div.append this._buildDisplayHeader()
-        @queue_div.append this._buildDisplayItem(track) for track in @tracks[1..-1] when @tracks.length > 1
+        @queue_div.append this._buildDisplayItem(track) for track in @tracks when @tracks.length > 1
     
     _buildDisplayHeader: () ->
     	"
