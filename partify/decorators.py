@@ -25,6 +25,7 @@ def with_mpd(f):
     """A decorator that establishes and MPD connection Mopidy and passes it into the wrapped function."""
     @wraps(f)
     def wrapped(*args, **kwargs):
+        # TODO: This needs logic to sub in a mock MPD client instead of a real one when the testing flag is up.
         mpd_client = MPDClient()
         mpd_client.connect(**app.config['MPD_SERVER'])
         return_value = f(mpd_client, *args, **kwargs)

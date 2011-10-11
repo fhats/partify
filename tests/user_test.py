@@ -1,4 +1,3 @@
-import flask
 from testify import *
 
 from partify import app

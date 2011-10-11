@@ -137,13 +137,13 @@ def track_info_from_spotify_url(spotify_url):
         'artist': ', '.join(artist['name'] for artist in response['track']['artists']),
         'album': response['track']['album']['name'],
         'spotify_url': spotify_url,
-        'date': raw_info_from_spotify_url(response['track']['album']['href'])['album']['released'],
+        'date': _raw_info_from_spotify_url(response['track']['album']['href'])['album']['released'],
         'length': response['track']['length']
     }
 
     return track_info
 
-def raw_info_from_spotify_url(spotify_url):
+def _raw_info_from_spotify_url(spotify_url):
     spotify_request_url = "http://ws.spotify.com/lookup/1/.json?uri=%s" % spotify_url
     raw_response = urllib2.urlopen(spotify_request_url).read()
 
@@ -151,7 +151,7 @@ def raw_info_from_spotify_url(spotify_url):
 
     return response
 
-def get_users_next_pqe_entry_after_playback_priority(user_id, playback_priority):
+def _get_users_next_pqe_entry_after_playback_priority(user_id, playback_priority):
     return PlayQueueEntry.query.filter(and_(PlayQueueEntry.user_id == user_id, PlayQueueEntry.playback_priority > playback_priority)).order_by(PlayQueueEntry.user_priority.asc()).first()
 
 @with_mpd
@@ -235,7 +235,7 @@ def _ensure_mpd_playlist_consistency(mpd):
                 # if it's not, then shuffle some things around until it is.
                 if PlayQueueEntry.query.filter(and_(PlayQueueEntry.user == track.user, PlayQueueEntry.user_priority < track.user_priority, PlayQueueEntry.playback_priority > track.playback_priority)).count() > 0:
                     # Get the track after the current playback priority with the minimum user_priority and make that the current track
-                    new_next_track = get_users_next_pqe_entry_after_playback_priority(track.user_id, track.playback_priority)
+                    new_next_track = _get_users_next_pqe_entry_after_playback_priority(track.user_id, track.playback_priority)
                     mpd.moveid(new_next_track.mpd_id, track.playback_priority)
                     break
                 else:
@@ -245,7 +245,7 @@ def _ensure_mpd_playlist_consistency(mpd):
                 # Uh-oh!
                 # Something isn't round robin about this.
                 # To resolve this, push the rest of the tracks back and move the user's lowest pqe after the current playback_priority to the current position.
-                new_next_track = get_users_next_pqe_entry_after_playback_priority(user.id, track.playback_priority)
+                new_next_track = _get_users_next_pqe_entry_after_playback_priority(user.id, track.playback_priority)
                 mpd.moveid(new_next_track.mpd_id, track.playback_priority)
                 break
 
