@@ -7,17 +7,17 @@ from testify import *
 from partify import app
 # TODO: Figure out these imports and how to remove duplication between this and run.py
 from partify import player, queue, track, user
-from partify.database import db_session, init_test_db
+from partify.database import init_db
 from partify.models import User
 
 class PartifyTestCase(TestCase):
 	@class_setup
 	def _prepare(self):
 		self.db_fd = tempfile.mkstemp()
-		app.config['DATABASE'] = "sqlite:///%s" % self.db_fd[1]
+		app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///%s" % self.db_fd[1]
 		app.config['TESTING'] = True
 		self.app = app.test_client()
-		init_test_db()
+		init_db()
 
 	@class_teardown
 	def _cleanup(self):

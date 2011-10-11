@@ -31,10 +31,6 @@ class UserTestCase(PartifyTestCase):
 	"""Tests related to views that actually have logic."""
 	def test_user_registration(self):
 		"""Test that user registration works."""
-		from partify.database import db_session, engine
-		print "I use engine %s" % engine.url.database
-		print "But my query elem uses %s" % db_session.get_bind()
-		print User.query.all()
 		test_name = 'tester'
 		test_username = 'test_user'
 		test_password = 'test_password'

@@ -1,5 +1,5 @@
 all:
 	cd partify; make
 clean:
-	rm -rf *.pyc
+	find ./ -name "*.pyc" -delete
 	cd partify; make clean

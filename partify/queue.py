@@ -11,7 +11,7 @@ from flask import jsonify, redirect, request, session, url_for
 from sqlalchemy import and_, func, not_
 from sqlalchemy.event import listens_for
 
-from database import db_session
+from database import db
 from decorators import with_authentication
 from decorators import with_mpd
 from partify import app
@@ -38,8 +38,8 @@ def add_to_queue(mpd):
 
     # Add the track to the play queue
     # Disabling this for now since the playlist consistency function should figure it out
-    db_session.add( PlayQueueEntry(track=track, user_id=session['user']['id'], mpd_id=mpd_id) )
-    db_session.commit()
+    db.session.add( PlayQueueEntry(track=track, user_id=session['user']['id'], mpd_id=mpd_id) )
+    db.session.commit()
 
     _ensure_mpd_playlist_consistency(mpd)
 
@@ -92,7 +92,7 @@ def reorder_queue():
 
         pqe.user_priority = new_priority
 
-        db_session.commit()
+        db.session.commit()
 
     ensure_mpd_playlist_consistency()
 
@@ -117,8 +117,8 @@ def track_from_spotify_url(spotify_url):
         track_info = track_info_from_spotify_url(spotify_url)
 
         track = Track(**track_info)
-        db_session.add( track )
-        db_session.commit()
+        db.session.add( track )
+        db.session.commit()
     else:
         track = existing_tracks[0]
 
@@ -172,9 +172,9 @@ def _ensure_mpd_playlist_consistency(mpd):
     # Purge all the database entries that don't have IDs present
     purge_entries = PlayQueueEntry.query.filter(not_(PlayQueueEntry.mpd_id.in_(playlist_ids))).all()
     for purge_entry in purge_entries:
-        db_session.delete(purge_entry)
+        db.session.delete(purge_entry)
         app.logger.debug("Removing Play Queue Entry %r" % purge_entry)
-    db_session.commit()
+    db.session.commit()
 
     for track in playlist_tracks:
         # This could cause some undue load on the database. We can do this in memory if it's too intensive to be doing DB calls
@@ -188,9 +188,9 @@ def _ensure_mpd_playlist_consistency(mpd):
             # We need to add the track to the Partify representation of the Play Queue
             new_track = track_from_spotify_url(track['file'])
             new_track_entry = PlayQueueEntry(track=new_track, user_id=None, mpd_id=track['id'], playback_priority=track['pos'])
-            db_session.add(new_track_entry)
+            db.session.add(new_track_entry)
 
-    db_session.commit()
+    db.session.commit()
 
     # Ensure that the playlist's order follows a selection method - in this case, round robin.
     # This should *probably* move to its own function later... for now this is just research!

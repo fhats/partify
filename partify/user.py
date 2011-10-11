@@ -7,7 +7,7 @@ from flask import url_for
 from sqlalchemy import and_
 from werkzeug.security import check_password_hash
 
-from database import db_session
+from database import db
 from models import User
 from partify import app
 from forms.user_forms import RegistrationForm
@@ -27,8 +27,8 @@ def register_post():
     form = RegistrationForm(request.form)
     if form.validate():
         user = User(form.name.data, form.username.data, form.password.data)
-        db_session.add(user)
-        db_session.commit()
+        db.session.add(user)
+        db.session.commit()
         session['user'] = dict((k, getattr(user, k)) for k in ('name', 'id', 'username'))
         return redirect(url_for('main'))
     else:
