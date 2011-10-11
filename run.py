@@ -3,11 +3,11 @@ from multiprocessing import Process
 
 from werkzeug.serving import run_simple
 
-from config import SERVER_HOST, SERVER_PORT
 from partify import app
 from partify import ipc
 from partify.queue import on_playlist_update, ensure_mpd_playlist_consistency
 
+# TODO: Figure out these imports
 from partify import player, queue, track, user
 
 if __name__ == "__main__":
@@ -20,4 +20,6 @@ if __name__ == "__main__":
     mpd_event_listener = Process(target=on_playlist_update)
     mpd_event_listener.start()
 
-    app.run(host=SERVER_HOST, port=SERVER_PORT, debug=False)
+    app.logger.debug(app.config)
+
+    app.run(host=app.config['SERVER_HOST'], port=app.config['SERVER_PORT'], debug=False)

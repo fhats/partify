@@ -4,7 +4,6 @@ from functools import wraps
 
 from flask import jsonify, redirect, session, url_for
 
-from config import mpd_server
 from mpd import MPDClient
 from partify import app
 
@@ -27,7 +26,7 @@ def with_mpd(f):
     @wraps(f)
     def wrapped(*args, **kwargs):
         mpd_client = MPDClient()
-        mpd_client.connect(**mpd_server)
+        mpd_client.connect(**app.config['MPD_SERVER'])
         return_value = f(mpd_client, *args, **kwargs)
         mpd_client.disconnect()
         return return_value

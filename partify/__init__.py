@@ -2,10 +2,10 @@ from multiprocessing import Manager
 
 from flask import Flask, jsonify, redirect, session, url_for
 
-from partify.database import db_session
-
 app = Flask("partify")
 app.config.from_object("config")
+
+from partify.database import db_session
 
 @app.route("/")
 def main():
