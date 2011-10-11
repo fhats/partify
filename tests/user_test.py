@@ -54,8 +54,49 @@ class UserTestCase(PartifyTestCase):
 			data = {'username': user.username, 'password': user.username},
 			follow_redirects = True)
 		assert response.status_code == 200
-		assert """<form action="/login" method="POST">""" not in response.data
+		assert """<form method="POST" action="/login">""" not in response.data
 		assert "Account settings" in response.data
+
+	def test_no_user_login(self):
+		response = self.app.get('/', follow_redirects = True)
+		assert response.status_code == 200
+		assert """<form method="POST" action="/login">""" in response.data
+		assert "Account settings" not in response.data
+
+		response = self.app.get('/player', follow_redirects = True)
+		assert response.status_code == 200
+		assert """<form method="POST" action="/login">""" in response.data
+		assert "Account settings" not in response.data
+
+	def test_invalid_user_login(self):
+		response = self.app.post('/login',
+			data = {'username': 'test_user', 'password':'test_user'},
+			follow_redirects = True)
+		assert response.status_code == 200
+		assert """<form method="POST" action="/login">""" in response.data
+		assert "Account settings" not in response.data
+
+	def test_user_logout(self):
+		user = self.create_test_user()
+
+		# We know that create_test_user always makes a test user with the password the same
+		# as the username.
+		response = self.app.post('/login',
+			data = {'username': user.username, 'password': user.username},
+			follow_redirects = True)
+		assert response.status_code == 200
+		assert """<form method="POST" action="/login">""" not in response.data
+		assert "Account settings" in response.data
+
+		response = self.app.get('/logout', follow_redirects=True)
+		assert """<form method="POST" action="/login">""" in response.data
+		assert "Account settings" not in response.data
+
+		# make sure session stuff doesn't stick around
+		response = self.app.get('/', follow_redirects = True)
+		assert response.status_code == 200
+		assert """<form method="POST" action="/login">""" in response.data
+		assert "Account settings" not in response.data
 
 	"""Utility functions."""
 	def assert_endpoint_works(self, endpoint):
