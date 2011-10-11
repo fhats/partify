@@ -5,9 +5,9 @@ from partify import app
 db = SQLAlchemy(app)
 
 def init_db():
-    from partify.models import *
+    import partify.models
     db.create_all()
-
+    
 def reinit_db():
     global db
 
