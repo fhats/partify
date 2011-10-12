@@ -14,7 +14,7 @@ def track_search(mpd):
             mpd_search_terms.append(request.args[term])
       
     response = {}
-          
+
     if len(mpd_search_terms) > 0:
         results = mpd.search(*mpd_search_terms)
         response['status'] = 'ok'

@@ -26,7 +26,11 @@ def with_mpd(f):
     @wraps(f)
     def wrapped(*args, **kwargs):
         # TODO: This needs logic to sub in a mock MPD client instead of a real one when the testing flag is up.
-        mpd_client = MPDClient()
+        if not app.config['TESTING']:
+            mpd_client = MPDClient()
+        else:
+            from testing.mocks.mock_mpd_client import MockMPDClient
+            mpd_client = MockMPDClient()
         mpd_client.connect(**app.config['MPD_SERVER'])
         return_value = f(mpd_client, *args, **kwargs)
         mpd_client.disconnect()

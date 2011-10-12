@@ -6,6 +6,7 @@ import select
 import time
 import urllib2
 from itertools import izip_longest
+from urllib2 import HTTPError
 
 from flask import jsonify, redirect, request, session, url_for
 from sqlalchemy import and_, func, not_
@@ -30,6 +31,9 @@ def add_to_queue(mpd):
     spotify_uri = request.form['spotify_uri']
     
     track = track_from_spotify_url(spotify_uri)
+
+    if track is None:
+        return jsonify(status='error', message='The Spotify URL you specified is invalid.')
     
     # This search is here to help mitigate the issue with Spotify metadata loading slowly in Mopidy
     mpd.search('filename', spotify_uri)
@@ -54,7 +58,10 @@ def remove_from_queue(mpd):
     if track_id is None:
         return jsonify(status='error', message="No track specified for removal!")
     
-    track_id = int(track_id)
+    try:
+        track_id = int(track_id)
+    except ValueError:
+        return jsonify(status='error', message="Not a valid track ID!")
 
     # Pull the track from the play queue
     track = PlayQueueEntry.query.filter(PlayQueueEntry.mpd_id == track_id).first()
@@ -66,6 +73,8 @@ def remove_from_queue(mpd):
     
     # Remove the track! All of the details will follow for now.... later we'll need to be watching the reordering of tracks (#20)
     mpd.deleteid(track_id)
+
+    _ensure_mpd_playlist_consistency(mpd)
 
     return jsonify(status='ok', queue=get_user_queue(session['user']['id']))
 
@@ -115,6 +124,8 @@ def track_from_spotify_url(spotify_url):
         
         # Look up the info from the Spotify metadata API
         track_info = track_info_from_spotify_url(spotify_url)
+        if track_info is None:
+            return None
 
         track = Track(**track_info)
         db.session.add( track )
@@ -127,7 +138,11 @@ def track_from_spotify_url(spotify_url):
 def track_info_from_spotify_url(spotify_url):
     """Returns track information from the Spotify metadata API from the given Spotify URI."""
     spotify_request_url = "http://ws.spotify.com/lookup/1/.json?uri=%s" % spotify_url
-    raw_response = urllib2.urlopen(spotify_request_url).read()
+    
+    try:
+        raw_response = urllib2.urlopen(spotify_request_url).read()
+    except HTTPError:
+        return None
 
     response = json.loads(raw_response)
 
@@ -207,7 +222,7 @@ def _ensure_mpd_playlist_consistency(mpd):
         unique_users = users = sorted(users, key=lambda d: getattr(d, 'username', 'anonymous'))
         # Turn the sorted user list into a cycle for repeated iteration
         users = itertools.cycle(users)
-        current_user = (PlayQueueEntry.query.filter(PlayQueueEntry.playback_priority == 0).first()).user
+        current_user = (PlayQueueEntry.query.order_by(PlayQueueEntry.playback_priority.asc()).first()).user
 
         # Advance the user list to the current user
         users = itertools.dropwhile(lambda x: x != current_user, users)

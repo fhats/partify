@@ -30,18 +30,15 @@ def status(mpd):
     """An endpoint for poll-based player status updates."""
     client_current = request.args.get('current', None)
     if client_current is not None:
-        client_current = int(client_current)
+        client_current = float(client_current)
 
     response = _get_status(mpd)
 
     playlist_last_updated = ipc.get_time('playlist')
-
     if client_current is None or client_current < playlist_last_updated:
         response['global_queue'] = get_global_queue()
         response['user_queue'] = get_user_queue(session['user']['id'])
         response['last_global_playlist_update'] = ceil(playlist_last_updated)
-        app.logger.debug("Issuing playlist update for user %r" % session['user']['name'])
-        app.logger.debug("Client current with %r, we have %r" % (client_current, playlist_last_updated))
 
     return jsonify(response)
 

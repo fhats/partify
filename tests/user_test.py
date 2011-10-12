@@ -96,8 +96,4 @@ class UserTestCase(PartifyTestCase):
 		assert response.status_code == 200
 		assert """<form method="POST" action="/login">""" in response.data
 		assert "Account settings" not in response.data
-
-	"""Utility functions."""
-	def assert_endpoint_works(self, endpoint):
-		response = self.app.get(endpoint, follow_redirects=True)
-		assert response.status_code == 200
+		

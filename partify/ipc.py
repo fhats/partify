@@ -6,8 +6,10 @@ manager = None
 def init_times():
 	global manager
 	global last_updated_times
-	manager = Manager()
-	last_updated_times = manager.dict()
+	if manager is None:
+		manager = Manager()
+	if last_updated_times is None:
+		last_updated_times = manager.dict()
 
 def update_time(key, time):
 	global manager
