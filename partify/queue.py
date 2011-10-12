@@ -264,9 +264,22 @@ def _ensure_mpd_playlist_consistency(mpd):
                 mpd.moveid(new_next_track.mpd_id, track.playback_priority)
                 break
 
+    _ensure_mpd_player_state_consistency(mpd)
+
     status = _get_status(mpd)
+        
     if status['state'] != 'play':
         mpd.play()
+
+def _ensure_mpd_player_state_consistency(mpd):
+    """Ensure that the Mopidy server's options are consistent with options that make sense for Partify."""
+    ideal_player_state = {'consume': '1', 'random': '0', 'repeat': '0', 'single': '0'}
+    status = _get_status(mpd)
+
+    for option, value in ideal_player_state.iteritems():
+        if status[option] != value:
+            option_method = getattr(mpd, option)
+            option_method(value)
 
 @with_mpd
 def on_playlist_update(mpd):
@@ -274,8 +287,10 @@ def on_playlist_update(mpd):
     while True:
         changed = mpd.idle()
         app.logger.debug("Received change event from Mopidy: %s" % changed)
-        if changed[0] == 'playlist':
+        if 'playlist' in changed:
             _ensure_mpd_playlist_consistency(mpd)
+        if 'options' in changed:
+            _ensure_mpd_player_state_consistency(mpd)
 
         # Update the dict which assists caching
         for changed_system in changed:

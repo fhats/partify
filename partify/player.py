@@ -75,7 +75,7 @@ def _get_status(mpd):
     status = {}
     for key in ('title', 'artist', 'album', 'date', 'file', 'time', 'id'):
         status[key] = current_song.get(key, 0 if key == 'time' else '')
-    for key in ('state', 'volume', 'elapsed'):
+    for key in ('state', 'volume', 'elapsed', 'consume', 'random', 'repeat', 'single'):
         status[key] = player_status.get(key, 0 if key == 'elapsed' else '')
 
     # Throw in a timestamp to assist synchronization
