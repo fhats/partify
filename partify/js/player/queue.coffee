@@ -29,7 +29,7 @@ class Queue
     updateDisplay: () ->
         @queue_div.empty()
         @queue_div.append this._buildDisplayHeader()
-        @queue_div.append this._buildDisplayItem(track) for track in @tracks when @tracks.length > 1
+        @queue_div.append this._buildDisplayItem(track) for track in @tracks
     
     _buildDisplayHeader: () ->
         "
@@ -107,7 +107,7 @@ class UserQueue extends Queue
         super queue_div
         @queue_div.bind 'sortupdate', (e, ui) =>
             track_list = {}
-            priority = 1
+            priority = if @tracks[0].id == window.Partify.Queues.GlobalQueue.tracks[0].id then 2 else 1
             for track in @queue_div.children("li.queue_item").children('input')
                 do (track) =>
                     target_track_id = parseInt($(track).val())
@@ -145,8 +145,11 @@ class UserQueue extends Queue
         )
     
     updateDisplay: () ->
-        super()
+        @queue_div.empty()
+        @queue_div.append this._buildDisplayHeader()
+        @queue_div.append this._buildDisplayItem(track) for track in @tracks when track.id != window.Partify.Queues.GlobalQueue.tracks[0].id
         this._createRemoveButtons()
+
 
     _buildDisplayHeader: () ->
         "
