@@ -1,5 +1,12 @@
 {% macro css_include(path) %}<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename=path) }}">{% endmacro %}
 {% macro js_include(path) %}<script type="text/javascript" src="{{ url_for('static', filename=path) }}"></script>{% endmacro %}
+{% macro blueprint_include() %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/blueprint/screen.css') }}" type="text/css" media="screen, projection">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/blueprint/print.css') }}" type="text/css" media="print"> 
+<!--[if lt IE 8]>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/blueprint/ie.css') }}" type="text/css" media="screen, projection">
+<![endif]-->
+{% endmacro %}
 
 {% macro render_field(field) %}
 <div span="clear prepend-6 span-6">{{ field.label }}</div>

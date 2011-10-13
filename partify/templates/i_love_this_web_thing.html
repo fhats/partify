@@ -1,13 +1,8 @@
-{% from "_util.html" import css_include %}
+{% from "_util.html" import blueprint_include, css_include %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
-    <!-- Blueprint CSS -->
-    {{ css_include('css/blueprint/screen.css') }}
-    {{ css_include('css/blueprint/print.css') }}
-    <!--[if lt IE 8]>
-    {{ css_include('css/blueprint/ie.css') }}
-    <![endif]-->
+    {{ blueprint_include() }}
 
     <!-- Google Web Fonts -->
     <link href='http://fonts.googleapis.com/css?family=Patrick+Hand' rel='stylesheet' type='text/css'>
