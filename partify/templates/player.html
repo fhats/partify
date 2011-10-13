@@ -22,12 +22,17 @@ Player - Partify
 <!-- Topbar - Logo & account settings -->
 <div id="topbar" style="width:100%; height:44px">
     <div class="container">
-    <div class="prepend-top span-24 last">
+    <div class="prepend-top append-bottom span-24 last">
         <div id="topbar_logo" class="span-16">
             <h3 class="logo">Partify - Social Music at Your Control</h3>
         </div>
-        <div class="prepend-1 span-7 last">
-            <p class="left">Account settings</p>
+        <div id="topbar_user_info" class="prepend-1 span-7 last">
+            <img class="left" src="http://robohash.org/{{ user.id }}.png?set=any&bgset=any&size=25x25" />
+            <p class="left">{{user.name}}</p>
+            <p class="left divider"> | </p>
+            <a class="left" href="/#">Account settings</a>
+            <p class="left divider"> | </p>
+            <a class="left" href="/logout">Logout</a>
         </div>
     </div>
     </div>
@@ -68,10 +73,10 @@ Player - Partify
                 &nbsp;
                 </div>
                 <div id="played_by_container" class="span-6 last">
-                    <div><img src="http://userserve-ak.last.fm/serve/85/19666107.jpg" /></div>
-                    <div>{{user.username}}<br/>Love/Hate</div>
+                    <div><img id="player_info_user_avatar" src="" /></div>
+                    <div><span id="player_info_user_name">{{user.username}}</span></div>
                 </div>
-                <div id="on_deck" class="span-23 last">
+                <div id="on_deck" class="prepend-top span-23 last">
                     <span class="logo">Up Next: </span>
                     <span id="up_next_tracks">
                     

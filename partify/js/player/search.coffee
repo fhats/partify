@@ -140,6 +140,7 @@ class Track
     @date = ""
     @length = ""
     @user = ""
+    @user_id = 0
     @playback_priority = 0
     @user_priority = 0
     @mpd_id = 0
@@ -155,6 +156,7 @@ class Track
         @date = data.date
         @length = data.length
         @user = data.user
+        @user_id = data.user_id
         @playback_priority = data.playback_priority
         @user_priority = data.user_priority
         if data.mpd_id

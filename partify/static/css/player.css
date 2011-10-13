@@ -13,6 +13,10 @@ div#content_container{
     font-style:italic;
 }
 
+p.divider {
+    color: #888;
+}
+
 div#player_status {
     margin: 12px;
 }
@@ -22,6 +26,15 @@ div.track_details {
 }
 div.track_details + div.track_details {
     
+}
+
+div#topbar_user_info > * {
+    margin-right: 10px;
+}
+
+div#topbar_user_info > img {
+    position: relative;
+    top: -5px;
 }
 
 div#player_progress {
