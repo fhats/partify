@@ -73,14 +73,8 @@ class Player
             data: 
                 current: @info.last_global_playlist_update
             success: (data) =>
-                # Compensate for any appreciable lag between the server's response time and the time of the reception of the data
-                # (network lag)
-                d = new Date()
-                current_time = d.getTime() / 1000.0
-                lag = current_time - data.response_time
-                lag = 0 if lag < 0
-                data.elapsed = parseFloat(data.elapsed) + parseFloat(lag)
-
+                data.elapsed = parseFloat(data.elapsed)
+                data.time = parseFloat(data.time)
                 this.updatePlayerInfo data
 
                 if data.global_queue

@@ -38,7 +38,7 @@ def status(mpd):
     if client_current is None or client_current < playlist_last_updated:
         response['global_queue'] = get_global_queue()
         response['user_queue'] = get_user_queue(session['user']['id'])
-        response['last_global_playlist_update'] = ceil(playlist_last_updated)
+        response['last_global_playlist_update'] = playlist_last_updated
 
     return jsonify(response)
 
