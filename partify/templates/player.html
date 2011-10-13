@@ -9,7 +9,14 @@
 {% block js_head %}
     {{ js_include('js/lib/jquery-1.6.2.js') }}
     {{ js_include('js/lib/jquery-ui-1.8.14.custom.min.js') }}
+    {{ js_include('js/lib/lastfm.api.md5.js') }}
+    {{ js_include('js/lib/lastfm.api.js') }}
+    {{ js_include('js/lib/lastfm.api.cache.js') }}
     {{ js_include('js/partify/player.js') }}
+    <script type="text/javascript">
+        config_lastfm_api_key = '{{ config.lastfm_api_key }}';
+        config_lastfm_api_secret = '{{ config.lastfm_api_secret }}';
+    </script>
 {% endblock %}
 
 {% block title %}
@@ -49,7 +56,7 @@ Player - Partify
 
                 <div id="player_container" class="span-16">
                     <div id="player_image_container" class="span-3">
-                        <img class="span-3" src="http://userserve-ak.last.fm/serve/85/17631399.jpg" />
+                        <img id="now_playing_artist_image" class="span-3" src="http://userserve-ak.last.fm/serve/85/17631399.jpg" />
                     </div>
                     <div id="player_status_container" class="span-13 last">
                         <div id="player_track_info" class="span-13 last">

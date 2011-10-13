@@ -22,7 +22,9 @@ def player():
     users_tracks = get_user_queue(session['user']['id'])
     global_queue = get_global_queue()
 
-    return render_template("player.html", user=User.query.get(session['user']['id']), user_play_queue=users_tracks, global_play_queue=global_queue)
+    config = {'lastfm_api_key': app.config['LASTFM_API_KEY'], 'lastfm_api_secret': app.config['LASTFM_API_SECRET']}
+
+    return render_template("player.html", user=User.query.get(session['user']['id']), user_play_queue=users_tracks, global_play_queue=global_queue, config=config)
 
 @app.route('/player/status/poll', methods=['GET'])
 @with_mpd

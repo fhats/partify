@@ -5,6 +5,14 @@ $ ->
     window.Partify.Queues = window.Partify.Queues || {}
     window.Partify.Queues.GlobalQueue = new GlobalQueue($("#party_queue"), $("#up_next_tracks"))
     window.Partify.Queues.UserQueue = new UserQueue($("#user_queue"))
+    window.Partify.Config = window.Partify.Config || {};
+    window.Partify.Config.lastFmApiKey = config_lastfm_api_key;           # The backticks here mean pass the content through as vanilla JS rather than being compiled
+    window.Partify.Config.lastFmApiSecret = config_lastfm_api_secret;     # I used them here to pass the {{}} template content through the coffeescript compiler.
+    window.Partify.LastCache = new LastFMCache()
+    window.Partify.LastFM = new LastFM
+        apiKey: window.Partify.Config.lastFmApiKey
+        apiSecret: window.Partify.Config.lastFmApiSecret
+        cache: window.Partify.LastCache
 
 class Queue
     # Class responsible for encapsulating the tracks in each queue and for updating the display of those queues
@@ -69,8 +77,29 @@ class GlobalQueue extends Queue
 
         # Update the user playing the track
         $("#player_info_user_name").empty()
-        $("#player_info_user_name").append @tracks[0].user
-        $("#player_info_user_avatar").attr 'src', buildRoboHashUrlFromId(@tracks[0].user_id, 70, 70)
+        if @tracks.length > 0
+            $("#player_info_user_name").append @tracks[0].user
+            $("#player_info_user_avatar").attr 'src', buildRoboHashUrlFromId(@tracks[0].user_id, 70, 70)
+
+            # Update the now playing artist picture
+            window.Partify.LastFM.artist.getInfo 
+                artist: @tracks[0].artist
+            , 
+            {
+                success: (data) =>
+                    images = data.artist?.image
+                    if images?
+                        console.log 'Got images'
+                        image_sizes = (image.size for image in images)
+                        preferred_sizes = ['large', 'medium', 'small']
+                        preferred_sizes.remove size for size in preferred_sizes when size not in image_sizes
+                        target_size = preferred_sizes[0]
+                        img_url = (image['#text'] for image in images when image.size == target_size)
+                        img_url = img_url[0]
+                        $('#now_playing_artist_image').attr 'src', img_url
+                , error: (code, message) =>
+                    console.log "#{code} - #{message}"
+            }
 
     _buildDisplayHeader: () ->
         "
