@@ -156,6 +156,7 @@ class Track
         @date = data.date
         @length = data.length
         @user = data.user
+        @username = data.username
         @user_id = data.user_id
         @playback_priority = data.playback_priority
         @user_priority = data.user_priority

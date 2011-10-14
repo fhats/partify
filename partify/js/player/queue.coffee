@@ -96,7 +96,7 @@ class GlobalQueue extends Queue
         $("#player_info_user_name").empty()
         if @tracks.length > 0
             $("#player_info_user_name").append @tracks[0].user
-            $("#player_info_user_avatar").attr 'src', buildRoboHashUrlFromId(@tracks[0].user_id, 70, 70)
+            $("#player_info_user_avatar").attr 'src', buildRoboHashUrlFromId(@tracks[0].username, 70, 70)
 
             if @tracks[0].user_id == window.Partify.Config.user_id
                 $("#player_info_skip_div").empty()

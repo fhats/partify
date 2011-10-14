@@ -61,6 +61,7 @@ class PlayQueueEntry(db.Model):
             d[attr] = getattr(self, attr)
         d['time_added'] = self.time_added.ctime()
         d['user'] = getattr(self.user, 'name', 'Anonymous')
+        d['username'] = getattr(self.user, 'username', 'anonymous')
         d['user_id'] = self.user_id
         return d
 
