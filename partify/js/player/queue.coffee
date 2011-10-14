@@ -8,6 +8,7 @@ $ ->
     window.Partify.Config = window.Partify.Config || {};
     window.Partify.Config.lastFmApiKey = config_lastfm_api_key;           # The backticks here mean pass the content through as vanilla JS rather than being compiled
     window.Partify.Config.lastFmApiSecret = config_lastfm_api_secret;     # I used them here to pass the {{}} template content through the coffeescript compiler.
+    window.Partify.Config.user_id = config_user_id;
     window.Partify.LastCache = new LastFMCache()
     window.Partify.LastFM = new LastFM
         apiKey: window.Partify.Config.lastFmApiKey
@@ -63,6 +64,22 @@ class Queue
         </li>
         "
 
+    removeTrack: (track) ->
+        $.ajax(
+            url: '/queue/remove'
+            type: 'POST'
+            data:
+                track_id: track.mpd_id
+            success: (data) =>
+                if data.status == 'ok'
+                    @tracks.remove(track)
+                    this.updateDisplay()
+                    window.Partify.Player._synchroPoll()
+            error: () =>
+                console.log "Could not contact the server!"
+        )
+
+
 class GlobalQueue extends Queue
     constructor: (queue_div, up_next_div) ->
         super queue_div
@@ -80,6 +97,14 @@ class GlobalQueue extends Queue
         if @tracks.length > 0
             $("#player_info_user_name").append @tracks[0].user
             $("#player_info_user_avatar").attr 'src', buildRoboHashUrlFromId(@tracks[0].user_id, 70, 70)
+
+            if @tracks[0].user_id == window.Partify.Config.user_id
+                $("#player_info_skip_div").empty()
+                $("#player_info_skip_div").append "<a href='#' id='player_skip_btn'>Skip My Track</a>"
+                $("#player_skip_btn").click (e) =>
+                    this.removeTrack(@tracks[0])
+                    e.stopPropagation()
+                    $("#player_skip_btn").remove()
 
             # Update the now playing artist picture
             window.Partify.LastFM.artist.getInfo 
@@ -100,6 +125,8 @@ class GlobalQueue extends Queue
                 , error: (code, message) =>
                     console.log "#{code} - #{message}"
             }
+        else
+            $('#now_playing_artist_image').attr 'src', ''
 
     _buildDisplayHeader: () ->
         "
@@ -203,20 +230,6 @@ class UserQueue extends Queue
             <span class='span-2'>#{secondsToTimeString(track.length)}</span>
             <span class='span-1 right last'><button id='rm_#{track.id}' class='rm_btn'></button></span>
         </li>"
-
-    removeTrack: (track) ->
-        $.ajax(
-            url: 'queue/remove'
-            type: 'POST'
-            data:
-                track_id: track.mpd_id
-            success: (data) =>
-                if data.status == 'ok'
-                    @tracks.remove(track)
-                    this.updateDisplay()
-            error: () =>
-                console.log "Could not contact the server!"
-        )
 
     _createRemoveButtons: () ->
         this._createRemoveButton track for track in @tracks

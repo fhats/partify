@@ -16,6 +16,7 @@
     <script type="text/javascript">
         config_lastfm_api_key = '{{ config.lastfm_api_key }}';
         config_lastfm_api_secret = '{{ config.lastfm_api_secret }}';
+        config_user_id = {{ user.id }};
     </script>
 {% endblock %}
 
@@ -56,7 +57,7 @@ Player - Partify
 
                 <div id="player_container" class="span-16">
                     <div id="player_image_container" class="span-3">
-                        <img id="now_playing_artist_image" class="span-3" src="http://userserve-ak.last.fm/serve/85/17631399.jpg" />
+                        <img id="now_playing_artist_image" class="span-3" src="" />&nbsp;
                     </div>
                     <div id="player_status_container" class="span-13 last">
                         <div id="player_track_info" class="span-13 last">
@@ -81,7 +82,10 @@ Player - Partify
                 </div>
                 <div id="played_by_container" class="span-6 last">
                     <div><img id="player_info_user_avatar" src="" /></div>
-                    <div><span id="player_info_user_name">{{user.username}}</span></div>
+                    <div>
+                        <div style="float:left; margin-bottom: 10px"><b><span id="player_info_user_name">{{user.username}}</span></b></div>
+                        <div style="clear:both; float: left" class="small" id="player_info_skip_div"></div>
+                    </div>
                 </div>
                 <div id="on_deck" class="prepend-top span-23 last">
                     <span class="logo">Up Next: </span>

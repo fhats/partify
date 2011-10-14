@@ -101,7 +101,8 @@ class Player
     updatePlayerInfo: (data) -> 
         # Takes an array of data items and populates the appropriate HTML elements
         info = for key, value of @info
-            data[key] or= @info[key] # Fills in data with information from info in case that key does not exist in data. Prevents nasty undefineds everywhere
+            if data.state != 'stop'
+                data[key] or= @info[key] # Fills in data with information from info in case that key does not exist in data. Prevents nasty undefineds everywhere
             @info[key] = data[key]
             # Special cases!
             if key == 'date'
