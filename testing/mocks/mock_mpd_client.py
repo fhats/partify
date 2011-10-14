@@ -78,7 +78,7 @@ class MockMPDClient(object):
     def status(self):
         global track_list
         return {'bitrate': '160',
-         'consume': '0',
+         'consume': '1',
          'elapsed': '95.254',
          'playlist': '10',
          'playlistlength': '%d' % len(track_list),

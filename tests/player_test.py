@@ -1,4 +1,5 @@
 import json
+import math
 import random
 import time
 from testify import *
@@ -40,7 +41,7 @@ class PlayerTestCase(LoggedInUserTestCase):
             assert track['file'] in [t['spotify_url'] for t in response_data['user_queue']]
             assert track['file'] in [t['spotify_url'] for t in response_data['global_queue']]
         
-        pl_update = int(response_data['last_global_playlist_update'])
+        pl_update = response_data['last_global_playlist_update']
 
         response = self.app.get('/player/status/poll?current=%s' % pl_update)
         response_data = json.loads(response.data)
