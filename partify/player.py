@@ -27,6 +27,7 @@ def player():
     return render_template("player.html", user=User.query.get(session['user']['id']), user_play_queue=users_tracks, global_play_queue=global_queue, config=config)
 
 @app.route('/player/status/poll', methods=['GET'])
+@with_authentication
 @with_mpd
 def status(mpd):
     """An endpoint for poll-based player status updates."""
