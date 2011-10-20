@@ -97,7 +97,7 @@ class Player
     _playerLocalUpdate: () ->
         last_update_time = @last_update_time
         @last_update_time = (new Date()).getTime()
-        console.log "Lagging like a #{((@last_update_time - last_update_time) / 1000)} mofo"
+        console.log "Lagging like a #{((@last_update_time - last_update_time) / 1000)} mofo but it is #{@info.elapsed}"
         # Updates the player to stay in sync with the Mopidy server without actually polling it.
         if @info.state == 'play'
             @info.elapsed = if Math.round(@info.elapsed) < @info.time then @info.elapsed + ((@last_update_time - last_update_time) / 1000) else @info.elapsed
