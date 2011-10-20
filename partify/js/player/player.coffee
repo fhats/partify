@@ -24,7 +24,7 @@ class Player
             last_global_playlist_update: 0
         @config =
             up_next_items = 3
-        @last_time_update = (new Date()).getTime()
+        @last_update_time = (new Date()).getTime()
 
     init: () -> 
         this.initPlayerVisuals()
@@ -73,12 +73,9 @@ class Player
             method: 'GET'
             data: 
                 current: @info.last_global_playlist_update
-                sent_time: (new Date()).getTime()
             success: (data) =>
-                now = (new Date()).getTime()
-                lag = (now - data.sent_time) / 2
-                console.log lag
-                data.elapsed = parseFloat(data.elapsed) + (lag / 1000.0)
+                if data.elapsed
+                    data.elapsed = parseFloat(data.elapsed)
                 data.time = parseFloat(data.time)
                 this.updatePlayerInfo data
 
@@ -97,10 +94,9 @@ class Player
     _playerLocalUpdate: () ->
         last_update_time = @last_update_time
         @last_update_time = (new Date()).getTime()
-        console.log "Lagging like a #{((@last_update_time - last_update_time) / 1000)} mofo but it is #{@info.elapsed}"
         # Updates the player to stay in sync with the Mopidy server without actually polling it.
         if @info.state == 'play'
-            @info.elapsed = if Math.round(@info.elapsed) < @info.time then @info.elapsed + ((@last_update_time - last_update_time) / 1000) else @info.elapsed
+            @info.elapsed = if Math.floor(@info.elapsed) < @info.time then @info.elapsed + ((@last_update_time - last_update_time) / 1000) else @info.elapsed
             this.updatePlayerProgress()
             if @info.elapsed >= @info.time
                 this._synchroPoll()
@@ -137,7 +133,7 @@ class Player
 
 secondsToTimeString = (seconds) ->
     # Converts a number of seconds to a string representing a human-readable time (eg. MM:SS)
-    seconds = Math.round(seconds)
+    seconds = Math.floor(seconds)
     minutes = Math.floor(seconds / 60 )
     seconds = (seconds % 60)
     time_s = "" + minutes + ":"

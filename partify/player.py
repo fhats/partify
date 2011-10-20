@@ -36,13 +36,14 @@ def status(mpd):
         client_current = float(client_current)
 
     response = _get_status(mpd)
-    response['sent_time'] = request.args.get('sent_time', None)
 
     playlist_last_updated = ipc.get_time('playlist')
     if client_current is None or client_current < playlist_last_updated:
         response['global_queue'] = get_global_queue()
         response['user_queue'] = get_user_queue(session['user']['id'])
         response['last_global_playlist_update'] = playlist_last_updated
+    else:
+        del response['elapsed']
 
     return jsonify(response)
 
