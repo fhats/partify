@@ -137,8 +137,8 @@ class Player
 
 secondsToTimeString = (seconds) ->
     # Converts a number of seconds to a string representing a human-readable time (eg. MM:SS)
-    seconds = Math.floor(seconds)
-    minutes = Math.floor( seconds / 60 )
+    seconds = Math.round(seconds)
+    minutes = Math.floor(seconds / 60 )
     seconds = (seconds % 60)
     time_s = "" + minutes + ":"
     # zero-padding
