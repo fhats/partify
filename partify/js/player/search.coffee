@@ -8,11 +8,14 @@ $ ->
 class Search
     @results = new Array()
     @results_display
+    @sortmode = {category: "", asc: true}
 
     constructor: () ->
         this.initializeFormHandlers()
+        this.initializeSortHandlers()
         @results_display = $("table#results_table > tbody")
         @results = new Array()
+        @sortmode = {category: "", asc: true}
 
     initializeFormHandlers: () ->
         $("#track_search_form").submit (e) =>
@@ -22,6 +25,39 @@ class Search
             album = $("input#search_album").val()
             this.processSearch title, artist, album
             return false
+
+    initializeSortHandlers: () ->
+        for category in ['title', 'artist', 'album']
+            do (category) =>
+                $("#results_header_" + category).click (e) =>
+                    e.stopPropagation()
+                    if @sortmode.category == category
+                        @sortmode.asc = !@sortmode.asc
+                    else
+                        @sortmode.category = category
+                        @sortmode.asc = true
+                    this.sortResultsBy @sortmode.category, @sortmode.asc
+        
+    sortResultsBy: (category, is_ascending) ->
+        sortfn = (a,b) -> 
+            cmp_val = 0
+            if a[category] < b[category]
+                cmp_val = -1
+            if a[category] > b[category]
+                cmp_val = 1
+            return cmp_val
+        @results.sort sortfn
+        if !is_ascending
+            @results.reverse()
+        this.updateResultsDisplay()
+        this.setSortIndicator()
+
+    setSortIndicator: () ->
+        this.clearSortIndicators()
+        $("#results_header_" + @sortmode.category).append "<span id='sort_indicator_arrow' class='ui-icon ui-icon-triangle-1-n grip'>&nbsp;</span>"
+
+    clearSortIndicators: () ->
+        $("#sort_indicator_arrow").remove()
 
     processSearch: (title, artist, album) ->
         @results = new Array()

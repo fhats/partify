@@ -13,6 +13,12 @@ div#content_container{
     font-style:italic;
 }
 
+th > a {
+    color: #F8F8F2;
+    text-decoration: none;
+    cursor: pointer;
+}
+
 p.divider {
     color: #888;
 }
