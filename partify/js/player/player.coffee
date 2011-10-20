@@ -24,11 +24,12 @@ class Player
             last_global_playlist_update: 0
         @config =
             up_next_items = 3
+        @last_time_update = (new Date()).getTime()
 
     init: () -> 
         this.initPlayerVisuals()
         this.initPlayerUpdating()
-        @info.last_global_playlist_update = (new Date()).getMilliseconds()
+        @info.last_global_playlist_update = (new Date()).getTime()
 
     initPlayerVisuals: () ->
         $("#player_progress").progressbar value: 0
@@ -68,12 +69,16 @@ class Player
     _synchroPoll: () ->
         # Performs the polling updates with the server
         $.ajax(
-            url: 'player/status/poll'
+            url: '/player/status/poll'
             method: 'GET'
             data: 
                 current: @info.last_global_playlist_update
+                sent_time: (new Date()).getTime()
             success: (data) =>
-                data.elapsed = parseFloat(data.elapsed)
+                now = (new Date()).getTime()
+                lag = (now - data.sent_time) / 2
+                console.log lag
+                data.elapsed = parseFloat(data.elapsed) + (lag / 1000.0)
                 data.time = parseFloat(data.time)
                 this.updatePlayerInfo data
 
@@ -90,9 +95,12 @@ class Player
         , 1000
             
     _playerLocalUpdate: () ->
+        last_update_time = @last_update_time
+        @last_update_time = (new Date()).getTime()
+        console.log "Lagging like a #{((@last_update_time - last_update_time) / 1000)} mofo"
         # Updates the player to stay in sync with the Mopidy server without actually polling it.
         if @info.state == 'play'
-            @info.elapsed = if Math.round(@info.elapsed) < @info.time then @info.elapsed + 1 else @info.elapsed
+            @info.elapsed = if Math.round(@info.elapsed) < @info.time then @info.elapsed + ((@last_update_time - last_update_time) / 1000) else @info.elapsed
             this.updatePlayerProgress()
             if @info.elapsed >= @info.time
                 this._synchroPoll()
