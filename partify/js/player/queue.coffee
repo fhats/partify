@@ -212,7 +212,7 @@ class UserQueue extends Queue
     updateDisplay: () ->
         @queue_div.empty()
         @queue_div.append this._buildDisplayHeader()
-        if @tracks > 0
+        if @tracks.length > 0
             @queue_div.append this._buildDisplayItem(track) for track in @tracks when track.id != window.Partify.Queues.GlobalQueue.tracks[0].id
         else
             @queue_div.append this._buildNoItemsRow()
