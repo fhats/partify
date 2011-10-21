@@ -43,15 +43,12 @@ class PlayerTestCase(LoggedInUserTestCase):
         
         pl_update = response_data['last_global_playlist_update']
 
-        response = self.app.get('/player/status/poll?current=%s' % pl_update)
+        response = self.app.get('/player/status/poll?current=%s' % str(float(pl_update)+1))
         response_data = json.loads(response.data)
 
         assert response.status_code == 200
         assert 'user_queue' not in response_data
         assert 'global_queue' not in response_data
-
-        # This is needed for now to emulate how the client stores times :(
-        time.sleep(2)
 
         self.mpd.addid('spotify:track:6LDYVzxjDSAO92UZ5veM3u')
 
