@@ -12,5 +12,13 @@ if __name__ == "__main__":
     app.logger.debug(app.config)
 
     on_startup()
+    if app.config['SERVER'] == 'builtin':
+        app.run(host=app.config['SERVER_HOST'], port=app.config['SERVER_PORT'], debug=False)
+    elif app.config['SERVER'] == 'tornado':
+        from tornado.wsgi import WSGIContainer
+        from tornado.httpserver import HTTPServer
+        from tornado.ioloop import IOLoop
 
-    app.run(host=app.config['SERVER_HOST'], port=app.config['SERVER_PORT'], debug=False)
+        http_server = HTTPServer(WSGIContainer(app))
+        http_server.listen(app.config['SERVER_PORT'])
+        IOLoop.instance().start()

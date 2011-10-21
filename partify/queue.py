@@ -251,7 +251,8 @@ def _ensure_mpd_playlist_consistency(mpd):
                 if PlayQueueEntry.query.filter(and_(PlayQueueEntry.user == track.user, PlayQueueEntry.user_priority < track.user_priority, PlayQueueEntry.playback_priority > track.playback_priority)).count() > 0:
                     # Get the track after the current playback priority with the minimum user_priority and make that the current track
                     new_next_track = _get_users_next_pqe_entry_after_playback_priority(track.user_id, track.playback_priority)
-                    mpd.moveid(new_next_track.mpd_id, track.playback_priority)
+                    if new_next_track is not None:
+                        mpd.moveid(new_next_track.mpd_id, track.playback_priority)
                     break
                 else:
                     # Everything's cool!
@@ -261,7 +262,8 @@ def _ensure_mpd_playlist_consistency(mpd):
                 # Something isn't round robin about this.
                 # To resolve this, push the rest of the tracks back and move the user's lowest pqe after the current playback_priority to the current position.
                 new_next_track = _get_users_next_pqe_entry_after_playback_priority(user.id, track.playback_priority)
-                mpd.moveid(new_next_track.mpd_id, track.playback_priority)
+                if new_next_track is not None:
+                    mpd.moveid(new_next_track.mpd_id, track.playback_priority)
                 break
 
     _ensure_mpd_player_state_consistency(mpd)

@@ -27,6 +27,7 @@ def player():
     return render_template("player.html", user=User.query.get(session['user']['id']), user_play_queue=users_tracks, global_play_queue=global_queue, config=config)
 
 @app.route('/player/status/poll', methods=['GET'])
+@with_authentication
 @with_mpd
 def status(mpd):
     """An endpoint for poll-based player status updates."""
@@ -41,6 +42,8 @@ def status(mpd):
         response['global_queue'] = get_global_queue()
         response['user_queue'] = get_user_queue(session['user']['id'])
         response['last_global_playlist_update'] = playlist_last_updated
+    else:
+        del response['elapsed']
 
     return jsonify(response)
 

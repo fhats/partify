@@ -24,11 +24,12 @@ class Player
             last_global_playlist_update: 0
         @config =
             up_next_items = 3
+        @last_update_time = (new Date()).getTime()
 
     init: () -> 
         this.initPlayerVisuals()
         this.initPlayerUpdating()
-        @info.last_global_playlist_update = (new Date()).getMilliseconds()
+        @info.last_global_playlist_update = (new Date()).getTime()
 
     initPlayerVisuals: () ->
         $("#player_progress").progressbar value: 0
@@ -68,12 +69,13 @@ class Player
     _synchroPoll: () ->
         # Performs the polling updates with the server
         $.ajax(
-            url: 'player/status/poll'
+            url: '/player/status/poll'
             method: 'GET'
             data: 
                 current: @info.last_global_playlist_update
             success: (data) =>
-                data.elapsed = parseFloat(data.elapsed)
+                if data.elapsed
+                    data.elapsed = parseFloat(data.elapsed)
                 data.time = parseFloat(data.time)
                 this.updatePlayerInfo data
 
@@ -90,9 +92,11 @@ class Player
         , 1000
             
     _playerLocalUpdate: () ->
+        last_update_time = @last_update_time
+        @last_update_time = (new Date()).getTime()
         # Updates the player to stay in sync with the Mopidy server without actually polling it.
         if @info.state == 'play'
-            @info.elapsed = if Math.round(@info.elapsed) < @info.time then @info.elapsed + 1 else @info.elapsed
+            @info.elapsed = if Math.floor(@info.elapsed) < @info.time then @info.elapsed + ((@last_update_time - last_update_time) / 1000) else @info.elapsed
             this.updatePlayerProgress()
             if @info.elapsed >= @info.time
                 this._synchroPoll()
@@ -130,7 +134,7 @@ class Player
 secondsToTimeString = (seconds) ->
     # Converts a number of seconds to a string representing a human-readable time (eg. MM:SS)
     seconds = Math.floor(seconds)
-    minutes = Math.floor( seconds / 60 )
+    minutes = Math.floor(seconds / 60 )
     seconds = (seconds % 60)
     time_s = "" + minutes + ":"
     # zero-padding
