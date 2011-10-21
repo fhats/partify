@@ -38,7 +38,10 @@ class Queue
     updateDisplay: () ->
         @queue_div.empty()
         @queue_div.append this._buildDisplayHeader()
-        @queue_div.append this._buildDisplayItem(track) for track in @tracks
+        if @tracks.length > 0
+            @queue_div.append this._buildDisplayItem(track) for track in @tracks
+        else
+            @queue_div.append this._buildNoItemsRow()
     
     _buildDisplayHeader: () ->
         "
@@ -61,6 +64,12 @@ class Queue
             <span class='span-6'>#{track.album}</span>
             <span class='span-3'>#{track.user}</span>
             <span class='span-1 last right'>#{secondsToTimeString(track.length)}</span>
+        </li>
+        "
+    _buildNoItemsRow: () ->
+        "
+        <li class='queue_item ui-state-default small span-23 last'>
+            <span class='span-23 last'><center><p ><em>There's nothing in this queue right now!</em></p></center></span>
         </li>
         "
 
@@ -203,7 +212,10 @@ class UserQueue extends Queue
     updateDisplay: () ->
         @queue_div.empty()
         @queue_div.append this._buildDisplayHeader()
-        @queue_div.append this._buildDisplayItem(track) for track in @tracks when track.id != window.Partify.Queues.GlobalQueue.tracks[0].id
+        if @tracks > 0
+            @queue_div.append this._buildDisplayItem(track) for track in @tracks when track.id != window.Partify.Queues.GlobalQueue.tracks[0].id
+        else
+            @queue_div.append this._buildNoItemsRow()
         this._createRemoveButtons()
 
 
