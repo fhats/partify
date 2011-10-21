@@ -38,13 +38,18 @@ class Search
                         @sortmode.asc = true
                     this.sortResultsBy @sortmode.category, @sortmode.asc
         
-    sortResultsBy: (category, is_ascending) ->
+    sortResultsBy: (category, is_ascending, sub_category = "track") ->
         sortfn = (a,b) -> 
             cmp_val = 0
             if a[category] < b[category]
                 cmp_val = -1
             if a[category] > b[category]
                 cmp_val = 1
+            if cmp_val == 0
+                if a[sub_category] < b[sub_category]
+                    cmp_val = -1
+                if a[sub_category] > b[sub_category]
+                    cmp_val = 1
             return cmp_val
         @results.sort sortfn
         if !is_ascending
@@ -54,7 +59,7 @@ class Search
 
     setSortIndicator: () ->
         this.clearSortIndicators()
-        $("#results_header_" + @sortmode.category).append "<span id='sort_indicator_arrow' class='ui-icon ui-icon-triangle-1-n grip'>&nbsp;</span>"
+        $("#results_header_" + @sortmode.category).append "<span id='sort_indicator_arrow' class='ui-icon ui-icon-triangle-1-#{if @sortmode.asc then 'n' else 's'} grip' style='float:left'>&nbsp;</span>"
 
     clearSortIndicators: () ->
         $("#sort_indicator_arrow").remove()
@@ -62,6 +67,7 @@ class Search
     processSearch: (title, artist, album) ->
         @results = new Array()
         this._show_wait_spinner()
+        this.clearSortIndicators()
 
         request_data = {}
         if title != ""
@@ -182,13 +188,13 @@ class Track
     @mpd_id = 0
 
     constructor: (data) ->
-        @id = data.id
+        @id = parseInt(data.id) or data.id
         @title = data.title
         @artist = data.artist
         @album = data.album
-        @track = data.track
+        @track = parseInt(data.track) or data.track
         @file = data.file
-        @time = data.time
+        @time = parseInt(data.time) or data.time
         @date = data.date
         @length = data.length
         @user = data.user
