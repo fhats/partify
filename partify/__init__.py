@@ -4,8 +4,8 @@ from multiprocessing import Manager, Process
 from flask import Flask, jsonify, redirect, session, url_for
 
 app = Flask("partify")
-app.config.from_object("config")
 
+from partify.config import load_config_from_db
 from partify.queue import on_playlist_update, ensure_mpd_playlist_consistency
 
 @app.route("/")
@@ -15,6 +15,7 @@ def main():
     return redirect(url_for('player'))
 
 def on_startup():
+    load_config_from_db()
     ipc.init_times()
     ensure_mpd_playlist_consistency()
     ipc.update_time('playlist', time.time())

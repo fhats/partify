@@ -73,3 +73,6 @@ class ConfigurationField(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     field_name = db.Column(db.Text)
     field_value = db.Column(db.Text)
+
+    def __repr__(self):
+        return "<ConfigurationField %r with value %r>" % (self.field_name, self.field_value)

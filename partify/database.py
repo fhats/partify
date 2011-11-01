@@ -2,6 +2,8 @@ from flaskext.sqlalchemy import SQLAlchemy
 
 from partify import app
 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../tmp/test.db'
+
 db = SQLAlchemy(app)
 
 def init_db():

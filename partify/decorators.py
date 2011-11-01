@@ -31,8 +31,16 @@ def with_mpd(f):
         else:
             from testing.mocks.mock_mpd_client import MockMPDClient
             mpd_client = MockMPDClient()
-        mpd_client.connect(**app.config['MPD_SERVER'])
-        return_value = f(mpd_client, *args, **kwargs)
-        mpd_client.disconnect()
-        return return_value
+        try:
+            mpd_client.connect(host=app.config['MPD_SERVER_HOSTNAME'], port=app.config['MPD_SERVER_PORT'])
+        except:
+            # Do something sensible when you can't connect to the MPD server, like pass None in for mpd_client
+            # maybe eventually just forward to the configuration page/no connection page
+            mpd_client = None
+            app.logger.warning("Could not connect to MPD server on host %r, port %r" % (app.config['MPD_SERVER_HOSTNAME'], app.config['MPD_SERVER_PORT']))
+        else:
+            return_value = f(mpd_client, *args, **kwargs)
+            if mpd_client is not None:
+                mpd_client.disconnect()
+            return return_value
     return wrapped

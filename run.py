@@ -9,11 +9,12 @@ from partify import player, queue, track, user
 
 if __name__ == "__main__":
     """Starts the WebApp."""
+    on_startup()
+    
     app.logger.debug(app.config)
 
-    on_startup()
     if app.config['SERVER'] == 'builtin':
-        app.run(host=app.config['SERVER_HOST'], port=app.config['SERVER_PORT'], debug=False)
+        app.run(host=app.config['SERVER_HOST'], port=app.config['SERVER_PORT'])
     elif app.config['SERVER'] == 'tornado':
         from tornado.wsgi import WSGIContainer
         from tornado.httpserver import HTTPServer
