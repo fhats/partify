@@ -1,0 +1,60 @@
+{% extends "i_love_this_web_thing.html" %}
+{% from "_util.html" import css_include, js_include %}
+{% from "common.html" import show_topbar %}
+
+{% macro show_configuration_form() %}
+<div class="span-22 prepend-1 append-1 last">
+	<h4>Configuration</h4>
+	<p><em>Configuration form here...</em></p>
+</div>
+<hr />
+{% endmacro %}
+
+{% macro show_player_controls() %}
+<div class="span-22 prepend-1 append-1 last">
+	<h4>Player Controls</h4>
+	<p><em>Configuration form here...</em></p>
+</div>
+<hr />
+{% endmacro %}
+
+{% macro show_admin_admin() %}
+<div class="span-22 prepend-1 append-1 last">
+	<h4>Administration</h4>
+	<p><em>Configuration form here...</em></p>
+</div>
+<hr />
+{% endmacro %}
+
+{% block css_head %}
+	{{ css_include('css/admin.css') }}
+{% endblock %}
+
+{% block title %}
+Admin - Partify
+{% endblock %}
+
+{% block super_body %}
+
+{{ show_topbar(user) }}
+
+<div id="content_all" style="width:100%; height:100%">
+    <div class="container prepend-top" id="content_container">
+        <div class="span-24 last" id="content">
+        	<div class="span-22 prepend-1 append-1 last">
+        		<h2>Administration</h2>
+        	</div>
+        	{% if "ADMIN_CONTROLS" in user_privs %}
+        		{{ show_player_controls() }}
+        	{% endif %}
+        	{% if "ADMIN_CONFIG" in user_privs %}
+				{{ show_configuration_form() }}
+			{% endif %}
+        	{% if "show_admin_admin" in user_privs %}
+        		{{ show_admin_admin() }}
+        	{% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

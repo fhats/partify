@@ -2,10 +2,11 @@ import logging
 import time
 from functools import wraps
 
-from flask import jsonify, redirect, session, url_for
+from flask import flash, jsonify, redirect, session, url_for
 
 from mpd import MPDClient
 from partify import app
+from partify.priv import user_has_privilege
 
 def with_authentication(f):
     """A decorator that ensures that a user is logged in and redirects them to a login page if the user is not authenticated.
@@ -14,9 +15,9 @@ def with_authentication(f):
     authentication but it will do for now. Security is not a high priority for this project since its intended use case is in a local scenario.
     However, it would be great to have better security if time permits."""
     @wraps(f)
-    def wrapped():
+    def wrapped(*args, **kwargs):
         if 'user' in session:
-            return f()
+            return f(*args, **kwargs)
         else:
             return redirect(url_for('login_form'))
     return wrapped
@@ -25,7 +26,6 @@ def with_mpd(f):
     """A decorator that establishes and MPD connection Mopidy and passes it into the wrapped function."""
     @wraps(f)
     def wrapped(*args, **kwargs):
-        # TODO: This needs logic to sub in a mock MPD client instead of a real one when the testing flag is up.
         if not app.config['TESTING']:
             mpd_client = MPDClient()
         else:
@@ -44,3 +44,22 @@ def with_mpd(f):
                 mpd_client.disconnect()
             return return_value
     return wrapped
+
+def with_privileges(privs, fail_mode="json"):
+    """A decorator that restricts access to the decorated endpoint if the logged in user does not have sufficient privileges."""
+    def dec(f):
+        @wraps(f)
+        def wrapped(*args, **kwargs):
+            current_user = session['user']['id']
+            missing_privs = [p for p in privs if not user_has_privilege(current_user, p)]
+            if len(missing_privs) == 0:
+                return f(*args, **kwargs)
+            else:
+                if fail_mode == "redirect":
+                    return redirect(url_for("player"))
+                elif fail_mode == "json":
+                    return jsonify(status="error", message="You are not authorized to view this page!"), 403
+                else:
+                    return jsonify(status="Not authorized."), 403
+        return wrapped
+    return dec

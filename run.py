@@ -5,7 +5,7 @@ from partify import ipc
 from partify import on_startup
 
 # TODO: Figure out these imports
-from partify import player, queue, track, user
+from partify import admin, player, queue, track, user
 
 if __name__ == "__main__":
     """Starts the WebApp."""

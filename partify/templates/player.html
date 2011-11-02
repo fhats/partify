@@ -1,5 +1,6 @@
 {% extends "i_love_this_web_thing.html" %}
 {% from "_util.html" import css_include, js_include %}
+{% from "common.html" import show_topbar %}
 
 {% block css_head %}
     {{ css_include('css/jquery-ui/partify/jquery-ui-1.8.14.custom.css') }}
@@ -26,25 +27,7 @@ Player - Partify
 
 {% block super_body %}
 
-
-<!-- Topbar - Logo & account settings -->
-<div id="topbar" style="width:100%; height:44px">
-    <div class="container">
-    <div class="prepend-top append-bottom span-24 last">
-        <div id="topbar_logo" class="span-9">
-            <h3 class="logo">Partify - Social Music at Your Control</h3>
-        </div>
-        <div id="topbar_user_info" class="prepend-1 span-14 last">
-            <a class="right" href="/logout">Logout</a>
-            <p class="right divider"> | </p>
-            <a class="right" href="/#">Account settings</a>
-            <p class="right divider"> | </p>
-            <p class="right">{{user.name}}</p>
-            <img class="right" src="http://robohash.org/{{ user.username }}.png?set=any&bgset=any&size=25x25" />
-        </div>
-    </div>
-    </div>
-</div>
+{{ show_topbar(user) }}
 
 <div id="content_all" style="width:100%; height:100%">
     <div class="container prepend-top" id="content_container">

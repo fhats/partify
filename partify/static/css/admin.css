@@ -1,0 +1,13 @@
+hr {
+	width: 75%;
+	border: 0;
+	background-color: #222;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	background: -webkit-gradient(linear, 0 0, 100% 0, from(#272822), to(#272822), color-stop(50%, #222));
+}
+
+hr:last-child {
+	visibility: hidden;
+}

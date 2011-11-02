@@ -1,0 +1,27 @@
+div#topbar_user_info > * {
+    margin-right: 10px;
+}
+
+div#topbar_user_info > img {
+    position: relative;
+    top: -5px;
+}
+p.divider {
+    color: #888;
+}
+
+div#content_container{
+    background: #272822;
+    padding: 0px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -khtml-border-radius: 4px;
+    border-radius: 4px;
+
+    border: 1px solid #1f1f1f;
+}
+
+h1, h2, h3, h4 {
+    color: #FD971F;
+    font-family: "Comfortaa", sans-serif;
+}
