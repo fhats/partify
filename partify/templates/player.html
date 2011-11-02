@@ -27,7 +27,7 @@ Player - Partify
 
 {% block super_body %}
 
-{{ show_topbar(user) }}
+{{ show_topbar(user, "ADMIN_INTERFACE" in user_privs, false) }}
 
 <div id="content_all" style="width:100%; height:100%">
     <div class="container prepend-top" id="content_container">

@@ -12,6 +12,7 @@ from partify import ipc
 from partify.models import PlayQueueEntry
 from partify.models import Track
 from partify.models import User
+from partify.priv import dump_user_privileges
 
 @app.route('/player', methods=['GET'])
 @with_authentication
@@ -24,7 +25,9 @@ def player():
 
     config = {'lastfm_api_key': app.config['LASTFM_API_KEY'], 'lastfm_api_secret': app.config['LASTFM_API_SECRET']}
 
-    return render_template("player.html", user=User.query.get(session['user']['id']), user_play_queue=users_tracks, global_play_queue=global_queue, config=config)
+    user = User.query.get(session['user']['id'])
+
+    return render_template("player.html", user=user, user_play_queue=users_tracks, global_play_queue=global_queue, config=config, user_privs=dump_user_privileges(user))
 
 @app.route('/player/status/poll', methods=['GET'])
 @with_authentication

@@ -1,11 +1,20 @@
 {% extends "i_love_this_web_thing.html" %}
-{% from "_util.html" import css_include, js_include %}
+{% from "_util.html" import css_include, js_include, render_field %}
 {% from "common.html" import show_topbar %}
 
 {% macro show_configuration_form() %}
 <div class="span-22 prepend-1 append-1 last">
 	<h4>Configuration</h4>
-	<p><em>Configuration form here...</em></p>
+	<form method="POST" action="{{url_for('configuration_update')}}">
+		{{ render_field(configuration_form.mpd_server_hostname) }}
+		{{ render_field(configuration_form.mpd_server_port) }}
+		{{ render_field(configuration_form.server) }}
+		{{ render_field(configuration_form.server_host) }}
+		{{ render_field(configuration_form.server_port) }}
+		{{ render_field(configuration_form.lastfm_api_key) }}
+		{{ render_field(configuration_form.lastfm_api_secret) }}
+		<input type="submit" value="Update">
+	</form>
 </div>
 <hr />
 {% endmacro %}
@@ -13,7 +22,7 @@
 {% macro show_player_controls() %}
 <div class="span-22 prepend-1 append-1 last">
 	<h4>Player Controls</h4>
-	<p><em>Configuration form here...</em></p>
+	<p><em>Player controls here</em></p>
 </div>
 <hr />
 {% endmacro %}
@@ -21,7 +30,7 @@
 {% macro show_admin_admin() %}
 <div class="span-22 prepend-1 append-1 last">
 	<h4>Administration</h4>
-	<p><em>Configuration form here...</em></p>
+	<p><em>Admin admin here...</em></p>
 </div>
 <hr />
 {% endmacro %}
@@ -36,7 +45,7 @@ Admin - Partify
 
 {% block super_body %}
 
-{{ show_topbar(user) }}
+{{ show_topbar(user, false, true) }}
 
 <div id="content_all" style="width:100%; height:100%">
     <div class="container prepend-top" id="content_container">
@@ -50,7 +59,7 @@ Admin - Partify
         	{% if "ADMIN_CONFIG" in user_privs %}
 				{{ show_configuration_form() }}
 			{% endif %}
-        	{% if "show_admin_admin" in user_privs %}
+        	{% if "ADMIN_ADMIN" in user_privs %}
         		{{ show_admin_admin() }}
         	{% endif %}
         </div>

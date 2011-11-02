@@ -1,5 +1,5 @@
 
-{% macro show_topbar(user) %}
+{% macro show_topbar(user, show_admin, show_player) %}
 <!-- Topbar - Logo & account settings -->
 <div id="topbar" style="width:100%; height:44px">
     <div class="container">
@@ -12,6 +12,14 @@
             <p class="right divider"> | </p>
             <a class="right" href="/#">Account settings</a>
             <p class="right divider"> | </p>
+            {% if show_admin %}
+                <a class="right" href="/admin">Admin</a>
+                <p class="right divider"> | </p>
+            {% endif %}
+            {% if show_player %}
+                <a class="right" href="/player">Player</a>
+                <p class="right divider"> | </p>
+            {% endif %}
             <p class="right">{{user.name}}</p>
             <img class="right" src="http://robohash.org/{{ user.username }}.png?set=any&bgset=any&size=25x25" />
         </div>
