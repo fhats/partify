@@ -27,6 +27,8 @@ from werkzeug.security import check_password_hash
 from database import db
 from models import User
 from partify import app
+from partify.priv import give_user_privilege
+from partify.priv import privs
 from forms.user_forms import RegistrationForm
 from forms.user_forms import LoginForm
 
@@ -47,6 +49,10 @@ def register_post():
         db.session.add(user)
         db.session.commit()
         session['user'] = dict((k, getattr(user, k)) for k in ('name', 'id', 'username'))
+        if User.query.count() == 1:
+            # If there's only one user in the database at this point (i.e. this is the first user in the DB), then give that user administrative rights.
+            for priv in privs:
+                give_user_privilege(user, priv)
         return redirect(url_for('main'))
     else:
         return render_template("register.html", form=form)

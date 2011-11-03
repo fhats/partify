@@ -55,6 +55,10 @@ def with_mpd(f):
             # maybe eventually just forward to the configuration page/no connection page
             mpd_client = None
             app.logger.warning("Could not connect to MPD server on host %r, port %r" % (app.config['MPD_SERVER_HOSTNAME'], app.config['MPD_SERVER_PORT']))
+            try:
+                return jsonify(status="error", message="MPD credentials incorrect")
+            except:
+                return "Crap.", 500
         else:
             return_value = f(mpd_client, *args, **kwargs)
             if mpd_client is not None:
