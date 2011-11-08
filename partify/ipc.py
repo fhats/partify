@@ -20,6 +20,33 @@ from multiprocessing import Manager
 last_updated_times = None
 manager = None
 
+desired_player_state = None
+
+def init_desired_player_state():
+	global manager
+	global desired_player_state
+
+	if manager is None:
+		manager = Manager()
+	if desired_player_state is None:
+		desired_player_state = manager.dict()
+	
+	desired_player_state['state'] = "play"
+	desired_player_state['trans_fn'] = "play"
+
+def update_desired_player_state(state, transition_fn):
+	global manager
+	global desired_player_state
+
+	desired_player_state['state'] = state
+	desired_player_state['trans_fn'] = transition_fn
+
+def get_desired_player_state():
+	global manager
+	global desired_player_state
+
+	return desired_player_state['state'], desired_player_state['trans_fn']
+
 def init_times():
 	global manager
 	global last_updated_times

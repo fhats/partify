@@ -57,6 +57,5 @@ def dump_user_privileges(user):
         user = User.query.get(user)
     return [p for p, v in privs.iteritems() if user.privs & v != 0]
 
-
 def priv_in_english(priv):
     return privs_in_english[priv]

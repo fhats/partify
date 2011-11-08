@@ -41,7 +41,13 @@ along with Partify.  If not, see <http://www.gnu.org/licenses/>.
 {% macro show_player_controls() %}
 <div class="span-22 prepend-1 append-1 last">
 	<h4>Player Controls</h4>
-	<p><em>Player controls here</em></p>
+	<a href="{{url_for('admin_playback_skip')}}">Skip Track</a><br/>
+	{% if playback_state == "play" %}
+		<a href="{{url_for('admin_playback_pause')}}">Pause</a><br />
+	{% elif playback_state == "pause" %}
+		<a href="{{url_for('admin_playback_play')}}">Play</a><br />
+	{% endif %}
+	<a href="{{url_for('admin_queue_clear')}}">Clear the Party Queue</a>
 </div>
 <hr />
 {% endmacro %}
@@ -104,7 +110,7 @@ Admin - Partify
         	<div class="span-22 prepend-1 append-1 last">
         		<h2>Administration</h2>
         	</div>
-        	{% if "ADMIN_CONTROLS" in user_privs %}
+        	{% if "ADMIN_PLAYBACK" in user_privs %}
         		{{ show_player_controls() }}
         	{% endif %}
         	{% if "ADMIN_CONFIG" in user_privs %}

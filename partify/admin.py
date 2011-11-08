@@ -18,17 +18,20 @@ along with Partify.  If not, see <http://www.gnu.org/licenses/>."""
 from flask import redirect, render_template, request, session, url_for
 
 from partify import app
+from partify import ipc
 from partify.config import load_config_from_db
 from partify.config import set_config_value
 from partify.forms.admin_forms import ConfigurationForm, create_single_user_admin_admin_form
-from partify.decorators import with_authentication, with_privileges
+from partify.decorators import with_authentication, with_mpd, with_privileges
 from partify.models import User
+from partify.player import _get_status
 from partify.priv import dump_user_privileges, give_user_privilege, privs, revoke_user_privilege
 
 @app.route("/admin", methods=["GET"])
 @with_authentication
+@with_mpd
 @with_privileges(["ADMIN_INTERFACE"], "redirect")
-def admin_console():
+def admin_console(mpd):
     user = User.query.get(session['user']['id'])
 
     form_object = dict( ( (k.lower(),v) for k,v in app.config.iteritems()) )
@@ -38,10 +41,14 @@ def admin_console():
     admin_admin_forms = create_admin_admin_form()
     user_ids_to_names = dict( (u.id, u.name) for u in User.query.all() )
 
+    status = _get_status(mpd)
+    playback_state = status['state']
+
     return render_template("admin.html",
         admin_admin_forms=admin_admin_forms,
         user_ids_to_names=user_ids_to_names,
         configuration_form=configuration_form, 
+        playback_state=playback_state,
         user=user, 
         user_privs=dump_user_privileges(user))
 
@@ -75,6 +82,47 @@ def admin_admin_update():
                 revoke_user_privilege(user, priv)
 
     return redirect(url_for('admin_console'))
+
+@app.route("/admin/playback/play")
+@with_authentication
+@with_mpd
+@with_privileges(["ADMIN_INTERFACE", "ADMIN_PLAYBACK"], "redirect")
+def admin_playback_play(mpd):
+    ipc.update_desired_player_state("play", "play")
+    mpd.play()
+
+    return redirect(url_for('admin_console'))    
+
+@app.route("/admin/playback/pause", methods=["GET"])
+@with_authentication
+@with_mpd
+@with_privileges(["ADMIN_INTERFACE", "ADMIN_PLAYBACK"], "redirect")
+def admin_playback_pause(mpd):
+    ipc.update_desired_player_state("paused", "pause")
+    mpd.pause()
+    
+    return redirect(url_for('admin_console'))    
+
+@app.route("/admin/playback/skip", methods=["GET"])
+@with_authentication
+@with_mpd
+@with_privileges(["ADMIN_INTERFACE", "ADMIN_PLAYBACK"], "redirect")
+def admin_playback_skip(mpd):
+    status = _get_status(mpd)
+    rm_id = status['id']
+
+    mpd.deleteid(rm_id)
+
+    return redirect(url_for('admin_console'))
+
+@app.route("/admin/queue/clear", methods=["GET"])
+@with_authentication
+@with_mpd
+@with_privileges(["ADMIN_INTERFACE", "ADMIN_PLAYBACK"], "redirect")
+def admin_queue_clear(mpd):
+    mpd.clear()
+
+    return redirect(url_for('admin_console'))    
 
 def create_admin_admin_form(data=None):
     """Returns a list of SingleUserAdminAdminForms - one for each user."""

@@ -287,8 +287,10 @@ def _ensure_mpd_playlist_consistency(mpd):
 
     status = _get_status(mpd)
         
-    if status['state'] != 'play':
-        mpd.play()
+    if status['state'] != ipc.get_desired_player_state()[0]:
+        tn_fn = getattr(mpd, ipc.get_desired_player_state()[1])
+        tn_fn()
+        
 
 def _ensure_mpd_player_state_consistency(mpd):
     """Ensure that the Mopidy server's options are consistent with options that make sense for Partify."""

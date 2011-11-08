@@ -34,6 +34,7 @@ def main():
 def on_startup():
     load_config_from_db()
     ipc.init_times()
+    ipc.init_desired_player_state()
     ensure_mpd_playlist_consistency()
     ipc.update_time('playlist', time.time())
 
