@@ -48,10 +48,42 @@ along with Partify.  If not, see <http://www.gnu.org/licenses/>.
 
 {% macro show_admin_admin() %}
 <div class="span-22 prepend-1 append-1 last">
-	<h4>Administration</h4>
-	<p><em>Admin admin here...</em></p>
+	<h4>User Administration</h4>
+	<form method="POST" action="{{url_for('admin_admin_update')}}">
+		<div class="span-22 last">
+			<table class="span-22 last">
+				<thead>
+					<tr>
+						{% set first_user_id = admin_admin_forms.iterkeys() | first %}
+						{% set first_user_form = admin_admin_forms.itervalues() | first %}
+						<th><strong>User</strong></th>
+						<th><center>{{ first_user_form['%d_admin_config' % first_user_id].label }}</center></th>
+						<th><center>{{ first_user_form['%d_admin_playback' % first_user_id].label }}</center></th>
+						<th><center>{{ first_user_form['%d_admin_admin' % first_user_id].label }}</center></th>
+						<th><center>{{ first_user_form['%d_admin_interface' % first_user_id].label }}</center></th>
+					</tr>
+				</thead>
+				<tbody>
+				{% for user_id, form in admin_admin_forms.iteritems() %}
+					{{ build_admin_admin_row(user_ids_to_names[user_id], user_id, form) }}
+				{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		<input type="submit" value="Update">
+	</form>
 </div>
 <hr />
+{% endmacro %}
+
+{% macro build_admin_admin_row(username, user_id, form) %}
+<tr>
+	<td>{{username}}</td>
+	<td><center>{{ form['%d_admin_config' % user_id] | safe }}</center></td>
+	<td><center>{{ form['%d_admin_playback' % user_id] | safe }}</center></td>
+	<td><center>{{ form['%d_admin_admin' % user_id] | safe }}</center></td>
+	<td><center>{{ form['%d_admin_interface' % user_id] | safe }}</center></td>
+</tr>
 {% endmacro %}
 
 {% block css_head %}

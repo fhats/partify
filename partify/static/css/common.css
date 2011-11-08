@@ -44,3 +44,22 @@ h1, h2, h3, h4 {
     color: #FD971F;
     font-family: "Comfortaa", sans-serif;
 }
+
+table {
+    border: 1px solid #49483E;
+}
+
+thead th{
+    background: #676862;
+    text-align: left;
+    font-weight: normal;
+}
+
+tbody tr td {
+    background: #313131;
+}
+
+tbody tr:nth-child(even) td, 
+tbody tr.even td{
+    background: #383838;
+}

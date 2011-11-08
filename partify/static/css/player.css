@@ -91,25 +91,6 @@ li.queue_item > span.padder{
     width: 0px;
 }
 
-table {
-    border: 1px solid #49483E;
-}
-
-thead th{
-    background: #676862;
-    text-align: left;
-    font-weight: normal;
-}
-
-tbody tr td {
-    background: #313131;
-}
-
-tbody tr:nth-child(even) td, 
-tbody tr.even td{
-    background: #383838;
-}
-
 tbody tr.disabled,
 tbody tr.disabled td {
     background: #9a9a9a;

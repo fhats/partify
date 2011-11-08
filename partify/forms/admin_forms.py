@@ -15,11 +15,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Partify.  If not, see <http://www.gnu.org/licenses/>."""
 
+from wtforms import BooleanField
 from wtforms import Form 
+from wtforms import HiddenField
 from wtforms import IntegerField
 from wtforms import SelectField
 from wtforms import TextField
 from wtforms import validators
+
+from partify.priv import priv_in_english
 
 class ConfigurationForm(Form):
     """A WTForm for configuration information.
@@ -40,3 +44,16 @@ class ConfigurationForm(Form):
     server = SelectField("Underlying Server Software", [validators.Required()], choices=[('tornado', 'Tornado'), ('builtin', 'Builtin Debugging Server')])
     lastfm_api_key = TextField("Last.fm API Key", [validators.Optional()])
     lastfm_api_secret = TextField("Last.fm API Secret", [validators.Optional()])
+
+def create_single_user_admin_admin_form(user_id):
+    """Creates a SingleUserAdminAdminForm that can be used in concert with other SingleUserAdminAdminForms."""
+
+    class SingleUserAdminAdminForm(Form):
+        pass
+    
+    setattr(SingleUserAdminAdminForm, "%d_admin_config" % user_id, BooleanField(priv_in_english("ADMIN_CONFIG"), [validators.Required()]))
+    setattr(SingleUserAdminAdminForm, "%d_admin_playback" % user_id, BooleanField(priv_in_english("ADMIN_PLAYBACK"), [validators.Required()]))
+    setattr(SingleUserAdminAdminForm, "%d_admin_admin" % user_id, BooleanField(priv_in_english("ADMIN_ADMIN"), [validators.Required()]))
+    setattr(SingleUserAdminAdminForm, "%d_admin_interface" % user_id, BooleanField(priv_in_english("ADMIN_INTERFACE"), [validators.Required()]))
+
+    return SingleUserAdminAdminForm

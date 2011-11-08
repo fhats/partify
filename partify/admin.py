@@ -20,10 +20,10 @@ from flask import redirect, render_template, request, session, url_for
 from partify import app
 from partify.config import load_config_from_db
 from partify.config import set_config_value
-from partify.forms.admin_forms import ConfigurationForm
+from partify.forms.admin_forms import ConfigurationForm, create_single_user_admin_admin_form
 from partify.decorators import with_authentication, with_privileges
 from partify.models import User
-from partify.priv import dump_user_privileges
+from partify.priv import dump_user_privileges, give_user_privilege, privs, revoke_user_privilege
 
 @app.route("/admin", methods=["GET"])
 @with_authentication
@@ -35,12 +35,17 @@ def admin_console():
 
     configuration_form = ConfigurationForm(request.form, **form_object)
 
-    return render_template("admin.html", 
+    admin_admin_forms = create_admin_admin_form()
+    user_ids_to_names = dict( (u.id, u.name) for u in User.query.all() )
+
+    return render_template("admin.html",
+        admin_admin_forms=admin_admin_forms,
+        user_ids_to_names=user_ids_to_names,
         configuration_form=configuration_form, 
         user=user, 
         user_privs=dump_user_privileges(user))
 
-@app.route("/admin", methods=["POST"])
+@app.route("/admin/config_update", methods=["POST"])
 @with_authentication
 @with_privileges(["ADMIN_INTERFACE", "ADMIN_CONFIG"], "redirect")
 def configuration_update():
@@ -51,9 +56,46 @@ def configuration_update():
             key = key.upper()
             set_config_value(key, val)
         load_config_from_db()
-        return redirect(url_for('admin_console'))
-    else:
-        return render_template("admin.html", 
-            configuration_form=configuration_form, 
-            user=User.query.get(session['user']['id']), 
-            user_privs=dump_user_privileges(User.query.get(session['user']['id'])))
+        
+    return redirect(url_for('admin_console'))
+
+@app.route("/admin/admin_admin_update", methods=["POST"])
+@with_authentication
+@with_privileges(["ADMIN_INTERFACE", "ADMIN_ADMIN"], "redirect")
+def admin_admin_update():
+    forms = create_admin_admin_form(request.form)
+
+    for user_id, form in forms.iteritems():
+        user = User.query.get(user_id)
+        user_data = dict( (k[k.find("_")+1:].upper(),v) for k,v in form.data.iteritems())
+        for priv, has_priv in user_data.iteritems():
+            if has_priv:
+                give_user_privilege(user, priv)
+            else:
+                revoke_user_privilege(user, priv)
+
+    return redirect(url_for('admin_console'))
+
+def create_admin_admin_form(data=None):
+    """Returns a list of SingleUserAdminAdminForms - one for each user."""
+
+    users = User.query.all()
+    forms = {}
+    for user in users:
+        form_type = create_single_user_admin_admin_form(user.id)
+        form_obj = make_admin_admin_form_object(user)
+        if data is None:
+            form = form_type(**form_obj)
+        else:
+            form = form_type(data)
+        forms[user.id] = form
+    return forms
+
+def make_admin_admin_form_object(user):
+    user_form_obj = {}
+    user_privs = dump_user_privileges(user)
+
+    for key in privs.iterkeys():
+        user_form_obj["%d_%s" % (user.id, key.lower())] = key in user_privs
+
+    return user_form_obj
