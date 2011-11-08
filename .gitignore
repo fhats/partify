@@ -1,5 +1,5 @@
 *.pyc
 *.key
-tmp/*
-config.py
+/tmp/*
+/config.py
 partify/static/js/partify/*

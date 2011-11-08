@@ -33,7 +33,7 @@ if not os.path.exists(db_location):
         os.makedirs(os.path.split(db_location)[0])
     except:
         pass
-    open(os.path.split(db_location)[1], 'w+')
+    open(db_location, 'w+')
     db_exists = False
 
 db = SQLAlchemy(app)
