@@ -29,9 +29,8 @@ from partify.priv import dump_user_privileges, give_user_privilege, privs, revok
 
 @app.route("/admin", methods=["GET"])
 @with_authentication
-@with_mpd
 @with_privileges(["ADMIN_INTERFACE"], "redirect")
-def admin_console(mpd):
+def admin_console():
     user = User.query.get(session['user']['id'])
 
     form_object = dict( ( (k.lower(),v) for k,v in app.config.iteritems()) )
@@ -41,14 +40,10 @@ def admin_console(mpd):
     admin_admin_forms = create_admin_admin_form()
     user_ids_to_names = dict( (u.id, u.name) for u in User.query.all() )
 
-    status = _get_status(mpd)
-    playback_state = status['state']
-
     return render_template("admin.html",
         admin_admin_forms=admin_admin_forms,
         user_ids_to_names=user_ids_to_names,
         configuration_form=configuration_form, 
-        playback_state=playback_state,
         user=user, 
         user_privs=dump_user_privileges(user))
 

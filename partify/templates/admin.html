@@ -42,11 +42,8 @@ along with Partify.  If not, see <http://www.gnu.org/licenses/>.
 <div class="span-22 prepend-1 append-1 last">
 	<h4>Player Controls</h4>
 	<a href="{{url_for('admin_playback_skip')}}">Skip Track</a><br/>
-	{% if playback_state == "play" %}
-		<a href="{{url_for('admin_playback_pause')}}">Pause</a><br />
-	{% elif playback_state == "pause" %}
-		<a href="{{url_for('admin_playback_play')}}">Play</a><br />
-	{% endif %}
+	<a href="{{url_for('admin_playback_pause')}}">Pause</a><br />
+	<a href="{{url_for('admin_playback_play')}}">Play</a><br />
 	<a href="{{url_for('admin_queue_clear')}}">Clear the Party Queue</a>
 </div>
 <hr />

@@ -29,7 +29,7 @@ from partify import ipc
 from partify.models import PlayQueueEntry
 from partify.models import Track
 from partify.models import User
-from partify.priv import dump_user_privileges
+from partify.priv import dump_user_privileges, user_has_privilege
 
 @app.route('/player', methods=['GET'])
 @with_authentication
@@ -43,6 +43,11 @@ def player():
     config = {'lastfm_api_key': app.config['LASTFM_API_KEY'], 'lastfm_api_secret': app.config['LASTFM_API_SECRET']}
 
     user = User.query.get(session['user']['id'])
+
+    # Do some logic to figure out if we need to show the admin console (i.e. the hostname or port for the MPD server are blank)
+    if app.config['MPD_SERVER_HOSTNAME'] == "" or app.config['MPD_SERVER_PORT'] == "":
+        if user_has_privilege(user, "ADMIN_INTERFACE") and user_has_privilege(user, "ADMIN_CONFIG"):
+            return redirect(url_for("admin_console"))
 
     return render_template("player.html", user=user, user_play_queue=users_tracks, global_play_queue=global_queue, config=config, user_privs=dump_user_privileges(user))
 
