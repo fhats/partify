@@ -25,6 +25,13 @@ privs = {
     "ADMIN_INTERFACE": 0x08
 }
 
+privs_in_english = {
+    "ADMIN_CONFIG": "Modify Partify configuration settings",
+    "ADMIN_PLAYBACK": "Access playback controls",
+    "ADMIN_ADMIN": "Modify other user's administrative privileges",
+    "ADMIN_INTERFACE": "View the administration interface"
+}
+
 def give_user_privilege(user, priv):
     """Given a user (either a User type or an ID) set the given privilege (identified by string) in the user's privilege list."""
     if not isinstance(user, User):
@@ -49,3 +56,6 @@ def dump_user_privileges(user):
     if not isinstance(user, User):
         user = User.query.get(user)
     return [p for p, v in privs.iteritems() if user.privs & v != 0]
+
+def priv_in_english(priv):
+    return privs_in_english[priv]

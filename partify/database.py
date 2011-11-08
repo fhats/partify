@@ -15,11 +15,26 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Partify.  If not, see <http://www.gnu.org/licenses/>."""
 
+import os
+import os.path
+
 from flaskext.sqlalchemy import SQLAlchemy
 
 from partify import app
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../tmp/test.db'
+db_location = '../tmp/partify.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///%s' % db_location
+
+# Uh... this is really ugly. :(
+db_exists = True
+
+if not os.path.exists(db_location):
+    try:
+        os.makedirs(os.path.split(db_location)[0])
+    except:
+        pass
+    open(os.path.split(db_location)[1], 'w+')
+    db_exists = False
 
 db = SQLAlchemy(app)
 
@@ -32,6 +47,9 @@ def reinit_db():
 
     db = SQLAlchemy(app)
     db.create_all()
+
+if not db_exists:
+    init_db()
 
 if __name__ == "__main__":
     init_db()
