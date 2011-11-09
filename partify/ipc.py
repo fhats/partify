@@ -15,13 +15,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Partify.  If not, see <http://www.gnu.org/licenses/>."""
 
-from multiprocessing import Manager
+from multiprocessing import Lock, Manager
+
+# State that should only be managed from within the functions in this script
 
 last_updated_times = None
 manager = None
 
-desired_player_state = None
-
+# Functions to manage the player state shared information
 def init_desired_player_state():
 	global manager
 	global desired_player_state
@@ -47,6 +48,9 @@ def get_desired_player_state():
 
 	return desired_player_state['state'], desired_player_state['trans_fn']
 
+desired_player_state = None
+
+# Functions to manage the update times shared information
 def init_times():
 	global manager
 	global last_updated_times
@@ -66,3 +70,19 @@ def get_time(key):
 	if key not in last_updated_times:
 		last_updated_times[key] = 0
 	return last_updated_times[key]
+
+mpd_lock = None
+
+# Functions to manage the locking mechanism between requests and playlist update callbacks
+def init_mpd_lock():
+	global mpd_lock
+	if mpd_lock is None:
+		mpd_lock = Lock()
+	
+def get_mpd_lock():
+	global mpd_lock
+	mpd_lock.acquire()
+
+def release_mpd_lock():
+	global mpd_lock
+	mpd_lock.release()

@@ -1,0 +1,54 @@
+<!--
+Copyright 2011 Fred Hatfull
+
+This file is part of Partify.
+
+Partify is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Partify is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Partify.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+{% extends "i_love_this_web_thing.html" %}
+{% from "_util.html" import css_include, js_include, render_field %}
+{% from "common.html" import show_topbar %}
+
+{% block title %}
+Account Settings - Partify
+{% endblock %}
+
+{% block super_body %}
+
+{{ show_topbar(user, "ADMIN_INTERFACE" in user_privs, true) }}
+
+<div id="content_all" style="width:100%; height:100%">
+    <div class="container prepend-top" id="content_container">
+        <div class="span-24 last" id="content">
+        	<div class="span-22 prepend-1 append-1 last">
+        		<h2>Account Settings</h2>
+        	</div>
+        	<div class="span-22 prepend-1 append-1 last">
+        		<p><em>Note: Current password is only required if desiring to change your password</p></em>
+        	</div>
+        	<div class="span-22 prepend-1 append-1 append-bottom last">
+        		<form action="{{url_for('account_settings_update')}}" method="POST">
+        			{{ render_field(form.name) }}
+        			{{ render_field(form.current_password) }}
+        			{{ render_field(form.new_password) }}
+        			{{ render_field(form.confirm_password) }}
+        			<input type="submit" value="Update">
+        		</form>
+        	</div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

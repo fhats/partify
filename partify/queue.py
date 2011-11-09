@@ -32,6 +32,7 @@ from sqlalchemy.event import listens_for
 from database import db
 from decorators import with_authentication
 from decorators import with_mpd
+from decorators import with_mpd_lock
 from partify import app
 from partify import ipc
 from partify.models import PlayQueueEntry
@@ -42,6 +43,7 @@ from partify.player import get_user_queue, _get_status
 @app.route('/queue/add', methods=['POST'])
 @with_authentication
 @with_mpd
+@with_mpd_lock
 def add_to_queue(mpd):
     """Takes a Spotify URL and adds it to the current play queue."""
 
@@ -62,13 +64,12 @@ def add_to_queue(mpd):
     db.session.add( PlayQueueEntry(track=track, user_id=session['user']['id'], mpd_id=mpd_id) )
     db.session.commit()
 
-    _ensure_mpd_playlist_consistency(mpd)
-
     return jsonify(status='ok', queue=get_user_queue(session['user']['id']), file=spotify_uri)
 
 @app.route('/queue/remove', methods=['POST'])
 @with_authentication
 @with_mpd
+@with_mpd_lock
 def remove_from_queue(mpd):
     track_id = request.form.get('track_id', None)
 
@@ -90,8 +91,6 @@ def remove_from_queue(mpd):
     
     # Remove the track! All of the details will follow for now.... later we'll need to be watching the reordering of tracks (#20)
     mpd.deleteid(track_id)
-
-    _ensure_mpd_playlist_consistency(mpd)
 
     return jsonify(status='ok', queue=get_user_queue(session['user']['id']))
 
@@ -191,6 +190,7 @@ def ensure_mpd_playlist_consistency(mpd):
     """A wrapper for _ensure_mpd_playlist_consistency that grabs an MPD client."""
     _ensure_mpd_playlist_consistency(mpd)
 
+@with_mpd_lock
 def _ensure_mpd_playlist_consistency(mpd):
     """Responsible for ensuring that the Partify play queue database table is in sync with the Mopidy play queue.
 

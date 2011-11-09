@@ -22,6 +22,7 @@ from functools import wraps
 from flask import flash, jsonify, redirect, session, url_for
 
 from mpd import MPDClient
+from ipc import get_mpd_lock, release_mpd_lock
 from partify import app
 from partify.priv import user_has_privilege
 
@@ -64,6 +65,16 @@ def with_mpd(f):
             if mpd_client is not None:
                 mpd_client.disconnect()
             return return_value
+    return wrapped
+
+def with_mpd_lock(f):
+    """A decorator that ensures that no two functions that send commands to MPD happen simultaneously."""
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        get_mpd_lock()
+        rv = f(*args, **kwargs)
+        release_mpd_lock()
+        return rv
     return wrapped
 
 def with_privileges(privs, fail_mode="json"):

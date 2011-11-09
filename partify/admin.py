@@ -81,6 +81,7 @@ def admin_admin_update():
 @app.route("/admin/playback/play")
 @with_authentication
 @with_mpd
+@with_mpd_lock
 @with_privileges(["ADMIN_INTERFACE", "ADMIN_PLAYBACK"], "redirect")
 def admin_playback_play(mpd):
     ipc.update_desired_player_state("play", "play")
@@ -101,6 +102,7 @@ def admin_playback_pause(mpd):
 @app.route("/admin/playback/skip", methods=["GET"])
 @with_authentication
 @with_mpd
+@with_mpd_lock
 @with_privileges(["ADMIN_INTERFACE", "ADMIN_PLAYBACK"], "redirect")
 def admin_playback_skip(mpd):
     status = _get_status(mpd)
@@ -113,6 +115,7 @@ def admin_playback_skip(mpd):
 @app.route("/admin/queue/clear", methods=["GET"])
 @with_authentication
 @with_mpd
+@with_mpd_lock
 @with_privileges(["ADMIN_INTERFACE", "ADMIN_PLAYBACK"], "redirect")
 def admin_queue_clear(mpd):
     mpd.clear()
