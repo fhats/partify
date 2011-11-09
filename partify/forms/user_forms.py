@@ -20,11 +20,17 @@ from wtforms import PasswordField
 from wtforms import TextField
 from wtforms import validators
 
+class SettingsForm(Form):
+    name = TextField("Display Name", [validators.Required(), validators.Length(min=4, max=64)])
+    current_password = PasswordField("Current Password")
+    new_password = PasswordField("New Password", [validators.EqualTo('confirm_password', message="Passwords must match!")])
+    confirm_password = PasswordField("Confirm Password")
+
 class RegistrationForm(Form):
     name = TextField("Your Name", [validators.Required(), validators.Length(min=4, max=64)])
     username = TextField('Username', [validators.Length(min=4, max=36), validators.Required()])
-    password = PasswordField('Password', [validators.Required()])
+    password = PasswordField('Password', [validators.Required(), validators.Length(min=1)])
 
 class LoginForm(Form):
     username = TextField('Username', [validators.Length(min=4, max=36), validators.Required()])
-    password = PasswordField('Password', [validators.Required()])
+    password = PasswordField('Password', [validators.Required(), validators.Length(min=1)])

@@ -23,6 +23,7 @@ from flask import Flask, jsonify, redirect, session, url_for
 app = Flask("partify")
 
 from partify.config import load_config_from_db
+from partify.database import init_db
 from partify.queue import on_playlist_update, ensure_mpd_playlist_consistency
 
 @app.route("/")
@@ -32,7 +33,11 @@ def main():
     return redirect(url_for('player'))
 
 def on_startup():
-    load_config_from_db()
+    try:
+        load_config_from_db()
+    except:
+        init_db()
+        load_config_from_db()
     ipc.init_times()
     ipc.init_desired_player_state()
     ensure_mpd_playlist_consistency()

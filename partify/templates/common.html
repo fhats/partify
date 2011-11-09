@@ -29,7 +29,7 @@ along with Partify.  If not, see <http://www.gnu.org/licenses/>.
         <div id="topbar_user_info" class="prepend-1 span-14 last">
             <a class="right" href="/logout">Logout</a>
             <p class="right divider"> | </p>
-            <a class="right" href="/#">Account settings</a>
+            <a class="right" href="{{url_for('account_settings_page')}}">Account settings</a>
             <p class="right divider"> | </p>
             {% if show_admin %}
                 <a class="right" href="/admin">Admin</a>

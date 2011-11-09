@@ -22,15 +22,42 @@ from flask import request
 from flask import session
 from flask import url_for
 from sqlalchemy import and_
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from database import db
 from models import User
 from partify import app
+from partify.decorators import with_authentication
+from partify.priv import dump_user_privileges
 from partify.priv import give_user_privilege
 from partify.priv import privs
 from forms.user_forms import RegistrationForm
 from forms.user_forms import LoginForm
+from forms.user_forms import SettingsForm
+
+@app.route("/account_settings", methods=['GET'])
+@with_authentication
+def account_settings_page():
+    user = User.query.get(session['user']['id'])
+    form = SettingsForm(name=user.name)
+
+    return render_template("account_settings.html", user=user, form=form, user_privs=dump_user_privileges(user))
+
+@app.route("/account_settings", methods=['POST'])
+@with_authentication
+def account_settings_update():
+    user = User.query.get(session['user']['id'])
+    form = SettingsForm(request.form)
+
+    if form.validate():
+        user.name = form.name.data
+        if form.current_password.data != "" and form.new_password.data != "":
+            if check_password_hash(user.password, form.current_password.data):
+                user.password = generate_password_hash(form.new_password.data)
+    
+    db.session.commit()
+
+    return redirect(url_for('account_settings_page'))
 
 @app.route('/register', methods=['GET'])
 def register_form():
