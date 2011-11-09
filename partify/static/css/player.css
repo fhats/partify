@@ -63,9 +63,13 @@ li.queue_header {
 }
 
 li.queue_item{
-    margin-bottom: .1em;
+    margin-bottom: 3px;
     height: 24px;
     line-height: 24px;
+}
+
+li.queue_item:nth-child(even){
+    background: #393831;
 }
 
 li.queue_item > span{
