@@ -43,9 +43,9 @@ class Queue
             placeholder: "queue-placeholder"
             forcePlacerHolderSize: true
             axis: 'y'
-            cancel: 'li.queue_header'
+            cancel: 'li.queue_header, li.queue_footer'
             opacity: 0.8
-            items: "li.queue_item"
+            items: "li.queue_item_sortable"
         @queue_div.disableSelection()
         @queue_div.addClass 'queue'
 
@@ -74,7 +74,7 @@ class Queue
 
     _buildDisplayItem: (track) ->
         "
-        <li class='queue_item ui-state-default small span-23 last'>
+        <li class='queue_item queue_item_sortable ui-state-default small span-23 last'>
             <span class='span-1 ui-icon ui-icon-grip-dotted-vertical grip'>&nbsp;</span>
             <span class='span-6'>#{track.title}</span>
             <span class='span-6'>#{track.artist}</span>
@@ -93,14 +93,14 @@ class Queue
     _buildQueueSummary: () ->
         total_queue_time = (t.length for t in @tracks).reduce (a,b) -> a + b
         "
-        <li class='queue_item ui-state-default small span-23 last'>
+        <li class='queue_item queue_footer ui-state-default small span-23 last'>
             <span class='span-23 last'><center><p>#{@tracks.length} tracks - #{ secondsToTimeString(total_queue_time) }</p></center></span>
         </li>
         "
 
     _buildNoItemsRow: () ->
         "
-        <li class='queue_item ui-state-default small span-23 last'>
+        <li class='queue_item queue_footer ui-state-default small span-23 last'>
             <span class='span-23 last'><center><p ><em>There's nothing in this queue right now!</em></p></center></span>
         </li>
         "
@@ -184,7 +184,7 @@ class GlobalQueue extends Queue
 
     _buildDisplayItem: (track) ->
         "
-        <li class='queue_item ui-state-default small span-23 last'>
+        <li class='queue_item queue_item_sortable ui-state-default small span-23 last'>
             <span class='span-1 padder'>&nbsp;</span>
             <span class='span-6'>#{track.title}</span>
             <span class='span-6'>#{track.artist}</span>
@@ -204,7 +204,12 @@ class UserQueue extends Queue
         super queue_div
         @queue_div.bind 'sortupdate', (e, ui) =>
             track_list = {}
-            priority = if @tracks[0].id == window.Partify.Queues.GlobalQueue.tracks[0].id then 2 else 1
+            priority = 0
+            if @tracks[0].id == window.Partify.Queues.GlobalQueue.tracks[0].id
+                priority = 2
+                track_list[@tracks[0].id] = 1
+            else
+                priority = 1
             for track in @queue_div.children("li.queue_item").children('input')
                 do (track) =>
                     target_track_id = parseInt($(track).val())
@@ -244,7 +249,7 @@ class UserQueue extends Queue
     updateDisplay: () ->
         @queue_div.empty()
         @queue_div.append this._buildDisplayHeader()
-        @queue_div.append this._buildDisplayItem(track) for track in @tracks
+        @queue_div.append this._buildDisplayItem(track) for track in @tracks when track.id != window.Partify.Queues.GlobalQueue.tracks[0].id
         @queue_div.append this._buildDisplayFooter()
         this._createRemoveButtons()
 
@@ -263,7 +268,7 @@ class UserQueue extends Queue
 
     _buildDisplayItem: (track) ->
         html = "
-        <li class='queue_item ui-state-default small span-23 last'>
+        <li class='queue_item queue_item_sortable ui-state-default small span-23 last'>
             <input type='hidden' name='id' value='#{track.id}'>
             <span class='span-1 ui-icon ui-icon-grip-dotted-vertical grip'>&nbsp;</span>
             <span class='span-7'>#{track.title}</span>
