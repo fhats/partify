@@ -22,7 +22,7 @@ from partify import ipc
 from partify.config import load_config_from_db
 from partify.config import set_config_value
 from partify.forms.admin_forms import ConfigurationForm, create_single_user_admin_admin_form
-from partify.decorators import with_authentication, with_mpd, with_privileges
+from partify.decorators import with_authentication, with_mpd, with_mpd_lock, with_privileges
 from partify.models import User
 from partify.player import _get_status
 from partify.priv import dump_user_privileges, give_user_privilege, privs, revoke_user_privilege
