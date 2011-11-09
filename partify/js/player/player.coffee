@@ -151,6 +151,8 @@ class Player
         this._updatePlayerText 'time', secondsToTimeString @info['time']
 
 secondsToTimeString = (seconds) ->
+    # In case seconds isn't already an int
+    seconds = parseInt(Math.round(seconds))
     # Converts a number of seconds to a string representing a human-readable time (eg. MM:SS)
     seconds = Math.floor(seconds)
     minutes = Math.floor(seconds / 60 )

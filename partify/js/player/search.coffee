@@ -148,6 +148,8 @@ class Search
             <td class='small'>#{track.title}</td>
             <td class='small'>#{track.artist}</td>
             <td class='small'>#{track.album}</td>
+            <td class='small'>#{secondsToTimeString(track.time)}</td>
+            <td class='small'>#{track.track}</td>
             <td class='small'><button class='add_btn'></button></td>
         </tr>
         "
@@ -156,7 +158,7 @@ class Search
     buildEmptyResultRow: () ->
         row_html = "
         <tr>
-            <td colspan='4' class='results_empty small'>
+            <td colspan='5' class='results_empty small'>
                 <center><em>No results found. Please try a different search using the form above.</em></center>
             </td>
         </tr>"
@@ -184,7 +186,7 @@ class Search
         @results_display.empty()
         @results_display.append("
         <tr>
-            <td colspan='4' class='results_empty'>
+            <td colspan='5' class='results_empty'>
                 <center><img src='/static/img/loading.gif'></img></center>
             </td>
         </tr>
