@@ -1,4 +1,11 @@
 include LICENSE
 include MANIFEST.in
+include Makefile
+recursive-include partify/templates *
+recursive-include partify/forms *
+recursive-include partify/js *
+recursive-include partify/static/img *
+recursive-include partify/static/css *
+recursive-include partify/static/js/lib *
 recursive-include tests *.py
 recursive-include testing *.py
