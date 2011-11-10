@@ -22,19 +22,8 @@ from flaskext.sqlalchemy import SQLAlchemy
 
 from partify import app
 
-db_location = '../tmp/partify.db'
+db_location = 'partify.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///%s' % db_location
-
-# Uh... this is really ugly. :(
-db_exists = True
-
-if not os.path.exists(db_location):
-    try:
-        os.makedirs(os.path.split(db_location)[0])
-    except:
-        pass
-    open(db_location, 'w+')
-    db_exists = False
 
 db = SQLAlchemy(app)
 
@@ -47,9 +36,6 @@ def reinit_db():
 
     db = SQLAlchemy(app)
     db.create_all()
-
-if not db_exists:
-    init_db()
 
 if __name__ == "__main__":
     init_db()

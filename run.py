@@ -26,12 +26,14 @@ from werkzeug.serving import run_simple
 from partify import app
 from partify import ipc
 from partify import on_startup
+from partify.database import init_db
 
 # TODO: Figure out these imports
 from partify import admin, player, queue, track, user
 
 if __name__ == "__main__":
     """Starts the WebApp."""
+    init_db()
     on_startup()
     
     app.logger.debug(app.config)
