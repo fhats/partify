@@ -6,7 +6,7 @@ setup(
     author='Fred Hatfull',
     author_email='fred.hatfull@gmail.com',
     packages=['partify', 'partify.forms'],
-    data_files=[('templates', ['templates/*', 'templates/'])
+    data_files=[('templates', ['templates/*'])
     ],
     scripts=['run.py'],
     url='http://www.partify.us',
