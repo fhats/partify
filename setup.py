@@ -1,4 +1,16 @@
+import os
 from distutils.core import setup
+
+def gen_data_files(*dirs):
+    """This function makes it easy to copy entire directory trees, which is useful for moving static assets needed by Partify (templates, JS, CSS, etc...).
+
+    This code was graciously provided on StackOverflow by Scott Persinger at http://stackoverflow.com/questions/3596979/manifest-in-ignored-on-python-setup-py-install-no-data-files-installed ."""
+    results = []
+
+    for src_dir in dirs:
+        for root,dirs,files in os.walk(src_dir):
+            results.append((root, map(lambda f:root + "/" + f, files)))
+    return results
 
 setup(
     name='Partify',
@@ -6,8 +18,7 @@ setup(
     author='Fred Hatfull',
     author_email='fred.hatfull@gmail.com',
     packages=['partify', 'partify.forms'],
-    data_files=[('templates', ['templates/*'])
-    ],
+    data_files=gen_data_file("partify/static", "partify/templates", "partify/js"),
     scripts=['run.py'],
     url='http://www.partify.us',
     license='LICENSE.txt',
