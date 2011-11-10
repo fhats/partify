@@ -54,9 +54,6 @@ def add_to_queue(mpd):
     if track is None:
         return jsonify(status='error', message='The Spotify URL you specified is invalid.')
     
-    # This search is here to help mitigate the issue with Spotify metadata loading slowly in Mopidy
-    mpd.search('filename', spotify_uri)
-    
     mpd_id = mpd.addid(spotify_uri)
 
     # Add the track to the play queue
@@ -150,6 +147,39 @@ def track_from_spotify_url(spotify_url):
         track = existing_tracks[0]
 
     return track
+
+def track_from_mpd_search_results(spotify_url, mpd):
+    existing_tracks = Track.query.filter(Track.spotify_url == spotify_url).all()
+
+    if len(existing_tracks) == 0:
+        track_info = track_info_from_mpd_search_results(spotify_url, mpd)
+        if track_info is None:
+            return None
+        
+        track = Track(**track_info)
+        db.session.add( track )
+        db.session.commit()
+    else:
+        track = existing_tracks[0]
+
+    return track
+
+
+def track_info_from_mpd_search_results(spotify_url, mpd):
+    results = mpd.search('filename', spotify_url)
+
+    result = results[0]
+
+    track_info = {
+        'title': result['title'],
+        'artist': result['artist'],
+        'album': result['album'],
+        'spotify_url': result['file'],
+        'date': result['date'],
+        'length': result['time']
+    }
+
+    return track_info
 
 def track_info_from_spotify_url(spotify_url):
     """Returns track information from the Spotify metadata API from the given Spotify URI."""
