@@ -1,6 +1,7 @@
 include LICENSE
 include MANIFEST.in
 include Makefile
+include README.rst
 recursive-include partify/templates *
 recursive-include partify/forms *
 recursive-include partify/js *
