@@ -32,6 +32,7 @@ def load_config_from_db():
         'LASTFM_API_SECRET': '',
         'MPD_SERVER_HOSTNAME': '',
         'MPD_SERVER_PORT': 0,
+        'PROFILE': False,
         'SECRET_KEY': _produce_random_data(),
         'SERVER': 'builtin',
         'SERVER_HOST': '0.0.0.0',
@@ -43,6 +44,7 @@ def load_config_from_db():
     transformations = {
         'DEBUG': lambda x: bool(int(x)),
         'MPD_SERVER_PORT': int,
+        'PROFILE': lambda x: bool(int(x)),
         'SECRET_KEY': str,          # the secret key can't be unicode for some reason...
         'SERVER_PORT': int
     }

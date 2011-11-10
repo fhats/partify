@@ -15,6 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Partify.  If not, see <http://www.gnu.org/licenses/>."""
 
+import datetime
+
+from werkzeug.contrib.profiler import MergeStream
+from werkzeug.contrib.profiler import ProfilerMiddleware
 from werkzeug.serving import run_simple
 
 from partify import app
@@ -30,13 +34,21 @@ if __name__ == "__main__":
     
     app.logger.debug(app.config)
 
+    if app.config.get('PROFILE', False):
+        datetime_string = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        f = open("tmp/profile%s.log" % datetime_string, "w")
+        stream = MergeStream(f)
+        app.wsgi_app = ProfilerMiddleware(app.wsgi_app, stream)
+
     if app.config['SERVER'] == 'builtin':
         app.run(host=app.config['SERVER_HOST'], port=app.config['SERVER_PORT'])
     elif app.config['SERVER'] == 'tornado':
+        import tornado.options
         from tornado.wsgi import WSGIContainer
         from tornado.httpserver import HTTPServer
         from tornado.ioloop import IOLoop
 
+        tornado.options.enable_pretty_logging()
         http_server = HTTPServer(WSGIContainer(app))
         http_server.listen(app.config['SERVER_PORT'])
         IOLoop.instance().start()
