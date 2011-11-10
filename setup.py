@@ -12,7 +12,7 @@ setup(
     description='Collaborative Spotify Music Streamer',
     long_description=open('README.rst').read(),
     install_requires=[
-        "flask >= 0.72",
+        "Flask >= 0.7.2",
         "Flask-WTF >= 0.5.2",
         "Flask-SQLAlchemy >= 0.15",
         "tornado >= 2.1.1"
