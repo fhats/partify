@@ -5,7 +5,7 @@ setup(
     version='0.3',
     author='Fred Hatfull',
     author_email='fred.hatfull@gmail.com',
-    packages=['partify', 'partify.forms', 'partify.templates'],
+    packages=['partify', 'partify.forms'],
     scripts=['run.py'],
     url='http://www.partify.us',
     license='LICENSE.txt',
