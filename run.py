@@ -1,3 +1,5 @@
+#! /usr/bin/python
+
 """Copyright 2011 Fred Hatfull
 
 This file is part of Partify.
