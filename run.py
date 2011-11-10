@@ -35,7 +35,7 @@ if __name__ == "__main__":
     app.logger.debug(app.config)
 
     if app.config.get('PROFILE', False):
-        datetime_string = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        datetime_string = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         f = open("tmp/profile%s.log" % datetime_string, "w")
         stream = MergeStream(f)
         app.wsgi_app = ProfilerMiddleware(app.wsgi_app, stream)
