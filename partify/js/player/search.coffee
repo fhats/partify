@@ -158,7 +158,7 @@ class Search
     buildEmptyResultRow: () ->
         row_html = "
         <tr>
-            <td colspan='5' class='results_empty small'>
+            <td colspan='6' class='results_empty small'>
                 <center><em>No results found. Please try a different search using the form above.</em></center>
             </td>
         </tr>"
@@ -186,7 +186,7 @@ class Search
         @results_display.empty()
         @results_display.append("
         <tr>
-            <td colspan='5' class='results_empty'>
+            <td colspan='6' class='results_empty'>
                 <center><img src='/static/img/loading.gif'></img></center>
             </td>
         </tr>

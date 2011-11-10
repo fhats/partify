@@ -105,6 +105,11 @@ class Queue
         </li>
         "
 
+    _buildAvatarImage: (username) ->
+        "
+        <img id='player_info_user_avatar' src='#{ buildRoboHashUrlFromId(username, 70, 70) }' />
+        "
+
     removeTrack: (track) ->
         $.ajax(
             url: '/queue/remove'
@@ -135,12 +140,13 @@ class GlobalQueue extends Queue
 
         # Update the user playing the track
         $("#player_info_user_name").empty()
+        $("#player_info_skip_div").empty()
+        $("#user_avatar_container").empty()
         if @tracks.length > 0
             $("#player_info_user_name").append @tracks[0].user
-            $("#player_info_user_avatar").attr 'src', buildRoboHashUrlFromId(@tracks[0].username, 70, 70)
+            $("#user_avatar_container").append this._buildAvatarImage(@tracks[0].username)
 
             if @tracks[0].user_id == window.Partify.Config.user_id
-                $("#player_info_skip_div").empty()
                 $("#player_info_skip_div").append "<a href='#' id='player_skip_btn'>Skip My Track</a>"
                 $("#player_skip_btn").click (e) =>
                     this.removeTrack(@tracks[0])
@@ -167,7 +173,7 @@ class GlobalQueue extends Queue
                     console.log "#{code} - #{message}"
             }
         else
-            $('#now_playing_artist_image').attr 'src', ''
+            $('#now_playing_artist_image').attr 'src', "http://debbiefong.com/images/10%20t.jpg"
 
     _buildDisplayHeader: () ->
         "
@@ -193,6 +199,11 @@ class GlobalQueue extends Queue
             <span class='span-1 right'>#{secondsToTimeString(track.length)}</span>
             <span class='span-1 last padder'>&nbsp;</span>
         </li>
+        "
+
+    _buildPlayerImage: (src) ->
+        "
+       <img id='now_playing_artist_image' class='span-3' src='#{src}' />
         "
 
     _buildUpNextDisplayItem: (track, last) ->
