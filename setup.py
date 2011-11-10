@@ -6,7 +6,7 @@ setup(
     author='Fred Hatfull',
     author_email='fred.hatfull@gmail.com',
     packages=['partify', 'partify.forms'],
-    package_data={'partify': ["partify/templates/*", "partify/js/*", "partify/static/*"]}
+    package_data={'partify': ["partify/templates/*", "partify/js/*", "partify/static/*"]},
     scripts=['run.py'],
     url='http://www.partify.us',
     license='LICENSE.txt',
