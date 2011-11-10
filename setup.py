@@ -15,6 +15,6 @@ setup(
         "Flask >= 0.72",
         "Flask-WTF >= 0.5.2",
         "Flask-SQLAlchemy >= 0.15",
-        "Tornado >= 2.1.1"
+        "tornado >= 2.1.1"
     ],
 )
