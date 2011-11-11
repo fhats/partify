@@ -1,6 +1,5 @@
 include LICENSE
 include MANIFEST.in
-include Makefile
 include README.rst
 include partify.py
 recursive-include bin *
