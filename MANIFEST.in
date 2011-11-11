@@ -2,7 +2,8 @@ include LICENSE
 include MANIFEST.in
 include Makefile
 include README.rst
-include run.py
+include partify.py
+recursive-include bin/*
 recursive-include partify/templates *
 recursive-include partify/forms *
 recursive-include partify/js *
