@@ -8,3 +8,4 @@ sudo apt-get install python-setuptools -y
 
 # install partify
 sudo easy_install install partify
+sudo partify.py
