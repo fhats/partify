@@ -1,7 +1,7 @@
 include LICENSE
 include MANIFEST.in
 include README.rst
-include partify.py
+include run_partify
 recursive-include bin *
 recursive-include partify/templates *
 recursive-include partify/forms *

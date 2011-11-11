@@ -19,7 +19,7 @@ setup(
     author_email='fred.hatfull@gmail.com',
     packages=['partify', 'partify.forms'],
     data_files=gen_data_files("partify/static", "partify/templates", "partify/js", "bin"),
-    scripts=['partify.py'],
+    scripts=['run_partify'],
     url='http://www.partify.us',
     license='LICENSE.txt',
     description='Collaborative Spotify Music Streamer',
