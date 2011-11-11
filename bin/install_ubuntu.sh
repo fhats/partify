@@ -30,8 +30,8 @@ sudo echo "SPOTIFY_PASSWORD = '$spotify_password'" >> /root/.config/mopidy/setti
 sudo easy_install partify
 
 cd /etc/init
-wget http://partify.us/static/scripts/partify.conf
-wget http://partify.us/static/scripts/mopidy.conf
+sudo wget http://partify.us/static/scripts/partify.conf
+sudo wget http://partify.us/static/scripts/mopidy.conf
 
 # Run Partify!
 sudo start mopidy
