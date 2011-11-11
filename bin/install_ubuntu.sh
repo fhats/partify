@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # A quick and dirty force-feed script to get Partify and Mopidy up and running on Ubuntu systems
 
