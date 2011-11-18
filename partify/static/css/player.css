@@ -138,3 +138,11 @@ button.rm_btn{
 .ui-progressbar-value{
     background: #FD971F;
 }
+ul.ui-tabs-nav li:first-child{
+    margin-left: 18px;
+}
+div#tabs ul{
+    border-left: 0px;
+    border-right: 0px;
+    border-top: 0px;
+}
