@@ -156,8 +156,24 @@ secondsToTimeString = (seconds) ->
     # Converts a number of seconds to a string representing a human-readable time (eg. MM:SS)
     seconds = Math.floor(seconds)
     minutes = Math.floor(seconds / 60 )
+    hours = Math.floor(seconds / (60*60))
+    days = Math.floor(hours / 24)
     seconds = (seconds % 60)
-    time_s = "" + minutes + ":"
+
+    time_s = ""
+
+    if days > 0
+        hours = hours % 24
+        time_s += "" + days + ":"
+        if hours < 10
+            time_s += "0"
+    if hours > 0
+        minutes = minutes % 60
+        time_s += "" + hours + ":"
+        if minutes < 10
+            time_s += "0"
+
+    time_s += "" + minutes + ":"
     # zero-padding
     time_s += if seconds < 10 then '0' else ''
     time_s += seconds
