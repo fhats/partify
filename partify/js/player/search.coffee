@@ -55,21 +55,19 @@ class Search
                     else
                         @sortmode.category = category
                         @sortmode.asc = true
-                    this.sortResultsBy @sortmode.category, @sortmode.asc
+                    this.sortResultsBy @sortmode.category, "artist", "album", "track", @sortmode.asc
         
-    sortResultsBy: (category, is_ascending, sub_category = "track") ->
+    sortResultsBy: (categories..., is_ascending) ->
         sortfn = (a,b) -> 
             cmp_val = 0
-            if a[category] < b[category]
-                cmp_val = -1
-            if a[category] > b[category]
-                cmp_val = 1
-            if cmp_val == 0
-                if a[sub_category] < b[sub_category]
-                    cmp_val = -1
-                if a[sub_category] > b[sub_category]
-                    cmp_val = 1
+            for category in categories when cmp_val is 0
+                do (category) ->     
+                    if a[category] < b[category]
+                        cmp_val = -1
+                    if a[category] > b[category]
+                        cmp_val = 1
             return cmp_val
+
         @results.sort sortfn
         if !is_ascending
             @results.reverse()
@@ -87,7 +85,8 @@ class Search
         @results = new Array()
         this._show_wait_spinner()
         this.clearSortIndicators()
-
+        @sortmode = {category: "", asc: true}
+        
         request_data = {}
         if title != ""
             request_data['title'] = title
