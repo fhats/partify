@@ -146,3 +146,26 @@ div#tabs ul{
     border-right: 0px;
     border-top: 0px;
 }
+
+table#results_table tbody tr td{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap:break-word;
+}
+
+table#results_table tbody tr td.result_title,
+table#results_table tbody tr td.result_artist,
+table#results_table tbody tr td.result_album {
+    max-width: 270px;
+}
+
+
+table#results_table tbody tr td.result_time,
+table#results_table tbody tr td.result_track,
+table#results_table tbody tr td.result_add {
+    width: 30px;
+}
+
+table#results_table tbody tr td.album_details {
+    vertical-align: text-top;
+}
