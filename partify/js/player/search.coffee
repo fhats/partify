@@ -138,21 +138,24 @@ class Search
         if @results.length > 0
             this.buildResultRow(track) for track in @results
             if @sortmode.category != "title"
+                # If we can, group the album listing to show the album cover art as well as the name
+                # The length metrics were determined empirically
                 for track, pos in @results
                     do (track, pos) =>
                         album_length = (t for t in @results when t.album == track.album).length
-                        if album_length > 5
+                        if album_length > 4
                             if track.album == @results[Math.max(pos-1, 0)].album and track.file != @results[Math.max(pos-1, 0)].file
                                 $("tr[id='#{track.file}'] > td.result_album").remove()
                             else
                                 $("tr[id='#{track.file}'] > td.result_album").attr 'rowspan', album_length
                                 $("tr[id='#{track.file}'] > td.result_album").addClass 'album_details'
-                                $("tr[id='#{track.file}'] > td.result_album").removeClass 'small'
                                 $("tr[id='#{track.file}'] > td.result_album").empty()
-                                $("tr[id='#{track.file}'] > td.result_album").append "<img id='#{track.file}' src='/static/img/loading.gif' />"
                                 d = new Date(track.date)
                                 year = d.getFullYear()
-                                $("tr[id='#{track.file}'] > td.result_album").append "<br />#{track.album} (#{year})"
+                                $("tr[id='#{track.file}'] > td.result_album").append "
+                                <p>#{track.album} (#{year})</p>
+                                <img id='#{track.file}' src='/static/img/loading.gif' />
+                                "
                                 window.Partify.LastFM.album.getInfo 
                                     artist: track.artist,
                                     album: track.album
@@ -162,18 +165,20 @@ class Search
                                         images = data.album?.image
                                         if images?
                                             image_sizes = (image.size for image in images)
-                                            preferred_sizes = ['small']
-                                            if album_length > 7
-                                                preferred_sizes.push('medium')
-                                            if album_length > 9
-                                                preferred_sizes.push('large')
-                                            preferred_sizes.reverse()
-                                            preferred_sizes.remove size for size in preferred_sizes when size not in image_sizes
-                                            target_size = preferred_sizes[0]
-                                            img_url = (image['#text'] for image in images when image.size == target_size)
-                                            img_url = img_url[0]
-                                            $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").attr 'src', img_url
+                                            target_size = "large"
+                                            if target_size in image_sizes
+                                                img_url = (image['#text'] for image in images when image.size == target_size)
+                                                img_url = img_url[0]
+                                                $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").attr 'src', img_url
+                                                if img_url == ""
+                                                    $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").remove()
+                                    , error: (code, message) =>
+                                        $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").remove()
                                 }
+
+                        if track.album != @results[Math.max(pos-1, 0)].album
+                            $("tr[id='#{track.file}'] > td").addClass 'album_seperator'
+
                         
         else
             this.buildEmptyResultRow()
@@ -182,9 +187,9 @@ class Search
     buildResultRow: (track) ->
         row_html = "
         <tr id='#{track.file}'>
-            <td class='small result_title'>#{track.title}</td>
-            <td class='small result_artist'>#{track.artist}</td>
             <td class='small result_album'>#{track.album}</td>
+            <td class='small result_artist'>#{track.artist}</td>
+            <td class='small result_title'>#{track.title}</td>
             <td class='small result_time'>#{secondsToTimeString(track.time)}</td>
             <td class='small result_track'>#{track.track}</td>
             <td class='small result_add'><button class='add_btn'></button></td>
