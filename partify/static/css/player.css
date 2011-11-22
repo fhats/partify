@@ -184,6 +184,10 @@ table#results_table tbody tr td.album_seperator {
     border-top: 1px solid #222;
 }
 
+table#results_table tbody tr:hover td:not(.album_details) {
+    background: #515151;
+}
+
 table#results_table tbody tr td a:visited,
 table#results_table tbody tr td a{
     text-decoration: none ;
