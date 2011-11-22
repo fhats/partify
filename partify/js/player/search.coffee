@@ -134,6 +134,7 @@ class Search
            primary: 'ui-icon-alert'
     
     updateResultsDisplay: () ->
+        # TODO: Clean this up...
         @results_display.empty()
         if @results.length > 0
             this.buildResultRow(track) for track in @results
@@ -147,14 +148,15 @@ class Search
                             if track.album == @results[Math.max(pos-1, 0)].album and track.file != @results[Math.max(pos-1, 0)].file
                                 $("tr[id='#{track.file}'] > td.result_album").remove()
                             else
-                                $("tr[id='#{track.file}'] > td.result_album").attr 'rowspan', album_length
+                                $("tr[id='#{track.file}'] > td.result_album").attr 'rowspan', album_length 
                                 $("tr[id='#{track.file}'] > td.result_album").addClass 'album_details'
                                 $("tr[id='#{track.file}'] > td.result_album").empty()
                                 d = new Date(track.date)
                                 year = d.getFullYear()
+                                year_str = if year > 0 then "(" + year + ")" else ""
                                 $("tr[id='#{track.file}'] > td.result_album").append "
-                                <p>#{track.album} (#{year})</p>
                                 <img id='#{track.file}' src='/static/img/loading.gif' />
+                                <p>#{track.album} #{year_str}</p>
                                 "
                                 window.Partify.LastFM.album.getInfo 
                                     artist: track.artist,
@@ -170,6 +172,14 @@ class Search
                                                 img_url = (image['#text'] for image in images when image.size == target_size)
                                                 img_url = img_url[0]
                                                 $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").attr 'src', img_url
+                                                $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").bind 'load', (e) ->
+                                                    $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").addClass 'album_image'
+                                                    $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").attr 'width', 174
+                                                    $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").attr 'height', 174
+                                                    if 4 < album_length < 8
+                                                        last_track = @results[pos + album_length - 1]
+                                                        $("tr[id='#{last_track.file}']").after "<tr class='album_padding' id='padding_><td colspan=5>&nbsp;</td></tr>"
+                                                        $("tr[id='#{track.file}'] > td.result_album").attr 'rowspan', album_length + 1
                                                 if img_url == ""
                                                     $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").remove()
                                     , error: (code, message) =>

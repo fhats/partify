@@ -169,19 +169,22 @@ table#results_table tbody tr td.result_add {
 table#results_table tbody tr td.album_details {
     vertical-align: text-top;
     margin: 1em;
+    padding-top: 10px;
 }
 
-table#results_table tbody tr td.album_details img {
-    box-shadow: -2px 5px 10px 3px #222;
-    -moz-box-shadow: -2px 5px 10px 3px #222;
-    -webkit-box-shadow: -2px 5px 10px 3px #222;
-}
-
-table#results_table tbody tr td:first-child,
+table#results_table tbody tr td.result_album,
 table#results_table thead tr th:first-child {
     padding-left: 10px;
 }
 
 table#results_table tbody tr td.album_seperator {
     border-top: 1px solid #222;
+}
+
+img.album_image {
+    width: 174px;
+    height: 174px;
+    box-shadow: -2px 5px 10px 3px #222;
+    -moz-box-shadow: -2px 5px 10px 3px #222;
+    -webkit-box-shadow: -2px 5px 10px 3px #222;
 }
