@@ -177,14 +177,16 @@ class Search
                             else
                                 $("tr[id='#{track.file}'] > td.result_album").attr 'rowspan', album_length 
                                 $("tr[id='#{track.file}'] > td.result_album").addClass 'album_details'
-                                $("tr[id='#{track.file}'] > td.result_album").empty()
+                                $("tr[id='#{track.file}'] > td.result_album")
                                 d = new Date(track.date)
                                 year = d.getFullYear()
                                 year_str = if year > 0 then "(" + year + ")" else ""
                                 
+                                $("tr[id='#{track.file}'] > td.result_album").prepend "
+                                <img id='#{track.file}' src='/static/img/loading.gif' />"
+                                $("tr[id='#{track.file}'] > td.result_album > a").wrap "<p></p>"
+                                $("tr[id='#{track.file}'] > td.result_album > p").append " #{year_str}"
                                 $("tr[id='#{track.file}'] > td.result_album").append "
-                                <img id='#{track.file}' src='/static/img/loading.gif' />
-                                <p>#{track.album} #{year_str}</p>
                                 <button class='album_add_btn'>Add Album</button>
                                 "
                                 
@@ -207,19 +209,20 @@ class Search
                                             if target_size in image_sizes
                                                 img_url = (image['#text'] for image in images when image.size == target_size)
                                                 img_url = img_url[0]
-                                                $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").attr 'src', img_url
-                                                $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").bind 'load', (e) ->
-                                                    $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").addClass 'album_image'
-                                                    $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").attr 'width', 174
-                                                    $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").attr 'height', 174
+                                                img_element = $("tr[id='#{track.file}'] > td.result_album img[id='#{track.file}']")
+                                                img_element.attr 'src', img_url
+                                                img_element.bind 'load', (e) ->
+                                                    img_element.addClass 'album_image'
+                                                    img_element.attr 'width', 174
+                                                    img_element.attr 'height', 174
                                                     if 4 < album_length < 8
                                                         console.log $("tr[id='#{last_track.file}']")
                                                         $("tr[id='#{last_track.file}']").after "<tr class='album_padding'><td colspan=5>&nbsp;</td></tr>"
                                                         $("tr[id='#{track.file}'] > td.result_album").attr 'rowspan', album_length + 1
                                                 if img_url == ""
-                                                    $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").remove()
+                                                    img_element.remove()
                                     , error: (code, message) =>
-                                        $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").remove()
+                                        img_element.remove()
                                 }
                                 
                                 # Set up the button to add the album to the queue
@@ -242,15 +245,30 @@ class Search
     buildResultRow: (track) ->
         row_html = "
         <tr id='#{track.file}'>
-            <td class='small result_album'>#{track.album}</td>
-            <td class='small result_artist'>#{track.artist}</td>
+            <td class='small result_album'><a href='#'>#{track.album}</a></td>
+            <td class='small result_artist'><a href='#'>#{track.artist}</a></td>
             <td class='small result_title'>#{track.title}</td>
             <td class='small result_time'>#{secondsToTimeString(track.time)}</td>
             <td class='small result_track'>#{track.track}</td>
             <td class='small result_add'><button class='add_btn'></button></td>
         </tr>
-        "
+        "        
         @results_display.append row_html
+
+        # Set up the links to start corresponding searches
+        $("tr[id='#{track.file}'] td.result_album a").click (e) =>
+            e.stopPropagation()
+            $("input#search_artist").val(track.artist)
+            $("input#search_album").val(track.album)
+            $("input#search_title").val("")
+            this.processSearch "", track.artist, track.album
+        
+        $("tr[id='#{track.file}'] td.result_artist a").click (e) =>
+            e.stopPropagation()
+            $("input#search_artist").val(track.artist)
+            $("input#search_title").val("")
+            $("input#search_album").val("")
+            this.processSearch "", track.artist, ""
     
     buildEmptyResultRow: () ->
         row_html = "

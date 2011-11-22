@@ -184,6 +184,17 @@ table#results_table tbody tr td.album_seperator {
     border-top: 1px solid #222;
 }
 
+table#results_table tbody tr td a:visited,
+table#results_table tbody tr td a{
+    text-decoration: none ;
+}
+table#results_table tbody tr td a {
+    border-bottom: 1px solid #515151;
+}
+table#results_table tbody tr td a:hover {
+    text-decoration: underline;
+}
+
 img.album_image {
     width: 174px;
     height: 174px;
