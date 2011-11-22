@@ -49,19 +49,29 @@ def add_to_queue(mpd):
 
     spotify_uri = request.form['spotify_uri']
     
-    track = track_from_spotify_url(spotify_uri)
+    result = add_track_from_spotify_url(mpd, spotify_uri)
 
-    if track is None:
+    if result is None:
         return jsonify(status='error', message='The Spotify URL you specified is invalid.')
     
-    mpd_id = mpd.addid(spotify_uri)
-
-    # Add the track to the play queue
-    # Disabling this for now since the playlist consistency function should figure it out
-    db.session.add( PlayQueueEntry(track=track, user_id=session['user']['id'], mpd_id=mpd_id) )
-    db.session.commit()
-
     return jsonify(status='ok', queue=get_user_queue(session['user']['id']), file=spotify_uri)
+
+@app.route('/queue/add_album', methods=['POST'])
+@with_authentication
+@with_mpd
+@with_mpd_lock
+def add_album_from_track(mpd):
+    """Takes a Spotify track URL, finds its corresponding album, and adds it to the user's queue."""
+
+    spotify_files = request.form.getlist('spotify_files')
+
+    if spotify_files is None or len(spotify_files) == 0:
+        return jsonify(status='error', message='The Spotify URL you specified is invalid.')
+
+    for spotify_url in spotify_files:
+        result = add_track_from_spotify_url(mpd, spotify_url)
+
+    return jsonify(status='ok', queue=get_user_queue(session['user']['id']))
 
 @app.route('/queue/remove', methods=['POST'])
 @with_authentication
@@ -126,6 +136,21 @@ def reorder_queue():
 def list_user_queue():
     user_queue = get_user_queue(session['user']['id'])
     return jsonify(status="ok", result=user_queue)
+
+def add_track_from_spotify_url(mpd, spotify_url):
+    track = track_from_spotify_url(spotify_url)
+
+    if track is None:
+        return None
+
+    mpd_id = mpd.addid(spotify_url)
+
+    # Add the track to the play queue
+    # Disabling this for now since the playlist consistency function should figure it out
+    db.session.add( PlayQueueEntry(track=track, user_id=session['user']['id'], mpd_id=mpd_id) )
+    db.session.commit()
+
+    return track
 
 # These *_from_spotify_url functions should probably move to a kind of util file
 def track_from_spotify_url(spotify_url):

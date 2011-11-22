@@ -114,7 +114,7 @@ class Search
             data:
                 spotify_uri: spotify_url
             success: (data) =>
-                btn = row.children('td').children('button')
+                btn = row.children('td.result_add').children('button')
                 if data.status == 'ok'
                     btn.button 'option', 'icons',
                         primary: 'ui-icon-check'
@@ -124,8 +124,35 @@ class Search
                 else
                     this._addTrackFail(btn)
             error: () =>
-                this._addTrackFail(row.children('td').children('button'))
+                this._addTrackFail(row.children('td.result_add').children('button'))
             
+        )
+    
+    addAlbum: (spotify_url, album_tracks) ->
+        this.disableButton $("tr[id='#{album_tracks[0].file}'] > td.result_album > button")
+        this.disableRow $("tr[id='#{track.file}']") for track in album_tracks
+        spotify_files = (track.file for track in album_tracks)
+        $.ajax(
+            url: '/queue/add_album'
+            type: 'POST'
+            data:
+                spotify_files: spotify_files
+            traditional: 'true'
+            success: (data) ->
+                if data.status == 'ok'
+                    $("tr[id='#{album_tracks[0].file}'] > td.result_album > button").button 'option', 'icons',
+                        primary: 'ui-icon-check'
+                    for track in album_tracks
+                        do (track) ->
+                            $("tr[id='#{track.file}'] > td.result_add > button").button 'option', 'icons',
+                                primary: 'ui-icon-check'
+                    window.Partify.Player._synchroPoll()
+                    window.Partify.Queues.UserQueue.update data.queue
+                else
+                    this.error()
+            error: () =>
+                this._addTrackFail $("tr[id='#{album_tracks[0].file}'] > td.result_album > button")
+                this._addTrackFail $("tr[id='#{track.file}'] > td.result_add > button") for track in album_tracks
         )
     
     _addTrackFail: (btn) ->
@@ -154,16 +181,25 @@ class Search
                                 d = new Date(track.date)
                                 year = d.getFullYear()
                                 year_str = if year > 0 then "(" + year + ")" else ""
+                                
                                 $("tr[id='#{track.file}'] > td.result_album").append "
                                 <img id='#{track.file}' src='/static/img/loading.gif' />
                                 <p>#{track.album} #{year_str}</p>
+                                <button class='album_add_btn'>Add Album</button>
                                 "
+                                
+                                # This needs to be bound for later because of the stupid way Javascript handles 'this'
+                                # Apparently Coffeescript doesn't handle this, either...
+                                last_track = @results[(pos + album_length - 1)]
+                                console.log last_track
+
+                                # Find album art from Last.fm
                                 window.Partify.LastFM.album.getInfo 
                                     artist: track.artist,
                                     album: track.album
                                 , 
                                 {
-                                    success: (data) =>
+                                    success: (data) ->
                                         images = data.album?.image
                                         if images?
                                             image_sizes = (image.size for image in images)
@@ -177,14 +213,23 @@ class Search
                                                     $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").attr 'width', 174
                                                     $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").attr 'height', 174
                                                     if 4 < album_length < 8
-                                                        last_track = @results[pos + album_length - 1]
-                                                        $("tr[id='#{last_track.file}']").after "<tr class='album_padding' id='padding_><td colspan=5>&nbsp;</td></tr>"
+                                                        console.log $("tr[id='#{last_track.file}']")
+                                                        $("tr[id='#{last_track.file}']").after "<tr class='album_padding'><td colspan=5>&nbsp;</td></tr>"
                                                         $("tr[id='#{track.file}'] > td.result_album").attr 'rowspan', album_length + 1
                                                 if img_url == ""
                                                     $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").remove()
                                     , error: (code, message) =>
                                         $("tr[id='#{track.file}'] > td.result_album > img[id='#{track.file}']").remove()
                                 }
+                                
+                                # Set up the button to add the album to the queue
+                                $("tr[id='#{track.file}'] > td.result_album > button").button(
+                                    icons:
+                                        primary: 'ui-icon-plus'
+                                    , text: true
+                                )
+                                $("tr[id='#{track.file}'] > td.result_album > button").click (e) =>
+                                    this.addAlbum track.file, @results[pos...(pos+album_length)]
 
                         if track.album != @results[Math.max(pos-1, 0)].album
                             $("tr[id='#{track.file}'] > td").addClass 'album_seperator'
@@ -229,8 +274,11 @@ class Search
             this.addTrack spotify_url, track_row
 
     disableRow: (row) ->
-        row.children('td').children('button').button 'disable'
-        row.children('td').children('button').button 'option', 'icons',
+        this.disableButton row.children('td.result_add').children('button')
+        
+    disableButton: (btn) ->
+        btn.button 'disable'
+        btn.button 'option', 'icons',
             primary: 'ui-icon-loading'
 
 

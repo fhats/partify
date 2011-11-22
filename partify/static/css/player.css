@@ -117,6 +117,9 @@ button.rm_btn{
     margin-bottom: 3px;
     border: 1px solid #1f1f1f !important;
 }
+button.album_add_btn{
+    border: 1px solid #1f1f1f !important;
+}
 
 .queue-placeholder {
     height: 24px;
