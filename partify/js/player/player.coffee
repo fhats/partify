@@ -129,8 +129,8 @@ class Player
             @info[key] = data[key]
             # Special cases!
             if key == 'date'
-                d = new Date(data[key])
-                @info[key] = d.getFullYear()
+                year = yearFromDateString(data[key])
+                @info[key] = if year != "" and year > 0 then year else ""
         this._updatePlayerTextFromInfo text for text in ['artist', 'title', 'album', 'date']
         this.updatePlayerProgress()
 
@@ -149,6 +149,11 @@ class Player
         $("#player_progress").progressbar value: progress
         this._updatePlayerText 'elapsed', secondsToTimeString @info['elapsed']
         this._updatePlayerText 'time', secondsToTimeString @info['time']
+
+yearFromDateString = (date_string) ->
+    d = new Date(date_string)
+    year = d.getUTCFullYear()
+    year
 
 secondsToTimeString = (seconds) ->
     # In case seconds isn't already an int

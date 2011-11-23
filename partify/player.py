@@ -68,7 +68,8 @@ def status(mpd):
         response['user_queue'] = get_user_queue(session['user']['id'])
         response['last_global_playlist_update'] = playlist_last_updated
     else:
-        del response['elapsed']
+        if response['state'] == 'play':
+            del response['elapsed']
 
     return jsonify(response)
 

@@ -178,9 +178,8 @@ class Search
                                 $("tr[id='#{track.file}'] > td.result_album").attr 'rowspan', album_length 
                                 $("tr[id='#{track.file}'] > td.result_album").addClass 'album_details'
                                 $("tr[id='#{track.file}'] > td.result_album")
-                                d = new Date(track.date)
-                                year = d.getFullYear()
-                                year_str = if year > 0 then "(" + year + ")" else ""
+                                year = yearFromDateString(track.date)
+                                year_str = if year != "" and year > 0 then "(" + year + ")" else ""
                                 
                                 $("tr[id='#{track.file}'] > td.result_album").prepend "
                                 <img id='#{track.file}' src='/static/img/loading.gif' />"
