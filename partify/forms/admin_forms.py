@@ -28,15 +28,10 @@ from partify.priv import priv_in_english
 class ConfigurationForm(Form):
     """A WTForm for configuration information.
 
-    Covers:
-    * Last.fm information (api key, secret key)
-    * MPD server information (hostname, port)
-    * Server technology
-    * Server host
-    * Server port
-    * perhaps various Mopidy settings eventually (stream bitrate, etc)
-    * eventually arbitration scheme for track selection"""
+    Each of these fields should be the loweredcased name of the corresponding configuration field.
+    """
     
+    selection_scheme = SelectField("Track Selection", [validators.Required()], choices=[('ROUND_ROBIN', 'Round Robin'), ('FCFS', 'First-Come, First-Served')])
     mpd_server_hostname = TextField("MPD Server Hostname", [validators.Required()])
     mpd_server_port = IntegerField("MPD Server Port", [validators.Required(), validators.NumberRange(min=0, max=65535)])
     server_host = TextField("Hostname to listen on", [validators.Required()])

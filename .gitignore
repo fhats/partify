@@ -4,3 +4,4 @@
 /config.py
 partify/static/js/partify/*
 *.db
+*.db-journal

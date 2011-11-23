@@ -34,10 +34,11 @@ def load_config_from_db():
         'MPD_SERVER_PORT': 6600,
         'PROFILE': False,
         'SECRET_KEY': _produce_random_data(),
+        'SELECTION_SCHEME': 'ROUND_ROBIN',
         'SERVER': 'tornado',
         'SERVER_HOST': '0.0.0.0',
         'SERVER_PORT': 5000, 
-        'SESSION_SALT': _produce_random_data()
+        'SESSION_SALT': _produce_random_data(),
     }
 
     # Transformations to be performed on the key in the DB in case it shouldn't be just a string

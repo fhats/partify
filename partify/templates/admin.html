@@ -25,6 +25,7 @@ along with Partify.  If not, see <http://www.gnu.org/licenses/>.
 <div class="span-22 prepend-1 append-1 last">
 	<h4>Configuration</h4>
 	<form method="POST" action="{{url_for('configuration_update')}}">
+		{{ render_field(configuration_form.selection_scheme) }}
 		{{ render_field(configuration_form.mpd_server_hostname) }}
 		{{ render_field(configuration_form.mpd_server_port) }}
 		{{ render_field(configuration_form.server) }}

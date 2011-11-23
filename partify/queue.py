@@ -39,6 +39,7 @@ from partify.models import PlayQueueEntry
 from partify.models import Track
 from partify.models import User
 from partify.player import get_user_queue, _get_status
+from partify.selection import get_selection_scheme
 
 @app.route('/queue/add', methods=['POST'])
 @with_authentication
@@ -237,9 +238,6 @@ def _raw_info_from_spotify_url(spotify_url):
 
     return response
 
-def _get_users_next_pqe_entry_after_playback_priority(user_id, playback_priority):
-    return PlayQueueEntry.query.filter(and_(PlayQueueEntry.user_id == user_id, PlayQueueEntry.playback_priority > playback_priority)).order_by(PlayQueueEntry.user_priority.asc()).first()
-
 @with_mpd
 def ensure_mpd_playlist_consistency(mpd):
     """A wrapper for _ensure_mpd_playlist_consistency that grabs an MPD client."""
@@ -263,6 +261,7 @@ def _ensure_mpd_playlist_consistency(mpd):
         app.logger.debug("Removing Play Queue Entry %r" % purge_entry)
     db.session.commit()
 
+    # Next, make sure that we have a database entry for each track in the MPD queue
     for track in playlist_tracks:
         # This could cause some undue load on the database. We can do this in memory if it's too intensive to be doing DB calls
         queue_track = PlayQueueEntry.query.filter(PlayQueueEntry.mpd_id == track['id']).first() # Don't need to worry about dups since this field is unique in the DB
@@ -279,64 +278,11 @@ def _ensure_mpd_playlist_consistency(mpd):
 
     db.session.commit()
 
-    # Ensure that the playlist's order follows a selection method - in this case, round robin.
-    # This should *probably* move to its own function later... for now this is just research!
-    # A rough idea of the implemention of round-robin ordering can be found in issue #20 (https://github.com/fxh32/partify/issues/20)
-
-    # Before we do anything else we need the track list from the DB
+    # Ensure that the playlist's order follows the configured selection method
     db_tracks = PlayQueueEntry.query.order_by(PlayQueueEntry.playback_priority.asc()).all()
-
     if len(db_tracks) > 0:
-
-        # First, grab a list of all users that currently have PlayQueueEntrys (we can interpret this as active users)
-        # TODO: This is dumb and slow and can be improved by doing a better DB query. Right now I'm just avoiding learning how to do this query with the ORM (if it can be done).
-        users = set([pqe.user for pqe in PlayQueueEntry.query.all()])
-        unique_users = users = sorted(users, key=lambda d: getattr(d, 'username', 'anonymous'))
-        # Turn the sorted user list into a cycle for repeated iteration
-        users = itertools.cycle(users)
-        current_user = (PlayQueueEntry.query.order_by(PlayQueueEntry.playback_priority.asc()).first()).user
-
-        # Advance the user list to the current user
-        users = itertools.dropwhile(lambda x: x != current_user, users)
-
-        user_list = []
-        user_counts = dict( (user, PlayQueueEntry.query.filter(PlayQueueEntry.user == user).count()) for user in unique_users )
-
-        # generate a list of users to zip against the track list
-        for user in users:
-            if all( [user_count == 0 for user_count in user_counts.itervalues()] ):
-                break
-            
-            if user_counts[user] > 0:
-                user_counts[user] -= 1
-                user_list.append(user)
-    
-        # Without a multiprocessing primitive this loop is messed up. Also it seems to work quite well for a single user.... but what the hell does that even mean, anyway?
-        # Only make one MPD change per call and then break, since the MPD playlist changing will trigger another consistency check which is liable to cause DB locks and timeouts and hangs and all sorts of other nasty behavior
-        for (track,user) in zip(db_tracks, user_list):
-            # Check to make sure the next track's user matches the user being looked at.
-            # If it doesn't, reorder to move that user's track to this position
-            # Otherwise, continue onward 'cause everything cool!
-            if track.user == user:
-                # all that needs to happen in this situation is to check to see if the current track should be the user's next (i.e. that play order is respected)
-                # if it's not, then shuffle some things around until it is.
-                if PlayQueueEntry.query.filter(and_(PlayQueueEntry.user == track.user, PlayQueueEntry.user_priority < track.user_priority, PlayQueueEntry.playback_priority > track.playback_priority)).count() > 0:
-                    # Get the track after the current playback priority with the minimum user_priority and make that the current track
-                    new_next_track = _get_users_next_pqe_entry_after_playback_priority(track.user_id, track.playback_priority)
-                    if new_next_track is not None:
-                        mpd.moveid(new_next_track.mpd_id, track.playback_priority)
-                    break
-                else:
-                    # Everything's cool!
-                    pass
-            else:
-                # Uh-oh!
-                # Something isn't round robin about this.
-                # To resolve this, push the rest of the tracks back and move the user's lowest pqe after the current playback_priority to the current position.
-                new_next_track = _get_users_next_pqe_entry_after_playback_priority(user.id, track.playback_priority)
-                if new_next_track is not None:
-                    mpd.moveid(new_next_track.mpd_id, track.playback_priority)
-                break
+        selection_method = get_selection_scheme(app.config['SELECTION_SCHEME'])
+        selection_method(mpd, db_tracks)
 
     _ensure_mpd_player_state_consistency(mpd)
 
