@@ -45,7 +45,6 @@ def load_config_from_db():
         'DEBUG': lambda x: bool(int(x)),
         'MPD_SERVER_PORT': int,
         'PROFILE': lambda x: bool(int(x)),
-        'SECRET_KEY': str,          # the secret key can't be unicode for some reason...
         'SERVER_PORT': int
     }
 
@@ -92,4 +91,4 @@ def _produce_random_data():
     m.update(str(time.time()))
     for i in range(1,5000):
         m.update(str(random.random()))
-    return m.digest()
+    return m.hexdigest()
