@@ -84,6 +84,27 @@ class PlayQueueEntry(db.Model):
         d['user_id'] = self.user_id
         return d
 
+class PlayHistoryEntry(db.Model):
+    """Represents a log entry for a track that was played by a user. Used to generate statistics."""
+    __tablename__ = "play_history_entry"
+    
+    id = db.Column(db.Integer, primary_key = True, autoincrement=True)
+    
+    track_id = db.Column(db.Integer, db.ForeignKey('track.id'))
+    track = db.relationship("Track")
+    
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship("User") 
+
+    # This pqe should be empty for tracks that have finished playing, since the pqe wil be deleted by the consistency fcn.
+    # If the PQE is not none, then the track is currently still playing 
+    pqe_id = db.Column(db.Integer, db.ForeignKey('play_queue_entry.id'))
+    pqe = db.relationship("PlayQueueEntry")
+
+    time_played = db.Column(db.DateTime, default=datetime.datetime.now)
+
+    def __repr__(self):
+        return "<%r played by %r at %r>" % (self.track, self.user, self.time_played)
 
 class ConfigurationField(db.Model):
     """Represents a configuration field."""

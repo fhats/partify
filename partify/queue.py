@@ -35,6 +35,7 @@ from decorators import with_mpd
 from decorators import with_mpd_lock
 from partify import app
 from partify import ipc
+from partify.models import PlayHistoryEntry
 from partify.models import PlayQueueEntry
 from partify.models import Track
 from partify.models import User
@@ -303,6 +304,28 @@ def _ensure_mpd_player_state_consistency(mpd):
             option_method = getattr(mpd, option)
             option_method(value)
 
+def _update_track_history(mpd):
+    """Responsible for making sure that the currently playing track gets logged to the track history."""
+    
+    # Get the currently playing track
+    currently_playing_track = PlayQueueEntry.query.order_by(PlayQueueEntry.playback_priority.asc()).first()
+
+    if currently_playing_track is not None:
+        history_entry = PlayHistoryEntry.query.filter( 
+            and_( PlayHistoryEntry.pqe == currently_playing_track, 
+                PlayHistoryEntry.user == currently_playing_track.user,
+                PlayHistoryEntry.track == currently_playing_track.track 
+            )
+        ).first()
+
+        if history_entry is None:
+            # Add this to the play history
+            history_entry = PlayHistoryEntry(track = currently_playing_track.track,
+                user = currently_playing_track.user,
+                pqe = currently_playing_track)
+            db.session.add(history_entry)
+            db.session.commit()
+
 @with_mpd
 def on_playlist_update(mpd):
     """The subprocess that continuously IDLEs against the Mopidy server and ensures playlist consistency on playlist update."""
@@ -311,6 +334,7 @@ def on_playlist_update(mpd):
         app.logger.debug("Received change event from Mopidy: %s" % changed)
         if 'playlist' in changed:
             _ensure_mpd_playlist_consistency(mpd)
+            _update_track_history(mpd)
         if 'options' in changed:
             _ensure_mpd_player_state_consistency(mpd)
 
