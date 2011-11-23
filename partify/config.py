@@ -30,11 +30,11 @@ def load_config_from_db():
         'DEBUG': True,
         'LASTFM_API_KEY': '',
         'LASTFM_API_SECRET': '',
-        'MPD_SERVER_HOSTNAME': '',
-        'MPD_SERVER_PORT': 0,
+        'MPD_SERVER_HOSTNAME': 'localhost',
+        'MPD_SERVER_PORT': 6600,
         'PROFILE': False,
         'SECRET_KEY': _produce_random_data(),
-        'SERVER': 'builtin',
+        'SERVER': 'tornado',
         'SERVER_HOST': '0.0.0.0',
         'SERVER_PORT': 5000, 
         'SESSION_SALT': _produce_random_data()
@@ -91,4 +91,5 @@ def _produce_random_data():
     m = hashlib.sha512()
     m.update(str(time.time()))
     for i in range(1,5000):
-            m.update(str(random.random()))
+        m.update(str(random.random()))
+    return m.digest()
