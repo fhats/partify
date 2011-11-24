@@ -75,7 +75,7 @@ class Queue
     _buildDisplayItem: (track) ->
         "
         <li class='queue_item queue_item_sortable ui-state-default small span-23 last'>
-            <span class='span-1 ui-icon ui-icon-grip-dotted-vertical grip'>&nbsp;</span>
+            <span class='span-1 padder'>&nbsp;</span>
             <span class='span-6'>#{track.title}</span>
             <span class='span-6'>#{track.artist}</span>
             <span class='span-6'>#{track.album}</span>

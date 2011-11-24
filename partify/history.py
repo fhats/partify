@@ -1,0 +1,48 @@
+from math import ceil
+
+from flask import jsonify, request
+
+from partify import app
+from partify.models import PlayHistoryEntry
+
+@app.route("/history", methods=['GET'])
+def history():
+    """Returns a JSON structure representing the track history for a period specified by the client.
+
+    If ipp is specified, the return value is at most ipp items long. If page is specified, then ipp items are shown starting at page page.
+    ipp defaults to 25, page defaults to 1."""
+
+    ipp = request.args.get('ipp', 25)
+    ipp = int(ipp)
+    page = request.args.get('page', 1)
+    page = int(page)
+
+    # Get some meta information about the page and how many results came back...
+    total_entries = PlayHistoryEntry.query.count()
+    total_pages = ceil(total_entries / float(ipp))
+
+    if page > total_pages:
+        return jsonify(status='error', message='You requested a page that does not exist!')
+
+    history_slice = PlayHistoryEntry.query.order_by(PlayHistoryEntry.time_played.desc()).offset(ipp * (page-1)).limit(ipp).all()
+
+    result_history = []
+
+    # Format each track to send back only the data we want...
+    for entry in history_slice:
+        track = entry.track
+        user = entry.user
+        time_played = entry.time_played
+        history_entry = {
+            "id": entry.id,
+            "title": track.title,
+            "artist": track.artist,
+            "album": track.album,
+            "length": track.length,
+            "date": track.date,
+            "user": user.name,
+            "time": time_played.isoformat()
+        }
+        result_history.append(history_entry)
+
+    return jsonify(status='ok', tracks=result_history, num_items=len(result_history), page=page, pages=int(total_pages))
