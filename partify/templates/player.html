@@ -29,6 +29,7 @@ along with Partify.  If not, see <http://www.gnu.org/licenses/>.
 {% block js_head %}
     {{ js_include('js/lib/jquery-1.6.2.js') }}
     {{ js_include('js/lib/jquery-ui-1.8.14.custom.min.js') }}
+    {{ js_include('js/lib/jquery.timeago.js')}}
     {{ js_include('js/lib/lastfm.api.md5.js') }}
     {{ js_include('js/lib/lastfm.api.js') }}
     {{ js_include('js/lib/lastfm.api.cache.js') }}
@@ -156,9 +157,18 @@ Player - Partify
                     <div id="history_stats_tab">
                         
                         <div class="container">
-                            <h4>History</h4>
+                            <div class="span-23 last append-bottom">
+                                <h3>History</h3>
+                                <div id="history_widget" class="span-23 last">
 
-                            <h4>Statistics</h4>
+                                </div>
+                            </div>
+                            <div class="span-23 last">
+                                <h3>Statistics</h3>
+                                <div id="stats_widget" class="span-23 last">
+
+                                </div>
+                            </div>
                         </div>
 
                     </div>

@@ -96,11 +96,6 @@ class PlayHistoryEntry(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship("User") 
 
-    # This pqe should be empty for tracks that have finished playing, since the pqe wil be deleted by the consistency fcn.
-    # If the PQE is not none, then the track is currently still playing 
-    pqe_id = db.Column(db.Integer, db.ForeignKey('play_queue_entry.id'))
-    pqe = db.relationship("PlayQueueEntry")
-
     time_played = db.Column(db.DateTime, default=datetime.datetime.now)
 
     def __repr__(self):

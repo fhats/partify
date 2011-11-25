@@ -15,6 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Partify.  If not, see <http://www.gnu.org/licenses/>."""
 
+import datetime
 from math import ceil
 
 from flask import jsonify, request
@@ -38,7 +39,7 @@ def history():
     total_entries = PlayHistoryEntry.query.count()
     total_pages = ceil(total_entries / float(ipp))
 
-    if page > total_pages:
+    if (page > total_pages and total_pages > 0) or page < 1:
         return jsonify(status='error', message='You requested a page that does not exist!')
 
     history_slice = PlayHistoryEntry.query.order_by(PlayHistoryEntry.time_played.desc()).offset(ipp * (page-1)).limit(ipp).all()
@@ -58,8 +59,8 @@ def history():
             "length": track.length,
             "date": track.date,
             "user": user.name,
-            "time": time_played.isoformat()
+            "time_played": time_played.isoformat(),
         }
         result_history.append(history_entry)
 
-    return jsonify(status='ok', tracks=result_history, num_items=len(result_history), page=page, pages=int(total_pages))
+    return jsonify(status='ok', tracks=result_history, num_items=len(result_history), page=page, pages=int(total_pages), response_time=(datetime.datetime.now()).isoformat())

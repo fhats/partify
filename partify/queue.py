@@ -312,8 +312,7 @@ def _update_track_history(mpd):
 
     if currently_playing_track is not None:
         history_entry = PlayHistoryEntry.query.filter( 
-            and_( PlayHistoryEntry.pqe == currently_playing_track, 
-                PlayHistoryEntry.user == currently_playing_track.user,
+            and_(PlayHistoryEntry.user == currently_playing_track.user,
                 PlayHistoryEntry.track == currently_playing_track.track 
             )
         ).first()
@@ -321,8 +320,7 @@ def _update_track_history(mpd):
         if history_entry is None:
             # Add this to the play history
             history_entry = PlayHistoryEntry(track = currently_playing_track.track,
-                user = currently_playing_track.user,
-                pqe = currently_playing_track)
+                user = currently_playing_track.user)
             db.session.add(history_entry)
             db.session.commit()
 

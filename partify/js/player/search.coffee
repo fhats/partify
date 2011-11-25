@@ -324,6 +324,8 @@ class Track
     @playback_priority = 0
     @user_priority = 0
     @mpd_id = 0
+    @time_played = 0
+    @history_is_playing = false
 
     constructor: (data) ->
         @id = parseInt(data.id) or data.id
@@ -342,3 +344,6 @@ class Track
         @user_priority = data.user_priority
         if data.mpd_id
             @mpd_id = data.mpd_id
+        if data.time_played
+            @time_played = data.time_played
+        @history_is_playing = data.is_playing

@@ -104,7 +104,9 @@ td.results_empty {
     background: #272822;
 }
 
-button.add_btn{
+button.add_btn,
+button#page_left,
+button#page_right{
     height: 19px;
     width: 18px;
     vertical-align: middle;
@@ -162,6 +164,11 @@ table#results_table tbody tr td.result_album {
     max-width: 270px;
 }
 
+div#history_widget a,
+div#history_widget a:hover{
+    color: #A6E22E;
+}
+
 
 table#results_table tbody tr td.result_time,
 table#results_table tbody tr td.result_track,
@@ -205,4 +212,24 @@ img.album_image {
     box-shadow: -2px 5px 10px 3px #222;
     -moz-box-shadow: -2px 5px 10px 3px #222;
     -webkit-box-shadow: -2px 5px 10px 3px #222;
+}
+
+span#history_last_updated,
+span#page_info {
+    font-style: italic;
+}
+
+span#history_last_updated,
+span#ipp_selector,
+span#page_info,
+span#page_selector {
+    margin-bottom: 0px !important;
+}
+
+abbr {
+    border: 0px !important;
+}
+
+span.darker {
+    color: #999;
 }

@@ -25,8 +25,8 @@ $ ->
     window.Partify.Queues.GlobalQueue = new GlobalQueue($("#party_queue"), $("#up_next_tracks"))
     window.Partify.Queues.UserQueue = new UserQueue($("#user_queue"))
     window.Partify.Config = window.Partify.Config || {};
-    window.Partify.Config.lastFmApiKey = config_lastfm_api_key;           # The backticks here mean pass the content through as vanilla JS rather than being compiled
-    window.Partify.Config.lastFmApiSecret = config_lastfm_api_secret;     # I used them here to pass the {{}} template content through the coffeescript compiler.
+    window.Partify.Config.lastFmApiKey = config_lastfm_api_key;
+    window.Partify.Config.lastFmApiSecret = config_lastfm_api_secret;
     window.Partify.Config.user_id = config_user_id;
     window.Partify.LastCache = new LastFMCache()
     window.Partify.LastFM = new LastFM
@@ -63,7 +63,7 @@ class Queue
     _buildDisplayHeader: () ->
         "
         <li class='queue_header span-23 last'>
-            <span class='span-1 ui-icon ui-icon-arrowthick-2-n-s grip'>&nbsp;</span>
+            <span class='span-1 padder'>&nbsp;</span>
             <span class='span-6'>Title</span>
             <span class='span-6'>Artist</span>
             <span class='span-6'>Album</span>
@@ -124,7 +124,6 @@ class Queue
             error: () =>
                 console.log "Could not contact the server!"
         )
-
 
 class GlobalQueue extends Queue
     constructor: (queue_div, up_next_div) ->
@@ -303,6 +302,49 @@ class UserQueue extends Queue
             rm_btn.button 'option', 'icons',
                 primary: 'ui-icon-loading'
             this.removeTrack(track)
+
+class HistoryQueue extends Queue
+    constructor: (queue_div) ->
+        super queue_div
+        @queue_div.sortable 'option', 'disabled', true
+
+    updateDisplay: () ->
+        @queue_div.empty()
+        @queue_div.append this._buildDisplayHeader()
+        @queue_div.append this._buildDisplayItem(track) for track in @tracks
+        if @tracks.length == 0
+            @queue_div.append this._buildNoItemsRow()
+    
+    _buildDisplayHeader: () ->
+        "
+        <li class='queue_header span-23 last'>
+            <span class='span-1 padder'>&nbsp;</span>
+            <span class='span-6'>Title</span>
+            <span class='span-5'>Artist</span>
+            <span class='span-5'>Album</span>
+            <span class='span-2'>User</span>
+            <span class='span-4 last right'>Played</span>
+        </li>
+        "
+
+    _buildDisplayItem: (track) ->
+        "
+        <li class='queue_item queue_item_sortable ui-state-default small span-23 last'>
+            <span class='span-1 padder'>&nbsp;</span>
+            <span class='span-6'>#{track.title}</span>
+            <span class='span-5'>#{track.artist}</span>
+            <span class='span-5'>#{track.album}</span>
+            <span class='span-2'>#{track.user}</span>
+            <span class='span-4 last right timeago' title='#{(track.time_played)}'>now</span>
+        </li>
+        "
+
+    _buildNoItemsRow: () ->
+        "
+        <li class='queue_item queue_footer ui-state-default small span-23 last'>
+            <span class='span-23 last'><center><p ><em>No tracks have been played yet. Make history... be the first!</em></p></center></span>
+        </li>
+        "
 
 buildRoboHashUrlFromId = (id, dimension_x, dimension_y) ->
     "http://robohash.org/#{id}.png?size=#{dimension_x}x#{dimension_y}&set=any&bgset=any"
