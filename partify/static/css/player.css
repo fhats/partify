@@ -216,6 +216,7 @@ img.album_image {
     box-shadow: -2px 5px 10px 3px #222;
     -moz-box-shadow: -2px 5px 10px 3px #222;
     -webkit-box-shadow: -2px 5px 10px 3px #222;
+    vertical-align: top;
 }
 
 span#history_last_updated,
