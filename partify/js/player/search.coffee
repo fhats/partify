@@ -170,7 +170,27 @@ class Search
                 # The length metrics were determined empirically
                 for track, pos in @results
                     do (track, pos) =>
-                        album_length = (t for t in @results when t.album == track.album).length
+                        start_pos = pos
+                        end_pos = pos
+                        while start_pos > 0
+                            if @results[start_pos-1].album == track.album
+                                start_pos -= 1 
+                            else
+                                break
+                        
+                        while end_pos < @results.length - 1
+                            if @results[end_pos+1].album == track.album
+                                end_pos += 1
+                            else
+                                break
+
+                        #console.log start_pos
+                        #console.log end_pos
+                        
+                        #album_length = (t for t in @results when t.album == track.album).length
+                        
+                        album_length = (end_pos - start_pos) + 1
+
                         if album_length > 4
                             if track.album == @results[Math.max(pos-1, 0)].album and track.file != @results[Math.max(pos-1, 0)].file
                                 $("tr[id='#{track.file}'] > td.result_album").remove()
@@ -192,7 +212,6 @@ class Search
                                 # This needs to be bound for later because of the stupid way Javascript handles 'this'
                                 # Apparently Coffeescript doesn't handle this, either...
                                 last_track = @results[(pos + album_length - 1)]
-                                console.log last_track
 
                                 # Find album art from Last.fm
                                 window.Partify.LastFM.album.getInfo 
@@ -215,7 +234,6 @@ class Search
                                                     img_element.attr 'width', 174
                                                     img_element.attr 'height', 174
                                                     if 4 < album_length < 8
-                                                        console.log $("tr[id='#{last_track.file}']")
                                                         $("tr[id='#{last_track.file}']").after "<tr class='album_padding'><td colspan=5>&nbsp;</td></tr>"
                                                         $("tr[id='#{track.file}'] > td.result_album").attr 'rowspan', album_length + 1
                                                 if img_url == ""
