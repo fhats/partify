@@ -191,7 +191,8 @@ table#results_table tbody tr td.album_seperator {
     border-top: 1px solid #222;
 }
 
-table#results_table tbody tr:hover td:not(.album_details) {
+/* Search results highlighting */
+table#results_table td.highlight {
     background: #515151;
 }
 

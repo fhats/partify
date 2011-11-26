@@ -254,6 +254,14 @@ class Search
                         if track.album != @results[Math.max(pos-1, 0)].album
                             $("tr[id='#{track.file}'] > td").addClass 'album_seperator'
 
+            # Get some fancy hovering going on
+            $("table#results_table td:not(.album_details)").hover( (e) ->
+                # Hover enter. Highlight the appropriate tds
+                console.log $(e.currentTarget).parents("tr").first()
+                $(e.currentTarget).parents("tr").first().children("td:not(.album_details)").addClass 'highlight'
+            , (e) =>
+                $(e.currentTarget).parents("tr").first().children("td:not(.album_details)").removeClass 'highlight'
+            )
                         
         else
             this.buildEmptyResultRow()
