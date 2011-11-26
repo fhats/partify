@@ -30,6 +30,7 @@ from partify.models import PlayQueueEntry
 from partify.models import Track
 from partify.models import User
 from partify.priv import dump_user_privileges, user_has_privilege
+from partify.selection import needs_voting
 
 @app.route('/player', methods=['GET'])
 @with_authentication
@@ -49,7 +50,7 @@ def player():
         if user_has_privilege(user, "ADMIN_INTERFACE") and user_has_privilege(user, "ADMIN_CONFIG"):
             return redirect(url_for("admin_console"))
 
-    return render_template("player.html", user=user, user_play_queue=users_tracks, global_play_queue=global_queue, config=config, user_privs=dump_user_privileges(user))
+    return render_template("player.html", user=user, user_play_queue=users_tracks, global_play_queue=global_queue, config=config, voting_enabled=needs_voting[app.config['SELECTION_SCHEME']], user_privs=dump_user_privileges(user))
 
 @app.route('/player/status/poll', methods=['GET'])
 @with_authentication
@@ -108,6 +109,8 @@ def _get_status(mpd):
         status[key] = current_song.get(key, 0 if key == 'time' else '')
     for key in ('state', 'volume', 'elapsed', 'consume', 'random', 'repeat', 'single'):
         status[key] = player_status.get(key, 0 if key == 'elapsed' else '')
+
+    status['pqe_id'] = getattr((PlayQueueEntry.query.filter(PlayQueueEntry.mpd_id == status['id']).first()), 'id', None)
 
     # Throw in a timestamp to assist synchronization
     status['response_time'] = time.time()

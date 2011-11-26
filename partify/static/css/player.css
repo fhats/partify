@@ -107,12 +107,19 @@ td.results_empty {
 /* these min-heights needs to be here because of a jQuery UI bug */
 button.add_btn,
 button#page_left,
-button#page_right
+button#page_right,
+button.vote_up_button,
+button.vote_down_button
 {
     min-height: 19px;
     width: 18px;
     vertical-align: middle;
     border: 1px solid #1f1f1f !important;
+}
+button.vote_up_button span,
+button.vote_down_button span
+{
+    left: 0em !important;
 }
 button.rm_btn{
     min-height: 18px;

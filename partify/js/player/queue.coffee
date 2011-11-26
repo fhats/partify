@@ -28,6 +28,7 @@ $ ->
     window.Partify.Config.lastFmApiKey = config_lastfm_api_key;
     window.Partify.Config.lastFmApiSecret = config_lastfm_api_secret;
     window.Partify.Config.user_id = config_user_id;
+    window.Partify.Config.voting_enabled = config_voting_enabled;
     window.Partify.LastCache = new LastFMCache()
     window.Partify.LastFM = new LastFM
         apiKey: window.Partify.Config.lastFmApiKey
@@ -137,9 +138,13 @@ class GlobalQueue extends Queue
         up_next_dsp = @tracks[1..3]
         @up_next_div.append this._buildUpNextDisplayItem(track, track.mpd_id==up_next_dsp[-1..-1][0].mpd_id) for track in up_next_dsp
 
+        if window.Partify.Config.voting_enabled
+            this._buildVotingButtons()
+
         # Update the user playing the track
         $("#player_info_user_name").empty()
         $("#player_info_skip_div").empty()
+        $("#player_info_vote_div").empty()
         $("#user_avatar_container").empty()
         if @tracks.length > 0
             $("#player_info_user_name").append @tracks[0].user
@@ -151,6 +156,8 @@ class GlobalQueue extends Queue
                     this.removeTrack(@tracks[0])
                     e.stopPropagation()
                     $("#player_skip_btn").remove()
+            else if window.Partify.Config.voting_enabled
+                this._buildPlayerVoteButtons(@tracks[0].id)
 
             # Update the now playing artist picture
             window.Partify.LastFM.artist.getInfo 
@@ -175,30 +182,144 @@ class GlobalQueue extends Queue
             $('#now_playing_artist_image').attr 'src', "http://debbiefong.com/images/10%20t.jpg"
 
     _buildDisplayHeader: () ->
+        user_width = 3
+        album_width = 6
+        voting_hdr = ""
+        if window.Partify.Config.voting_enabled
+            user_width = 2
+            album_width = 5
+            voting_hdr = "<span class='span-2'>Vote</span>"
         "
         <li class='queue_header span-23 last'>
             <span class='span-1 padder'>&nbsp;</span>
             <span class='span-6'>Title</span>
             <span class='span-6'>Artist</span>
-            <span class='span-6'>Album</span>
-            <span class='span-3'>User</span>
+            <span class='span-#{album_width}'>Album</span>
+            <span class='span-#{user_width}'>User</span>
+            #{voting_hdr}
             <span class='span-1 right'>Time</span>
             <span class='span-1 last padder'>&nbsp;</span>
         </li>
         "
 
     _buildDisplayItem: (track) ->
+        user_width = 3
+        album_width = 6
+        voting_section = ""
+        if window.Partify.Config.voting_enabled
+            user_width = 2
+            album_width = 5
+            voting_section = "
+            <span class='span-2'><button class='vote_up_button'></button>
+            <button class='vote_down_button'></button></span>
+            "
         "
         <li class='queue_item queue_item_sortable ui-state-default small span-23 last'>
+            <input type='hidden' name='id' value='#{track.id}'>
             <span class='span-1 padder'>&nbsp;</span>
             <span class='span-6'>#{track.title}</span>
             <span class='span-6'>#{track.artist}</span>
-            <span class='span-6'>#{track.album}</span>
-            <span class='span-3'>#{track.user}</span>
+            <span class='span-#{album_width}'>#{track.album}</span>
+            <span class='span-#{user_width}'>#{track.user}</span>
+            #{voting_section}
             <span class='span-1 right'>#{secondsToTimeString(track.length)}</span>
             <span class='span-1 last padder'>&nbsp;</span>
         </li>
         "
+
+    _buildVotingButtons: () ->
+        $("li.queue_item span button.vote_up_button").each (idx, up_btn) ->
+            id = $(up_btn).parents("span").first().siblings("input:hidden").first().attr 'value'
+            id = parseInt(id)
+
+            $(up_btn).button
+                icons:
+                    primary: "ui-icon-circle-arrow-n"
+            
+            $(up_btn).click (e) ->
+                e.stopPropagation()
+                btn = $(e.currentTarget)
+                btn.button 'disable'
+                btn.button 'option', 'icons',
+                    primary: 'ui-icon-loading'
+                $.ajax(
+                    url: "/vote/up"
+                    type: 'POST'
+                    data:
+                        pqe: id
+                    success: (data) ->
+                        if data.status == "ok"
+                            btn.button 'option', 'icons',
+                                primary: "ui-icon-circle-arrow-n"
+                            btn.siblings(".vote_down_button").first().button 'enable'
+                            if id == window.Partify.Queues.GlobalQueue.tracks[0].id
+                                $("button#player_info_vote_up").button 'disable'
+                                $("button#player_info_vote_down").button 'enable'
+                        else
+                            this.error()
+                    error: () =>
+                        btn.button 'enable'
+                        btn.button 'option', 'icons',
+                            primary: "ui-icon-circle-arrow-n"
+                )
+        $("li.queue_item span button.vote_down_button").each (idx, dwn_btn) ->
+            id = $(dwn_btn).parents("span").first().siblings("input:hidden").first().attr 'value'
+            id = parseInt(id)
+
+            $(dwn_btn).button
+                icons:
+                    primary: "ui-icon-circle-arrow-s"
+            
+            $(dwn_btn).click (e) ->
+                e.stopPropagation()
+                btn = $(e.currentTarget)
+                btn.button 'disable'
+                btn.button 'option', 'icons',
+                    primary: 'ui-icon-loading'
+                $.ajax(
+                    url: "/vote/down"
+                    type: 'POST'
+                    data:
+                        pqe: id
+                    success: (data) ->
+                        if data.status == "ok"
+                            btn.button 'option', 'icons',
+                                primary: "ui-icon-circle-arrow-s"
+                            btn.siblings(".vote_up_button").first().button 'enable'
+                            if id == window.Partify.Queues.GlobalQueue.tracks[0].id
+                                console.log $("button#player_info_vote_down")
+                                $("button#player_info_vote_down").button 'disable'
+                                $("button#player_info_vote_up").button 'enable'
+                        else
+                            this.error()
+                    error: () =>
+                        btn.button 'enable'
+                        btn.button 'option', 'icons',
+                            primary: "ui-icon-circle-arrow-s"
+                )
+        $("li.queue_item input:hidden").each (idx, id_input) ->
+            id = $(id_input).attr 'value'
+            id = parseInt(id)
+
+            $.ajax(
+                url: "/vote/status"
+                type: 'GET'
+                data:
+                    pqe: id
+                success: (data) ->
+                    if data.direction == -1
+                        $(id_input).parents("li").first().children("span").children("button.vote_down_button").button 'disable'
+                        if id == window.Partify.Queues.GlobalQueue.tracks[0].id
+                            $("button#player_info_vote_down").button 'disable'
+                            $("button#player_info_vote_up").button 'enable'
+                    if data.direction == 1
+                        $(id_input).parents("li").first().children("span").children("button.vote_up_button").button 'disable'
+                        if id == window.Partify.Queues.GlobalQueue.tracks[0].id
+                            console.log 
+                            $("button#player_info_vote_up").button 'disable'
+                            $("button#player_info_vote_down").button 'enable'
+            )
+
 
     _buildPlayerImage: (src) ->
         "
@@ -208,6 +329,83 @@ class GlobalQueue extends Queue
     _buildUpNextDisplayItem: (track, last) ->
         comma = if last then '' else ', '
         "#{track.artist} - #{track.title}#{comma}"
+
+    _buildPlayerVoteButtons: (pqe_id) ->
+        $("#player_info_vote_div").append "
+        <span class='darker'>Vote on this track:</span><br />
+        <button id='player_info_vote_up' class='vote_up_button'></button>
+        <button id='player_info_vote_down' class='vote_down_button'></button>
+        "
+
+        $("button#player_info_vote_up").button
+            icons:
+                primary: "ui-icon-circle-arrow-n"
+        $("button#player_info_vote_down").button
+            icons:
+                primary: "ui-icon-circle-arrow-s"
+
+        $.ajax(
+            url: "/vote/status"
+            type: 'GET'
+            data:
+                pqe: pqe_id
+            success: (data) ->
+                if data.direction == -1
+                    $("button#player_info_vote_down").button 'disable'
+                if data.direction == 1
+                    $("button#player_info_vote_up").button 'disable'
+        )
+
+        $("button#player_info_vote_up").click (e) ->
+            e.stopPropagation()
+            btn = $(e.currentTarget)
+            btn.button 'disable'
+            btn.button 'option', 'icons',
+                primary: 'ui-icon-loading'
+            $.ajax(
+                url: "/vote/up"
+                type: 'POST'
+                data:
+                    pqe: pqe_id
+                success: (data) ->
+                    if data.status == "ok"
+                        btn.button 'option', 'icons',
+                            primary: "ui-icon-circle-arrow-n"
+                        $("button#player_info_vote_down").button 'enable'
+                        window.Partify.Queues.GlobalQueue.queue_div.children("li.queue_item").first().children("span").children("button.vote_down_button").button 'enable'
+                        window.Partify.Queues.GlobalQueue.queue_div.children("li.queue_item").first().children("span").children("button.vote_up_button").button 'disable'
+                    else
+                        this.error()
+                error: () =>
+                    btn.button 'enable'
+                    btn.button 'option', 'icons',
+                        primary: "ui-icon-circle-arrow-n"
+            )   
+        $("button#player_info_vote_down").click (e) ->
+            e.stopPropagation()
+            btn = $(e.currentTarget)
+            btn.button 'disable'
+            btn.button 'option', 'icons',
+                primary: 'ui-icon-loading'
+            $.ajax(
+                url: "/vote/down"
+                type: 'POST'
+                data:
+                    pqe: pqe_id
+                success: (data) ->
+                    if data.status == "ok"
+                        btn.button 'option', 'icons',
+                            primary: "ui-icon-circle-arrow-s"
+                        $("button#player_info_vote_up").button 'enable'
+                        window.Partify.Queues.GlobalQueue.queue_div.children("li.queue_item").first().children("span").children("button.vote_up_button").button 'enable'
+                        window.Partify.Queues.GlobalQueue.queue_div.children("li.queue_item").first().children("span").children("button.vote_down_button").button 'disable'
+                    else
+                        this.error()
+                error: () =>
+                    btn.button 'enable'
+                    btn.button 'option', 'icons',
+                        primary: "ui-icon-circle-arrow-s"
+            )    
 
 class UserQueue extends Queue
     constructor: (queue_div) ->

@@ -38,6 +38,7 @@ along with Partify.  If not, see <http://www.gnu.org/licenses/>.
         config_lastfm_api_key = '{{ config.lastfm_api_key }}';
         config_lastfm_api_secret = '{{ config.lastfm_api_secret }}';
         config_user_id = {{ user.id }};
+        config_voting_enabled = {{ voting_enabled | lower }}
     </script>
 {% endblock %}
 
@@ -88,6 +89,7 @@ Player - Partify
                     <div>
                         <div style="float:left; margin-bottom: 10px"><b><span id="player_info_user_name">{{user.username}}</span></b></div>
                         <div style="clear:both; float: left" class="small" id="player_info_skip_div"></div>
+                        <div style="claer:both; float: left" class="small" id="player_info_vote_div"></div>
                     </div>
                 </div>
                 <div id="on_deck" class="span-23 last">

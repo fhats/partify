@@ -39,6 +39,7 @@ from partify.models import PlayHistoryEntry
 from partify.models import PlayQueueEntry
 from partify.models import Track
 from partify.models import User
+from partify.models import Vote
 from partify.player import get_user_queue, _get_status
 from partify.selection import get_selection_scheme
 
@@ -328,6 +329,7 @@ def _update_track_history(mpd):
             for vote in Vote.query.filter(Vote.pqe == currently_playing_track).all():
                 vote.phe = history_entry
                 vote.pqe = None
+            db.session.commit()
 
 @with_mpd
 def on_playlist_update(mpd):

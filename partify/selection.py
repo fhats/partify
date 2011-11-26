@@ -88,3 +88,8 @@ selection_schemes = {
     'ROUND_ROBIN': round_robin,
     'FCFS': first_come_first_served
 }
+
+needs_voting = {
+    'ROUND_ROBIN': True,
+    'FCFS': False
+}
