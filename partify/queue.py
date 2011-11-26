@@ -262,7 +262,10 @@ def _ensure_mpd_playlist_consistency(mpd):
         # Remove the votes for this track, too
         votes = [v for v in Vote.query.filter(Vote.pqe_id == purge_entry.id).all()]
         for v in votes:
-            db.session.delete(v)
+            if v.phe == None:
+                db.session.delete(v)
+            else:
+                v.pqe = None
         db.session.delete(purge_entry)
         app.logger.debug("Removing Play Queue Entry %r" % purge_entry)
     db.session.commit()
@@ -332,7 +335,6 @@ def _update_track_history(mpd):
             # Transfer all the votes from the the PQE to the PHE
             for vote in Vote.query.filter(Vote.pqe == currently_playing_track).all():
                 vote.phe = history_entry
-                vote.pqe = None
             db.session.commit()
 
 @with_mpd
