@@ -259,6 +259,10 @@ def _ensure_mpd_playlist_consistency(mpd):
     # Purge all the database entries that don't have IDs present
     purge_entries = PlayQueueEntry.query.filter(not_(PlayQueueEntry.mpd_id.in_(playlist_ids))).all()
     for purge_entry in purge_entries:
+        # Remove the votes for this track, too
+        votes = [v for v in Vote.query.filter(Vote.pqe_id == purge_entry.id).all()]
+        for v in votes:
+            db.session.delete(v)
         db.session.delete(purge_entry)
         app.logger.debug("Removing Play Queue Entry %r" % purge_entry)
     db.session.commit()

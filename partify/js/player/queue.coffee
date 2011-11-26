@@ -209,10 +209,13 @@ class GlobalQueue extends Queue
         if window.Partify.Config.voting_enabled
             user_width = 2
             album_width = 5
-            voting_section = "
-            <span class='span-2'><button class='vote_up_button'></button>
-            <button class='vote_down_button'></button></span>
-            "
+            if track.user_id != window.Partify.Config.user_id
+                voting_section = "
+                <span class='span-2'><button class='vote_up_button'></button>
+                <button class='vote_down_button'></button></span>
+                "
+            else
+                voting_section = "<span class='span-2'>&nbsp;</span>"
         "
         <li class='queue_item queue_item_sortable ui-state-default small span-23 last'>
             <input type='hidden' name='id' value='#{track.id}'>

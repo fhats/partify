@@ -31,7 +31,7 @@ class ConfigurationForm(Form):
     Each of these fields should be the loweredcased name of the corresponding configuration field.
     """
     
-    selection_scheme = SelectField("Track Selection", [validators.Required()], choices=[('ROUND_ROBIN', 'Round Robin'), ('FCFS', 'First-Come, First-Served')])
+    selection_scheme = SelectField("Track Selection", [validators.Required()], choices=[('ROUND_ROBIN', 'Round Robin'), ('FCFS_VOTE', 'First-Come, First-Served with Voting'), ('FCFS', 'First-Come, First-Served')])
     mpd_server_hostname = TextField("MPD Server Hostname", [validators.Required()])
     mpd_server_port = IntegerField("MPD Server Port", [validators.Required(), validators.NumberRange(min=0, max=65535)])
     server_host = TextField("Hostname to listen on", [validators.Required()])

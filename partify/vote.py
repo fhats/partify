@@ -5,6 +5,7 @@ from partify import app
 from partify.database import db
 from partify.decorators import with_authentication
 from partify.models import PlayQueueEntry, Vote
+from partify.queue import ensure_mpd_playlist_consistency
 
 @app.route("/vote/status", methods=['GET'])
 @with_authentication
@@ -40,6 +41,7 @@ def vote_up():
             db.session.commit()
         vote.direction = 1
         db.session.commit()
+        ensure_mpd_playlist_consistency()
         return jsonify(status="ok")
     else:
         return jsonify(status="error", message="You must specify the id of the PlayQueueEntry to vote for it!")
@@ -60,6 +62,7 @@ def vote_down():
             db.session.commit()
         vote.direction = -1
         db.session.commit()
+        ensure_mpd_playlist_consistency()
         return jsonify(status="ok")
     else:
         return jsonify(status="error", message="You must specify the id of the PlayQueueEntry to vote for it!")

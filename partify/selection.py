@@ -20,7 +20,7 @@ from itertools import izip_longest
 
 from sqlalchemy import and_
 
-from partify.models import PlayQueueEntry, User
+from partify.models import PlayQueueEntry, User, Vote
 
 def get_selection_scheme(scheme):
     return selection_schemes[scheme]
@@ -84,12 +84,37 @@ def first_come_first_served(mpd, db_tracks):
 
     _match_tracks_with_users(mpd, db_tracks, user_list)
 
+def first_come_first_served_with_voting(mpd, db_tracks):
+    # TODO: replace this with a nice SQLAlchemy query
+    def sort_fn(x,y):
+        votes_x = sum([v.direction for v in Vote.query.filter(Vote.pqe_id==x.id).all()])
+        votes_y = sum([v.direction for v in Vote.query.filter(Vote.pqe_id==y.id).all()])
+        if votes_x == votes_y:
+            if x.time_added < y.time_added:
+                return 1
+            elif x.time_added == y.time_added:
+                return 0
+            else:
+                return -1    
+        else:
+            return votes_x - votes_y
+
+    sorted_tracks = sorted(db_tracks[1:], cmp=sort_fn, reverse=True)
+
+    for (sorted_track, db_track) in zip(sorted_tracks, db_tracks[1:]):
+        if sorted_track.mpd_id != db_track.mpd_id:
+            mpd.moveid(sorted_track.mpd_id, db_track.playback_priority)
+            break
+
+
 selection_schemes = {
     'ROUND_ROBIN': round_robin,
-    'FCFS': first_come_first_served
+    'FCFS': first_come_first_served,
+    'FCFS_VOTE': first_come_first_served_with_voting
 }
 
 needs_voting = {
-    'ROUND_ROBIN': True,
-    'FCFS': False
+    'ROUND_ROBIN': False,
+    'FCFS': False,
+    'FCFS_VOTE': True
 }
