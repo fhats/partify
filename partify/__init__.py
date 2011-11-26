@@ -56,7 +56,7 @@ def on_startup():
 def start():
     """Starts the WebApp."""
     # TODO: Figure out these imports
-    from partify import admin, history, player, queue, track, user
+    from partify import admin, history, player, queue, statistics, track, user
     init_db()
     on_startup()
     

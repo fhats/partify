@@ -101,6 +101,7 @@ class Player
                 if data.global_queue
                     window.Partify.Queues.GlobalQueue.update(data.global_queue)
                     window.Partify.History.update()
+                    window.Partify.Statistics.update()
                 if data.user_queue
                     window.Partify.Queues.UserQueue.update data.user_queue
         )

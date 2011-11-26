@@ -215,15 +215,17 @@ img.album_image {
 }
 
 span#history_last_updated,
+span#statistics_last_updated,
 span#page_info {
     font-style: italic;
 }
 
 span#history_last_updated,
+span#statistics_last_updated,
 span#ipp_selector,
 span#page_info,
 span#page_selector {
-    margin-bottom: 0px !important;
+    margin-bottom: 5px !important;
 }
 
 abbr {
@@ -232,4 +234,23 @@ abbr {
 
 span.darker {
     color: #999;
+}
+
+div#stats_widget h4 {
+    margin-bottom: .25em;
+}
+
+div.top_stat {
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
+    overflow: hidden;
+}
+
+div.stat_border {
+    border: 1px solid #414141;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -khtml-border-radius: 4px;
+    border-radius: 4px;
+    padding: 5px;
 }

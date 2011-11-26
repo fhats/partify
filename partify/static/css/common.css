@@ -40,9 +40,15 @@ div#content_container{
     border: 1px solid #1f1f1f;
 }
 
-h1, h2, h3, h4 {
+h1, h2, h3, h4, h5, h6 {
     color: #FD971F;
     font-family: "Comfortaa", sans-serif;
+}
+
+h5, h6 {
+    text-transform: capitalize;
+    font-weight: normal;
+    margin-bottom: 5px;
 }
 
 table {
