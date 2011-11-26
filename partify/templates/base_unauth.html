@@ -18,6 +18,16 @@ along with Partify.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 {% extends "i_love_this_web_thing.html" %}
+{% from "_util.html" import css_include, js_include %}
+
+{% block css_head %}
+    {{ css_include('css/jquery-ui/partify/jquery-ui-1.8.14.custom.css') }}
+{% endblock %}
+
+{% block js_head %}
+    {{ js_include('js/lib/jquery-1.6.2.js') }}
+    {{ js_include('js/lib/jquery-ui-1.8.14.custom.min.js') }}
+{% endblock %}
 
 {% block title %} 
 {% block sub_title %}{% endblock %} - Partify

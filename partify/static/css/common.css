@@ -69,3 +69,18 @@ tbody tr:nth-child(even) td,
 tbody tr.even td{
     background: #383838;
 }
+
+.errorbox span.error-icon{
+    float: left; 
+    margin-right: .3em;
+    vertical-align: middle;
+    display: inline-block;
+}
+.errorbox p:last-child {
+    margin-bottom: 0px;
+}
+
+.form_error {
+    color: #F33;
+    margin-left: 5px;
+}

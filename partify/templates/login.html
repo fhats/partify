@@ -28,6 +28,13 @@ Login
 {% block body %}
 
 <div id="unauth_form_container" class="container prepend-top">
+    {% for message in get_flashed_messages() %}
+    <div class="prepend-6 span-12 append-6 append-bottom last">
+        <span class="span-12 last ui-state-error ui-state-corner-all errorbox">
+            <span class="ui-icon ui-icon-alert error-icon"></span><p>{{message}}</p>
+        </span>
+    </div>
+    {% endfor %}
     <div id="unauth_login_form" class="prepend-6 span-12 append-6 last">
         <form method="POST" action="{{url_for('login_post')}}">
             {{ render_field(form.username) }}

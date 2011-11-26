@@ -28,12 +28,6 @@ along with Partify.  If not, see <http://www.gnu.org/licenses/>.
 {% endmacro %}
 
 {% macro render_field(field) %}
-<div span="clear prepend-6 span-6">{{ field.label }}</div>
-<div span="span-6 append-6 last">{{ field(**kwargs)|safe}}
-    {% if field.errors %}
-        <ul class="errors">
-            {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
-        </ul>
-    {% endif %}
-</div>
+<div span="clear prepend-6 span-6">{{ field.label }}{% if field.errors %} <span class='form_error'>*{% for error in field.errors %}{{error}}{% endfor %}{% endif %}</span></div>
+<div span="span-6 append-6 last">{{ field(**kwargs)|safe}}</div>
 {% endmacro %}

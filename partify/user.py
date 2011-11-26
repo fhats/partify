@@ -15,6 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Partify.  If not, see <http://www.gnu.org/licenses/>."""
 
+from flask import flash
 from flask import jsonify
 from flask import redirect
 from flask import render_template
@@ -54,6 +55,9 @@ def account_settings_update():
         if form.current_password.data != "" and form.new_password.data != "":
             if check_password_hash(user.password, form.current_password.data):
                 user.password = generate_password_hash(form.new_password.data)
+    else:
+        return render_template("account_settings.html", user=user, form=form, user_privs=dump_user_privileges(user))
+
     
     db.session.commit()
 
@@ -98,6 +102,8 @@ def login_post():
         result = User.query.filter((User.username==form.username.data)).first()
         if result is not None and check_password_hash(result.password, form.password.data):
             session['user'] = dict((k, getattr(result, k)) for k in ('name', 'id', 'username'))
+        else:
+            flash("The username/password combination you entered was not found in the database. Please check your information and try again.")
         return redirect(url_for('main'))
     else:
         return render_template("login.html", form=form)
