@@ -72,7 +72,7 @@ li.queue_item:nth-child(even){
     background: #393831;
 }
 
-li.queue_item > span{
+li.queue_item > span:not(.grip){
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
