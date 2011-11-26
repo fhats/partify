@@ -106,7 +106,8 @@ td.results_empty {
 
 button.add_btn,
 button#page_left,
-button#page_right{
+button#page_right
+{
     height: 19px;
     width: 18px;
     vertical-align: middle;
@@ -119,7 +120,8 @@ button.rm_btn{
     margin-bottom: 3px;
     border: 1px solid #1f1f1f !important;
 }
-button.album_add_btn{
+button.album_add_btn,
+input[type='submit']{
     border: 1px solid #1f1f1f !important;
 }
 

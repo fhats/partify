@@ -37,6 +37,7 @@ class Search
         @sortmode = {category: "", asc: true}
 
     initializeFormHandlers: () ->
+        $("#track_search_form input:submit").button()
         $("#track_search_form").submit (e) =>
             e.stopPropagation()
             title = $("input#search_title").val()
