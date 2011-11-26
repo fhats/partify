@@ -77,11 +77,11 @@ class Statistics
 
 		stats_container = $("div##{label}_container")
 
-		this._buildStatisticsSegment(section.top_artists, 'artists', stats_container)
-		this._buildStatisticsSegment(section.top_albums, 'albums', stats_container)
-		this._buildStatisticsSegment(section.top_users, 'users', stats_container)
+		this._buildStatisticsSegment(section.top_artists, 'artists', stats_container, label)
+		this._buildStatisticsSegment(section.top_albums, 'albums', stats_container, label)
+		this._buildStatisticsSegment(section.top_users, 'users', stats_container, label)
 
-	_buildStatisticsSegment: (segment, type, stats_container) ->
+	_buildStatisticsSegment: (segment, type, stats_container, label) ->
 		segment_vpad = if type == "users" then "" else "append-bottom"
 		stats_container.append "
 		<div class='span-23 last #{segment_vpad}'><h5>Top #{type}</h5></div>"
@@ -91,46 +91,46 @@ class Statistics
 		max_rank = Math.max((rank for rank, e of segment)...)
 		if max_rank > 0
 			if type == "artists"
-				this._buildTopArtist segment[rank].artist, segment[rank].plays, rank, segment_container for rank in [1..max_rank]
+				this._buildTopArtist segment[rank].artist, segment[rank].plays, rank, segment_container, label for rank in [1..max_rank]
 			else if type == "albums"
-				this._buildTopAlbum segment[rank].artist, segment[rank].plays, segment[rank].album, rank, segment_container for rank in [1..max_rank]
+				this._buildTopAlbum segment[rank].artist, segment[rank].plays, segment[rank].album, rank, segment_container, label for rank in [1..max_rank]
 			else if type == "users"
-				this._buildTopUser segment[rank].username, segment[rank].user, segment[rank].plays, rank, segment_container for rank in [1..max_rank]
+				this._buildTopUser segment[rank].username, segment[rank].user, segment[rank].plays, rank, segment_container, label for rank in [1..max_rank]
 			segment_container.append "<div class='span-#{ ((5 - max_rank) * 5) + 3} last'>&nbsp;</div>"
 		else
 			this._buildNoData segment_container
 
 
-	_buildTopArtist: (artist, plays, rank, segment_container) ->
+	_buildTopArtist: (artist, plays, rank, segment_container, label) ->
 		segment_container.append "
 		<div class='span-5'>
 			<div class='span-5 last top_stat'><span>#{artist}</span></div>
 			<div class='span-5 last'><span class='darker'>#{plays} plays</span></div>
-			<img class='span-5 last' id='top_artist_#{rank}' src />
+			<img class='span-5 last' id='#{label}_top_artist_#{rank}' src />
 		</div>
 		"
-		this._buildArtistImage artist, $("img#top_artist_#{rank}")
+		this._buildArtistImage artist, $("img##{label}_top_artist_#{rank}")
 
-	_buildTopAlbum: (artist, plays, album, rank, segment_container) ->
+	_buildTopAlbum: (artist, plays, album, rank, segment_container, label) ->
 		segment_container.append "
 		<div class='span-5'>
 			<div class='span-5 last top_stat'><span>#{album}</span></div>
 			<div class='span-5 last top_stat'><span class='darker'>by </span><span>#{artist}</span></div>
 			<div class='span-5 last'><span class='darker'>#{plays} plays</span></div>
-			<img class='span-5 last' id='top_album_#{rank}' />
+			<img class='span-5 last' id='#{label}_top_album_#{rank}' />
 		</div>
 		"
-		this._buildAlbumImage artist, album, $("img#top_album_#{rank}")
+		this._buildAlbumImage artist, album, $("img##{label}_top_album_#{rank}")
 	
-	_buildTopUser: (username, user, plays, rank, segment_container) ->
+	_buildTopUser: (username, user, plays, rank, segment_container, label) ->
 		segment_container.append "
 		<div class='span-5'>
 			<div class='span-5 last top_stat'><span>#{user}</span></div>
 			<div class='span-5 last'><span class='darker'>#{plays} plays</span></div>
-			<img id='top_user_#{rank}' />
+			<img id='#{label}_top_user_#{rank}' />
 		</div>
 		"
-		this._buildUserImage username, $("img#top_user_#{rank}")
+		this._buildUserImage username, $("img##{label}_top_user_#{rank}")
 
 	_buildArtistImage: (artist, img_element) ->
 		window.Partify.LastFM.artist.getInfo
