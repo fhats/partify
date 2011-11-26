@@ -324,6 +324,11 @@ def _update_track_history(mpd):
             db.session.add(history_entry)
             db.session.commit()
 
+            # Transfer all the votes from the the PQE to the PHE
+            for vote in Vote.query.filter(Vote.pqe == currently_playing_track).all():
+                vote.phe = history_entry
+                vote.pqe = None
+
 @with_mpd
 def on_playlist_update(mpd):
     """The subprocess that continuously IDLEs against the Mopidy server and ensures playlist consistency on playlist update."""

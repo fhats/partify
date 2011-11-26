@@ -101,6 +101,23 @@ class PlayHistoryEntry(db.Model):
     def __repr__(self):
         return "<%r played by %r at %r>" % (self.track, self.user, self.time_played)
 
+class Vote(db.Model):
+    """Represents a vote that was taken by a user on the track."""
+    __tablename__ = "vote"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship("User") 
+
+    pqe_id = db.Column(db.Integer, db.ForeignKey('play_queue_entry.id'))
+    pqe = db.relationship('PlayQueueEntry')
+
+    phe_id = db.Column(db.Integer, db.ForeignKey('play_history_entry.id'))
+    phe = db.relationship('PlayHistoryEntry')
+
+    direction = db.Column(db.Integer, default=0)
+
 class ConfigurationField(db.Model):
     """Represents a configuration field."""
     __tablename__ = "configuration_field"
