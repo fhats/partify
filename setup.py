@@ -14,7 +14,7 @@ def gen_data_files(*dirs):
 
 setup(
     name='Partify',
-    version='0.3',
+    version='0.4',
     author='Fred Hatfull',
     author_email='fred.hatfull@gmail.com',
     packages=['partify', 'partify.forms'],
