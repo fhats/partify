@@ -104,17 +104,18 @@ td.results_empty {
     background: #272822;
 }
 
+/* these min-heights needs to be here because of a jQuery UI bug */
 button.add_btn,
 button#page_left,
 button#page_right
 {
-    height: 19px;
+    min-height: 19px;
     width: 18px;
     vertical-align: middle;
     border: 1px solid #1f1f1f !important;
 }
 button.rm_btn{
-    height: 18px;
+    min-height: 18px;
     width: 18px;
     margin-top: 3px;
     margin-bottom: 3px;
