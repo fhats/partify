@@ -39,6 +39,7 @@ def load_config_from_db():
         'SERVER_HOST': '0.0.0.0',
         'SERVER_PORT': 5000, 
         'SESSION_SALT': _produce_random_data(),
+        'TESTING': False
     }
 
     # Transformations to be performed on the key in the DB in case it shouldn't be just a string
@@ -46,7 +47,8 @@ def load_config_from_db():
         'DEBUG': lambda x: bool(int(x)),
         'MPD_SERVER_PORT': int,
         'PROFILE': lambda x: bool(int(x)),
-        'SERVER_PORT': int
+        'SERVER_PORT': int,
+        'TESTING': lambda x: bool(int(x))
     }
 
     all_config_fields = ConfigurationField.query.all()
@@ -60,7 +62,6 @@ def load_config_from_db():
     for field, value in default_configuration.iteritems():
         if field not in [f.field_name for f in all_config_fields]:
             app.config[field] = value
-            app.logger.warning("Adding field %s with value %s" % (field, value))
             new_cfg_field = ConfigurationField(field_name=field, field_value=value)
             db.session.add(new_cfg_field)
     db.session.commit()
