@@ -67,7 +67,7 @@ class PlayerTestCase(LoggedInUserTestCase):
         assert 'user_queue' not in response_data
         assert 'global_queue' not in response_data
 
-        self.mpd.addid('spotify:track:6LDYVzxjDSAO92UZ5veM3u')
+        pl_update = 0
 
         response = self.app.get('/player/status/poll?current=%s' % pl_update)
         response_data = json.loads(response.data)

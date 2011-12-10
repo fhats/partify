@@ -16,9 +16,10 @@ You should have received a copy of the GNU General Public License
 along with Partify.  If not, see <http://www.gnu.org/licenses/>."""
 
 import time
-from multiprocessing import Manager, Queue
+from multiprocessing import Event, Manager, Queue
 
 from partify import ipc
+from partify.models import PlayQueueEntry
 from testing.data.sample_tracks import sample_tracks
 # Be careful with this...
 try:
@@ -29,18 +30,31 @@ except NameError:
 try:
     manager
 except NameError:
+    print "Create manager"
     manager = Manager()
 
 try:
-    track_list
+    idle_event
 except NameError:
-    track_list = manager.list()
+    idle_event = Event()
+
 
 
 class MockMPDClient(object):
     """A mock MPD client which does not actually connect to an MPD server but acts like it does."""
 
     connected = False
+
+    track_list = []
+
+    def send_idle(self):
+        global idle_event
+        idle_event.set()
+        idle_event.clear()
+    
+    def stop_idle(self):
+        global idle_event
+        idle_event.set()
 
     def connect(self, *args, **kwargs):
         connected = True
@@ -66,39 +80,65 @@ class MockMPDClient(object):
         return results
     
     def addid(self, filename):
-        global track_list
         for track in sample_tracks:
             if track['file'] == filename:
                 added_track = track
-                added_track['pos'] = max([x['pos'] for x in track_list] + [-1]) + 1
-                added_track['id'] = max([x['id'] for x in track_list] + [-1]) + 1
-                track_list.append(added_track)
+                added_track['pos'] = max([x['pos'] for x in self.track_list] + [-1]) + 1
+                added_track['id'] = max([x['id'] for x in self.track_list] + [-1]) + 1
+                self.track_list.append(added_track)
                 break
 
-        ipc.update_time('playlist', time.time())
+        self.send_idle()
+        #ipc.update_time('playlist', time.time())
         return added_track['pos']
 
     def moveid(self, track_id, dest_pos):
-        ipc.update_time('playlist', time.time())
+        # Find the track with track_id in in the track list
+        track = None
+
+        for c_track in self.track_list:
+            if c_track['id'] == track_id:
+                track = c_track
+
+        if track is None:
+            return None
+
+        split_pos = dest_pos if track['pos'] < dest_pos else dest_pos
+        self.track_list.remove(track)
+        first_part = self.track_list[:(split_pos)]
+        try:
+            first_part.remove(track)
+        except ValueError:
+            pass
+        second_part = self.track_list[(split_pos):]
+        try:
+            second_part.remove(track)
+        except ValueError:
+            pass
+        self.track_list = first_part + [track] + second_part
+
+        # Update the positions
+        for i in range(0, len(self.track_list)):
+            self.track_list[i]['pos'] = i
+
+        #ipc.update_time('playlist', time.time())
 
     def deleteid(self, track_id):
-        global track_list
-        removal_track = [track for track in track_list if track['id']==track_id][0]
-        track_list.remove(removal_track)
-        ipc.update_time('playlist', time.time())
+        removal_track = [track for track in self.track_list if track['id']==track_id][0]
+        self.track_list.remove(removal_track)
+        #ipc.update_time('playlist', time.time())
+        self.send_idle()
         return removal_track
 
     def playlistinfo(self):
-        global track_list
-        return track_list
+        return self.track_list
 
     def status(self):
-        global track_list
         return {'bitrate': '160',
          'consume': '1',
          'elapsed': '95.254',
          'playlist': '10',
-         'playlistlength': '%d' % len(track_list),
+         'playlistlength': '%d' % len(self.track_list),
          'random': '0',
          'repeat': '0',
          'single': '0',
@@ -110,12 +150,15 @@ class MockMPDClient(object):
          'xfade': '0'}
 
     def idle(self):
-        while True:
-            a = 1+1
+        global idle_event
+        idle_event.wait()
+        return ["playlist"]
 
     def currentsong(self):
-        global track_list
-        if len(track_list) > 0:
-            return [track for track in track_list if track['pos'] == 0][0]
+        if len(self.track_list) > 0:
+            return [track for track in self.track_list if track['pos'] == 0][0]
         else:
             return {} # Should be wahtever the default MPD empty response is.
+
+    def clear(self):
+        del self.track_list[:]

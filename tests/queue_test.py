@@ -18,11 +18,18 @@ along with Partify.  If not, see <http://www.gnu.org/licenses/>."""
 import json
 import random
 import time
+from itertools import cycle, dropwhile
+
 from testify import *
 
 from partify import app
+from partify.config import get_config_value, load_config_from_db, set_config_value
 from partify.models import PlayQueueEntry
+from partify.queue import add_track_from_spotify_url
+from partify.queue import _ensure_mpd_playlist_consistency
+from partify.queue import track_from_mpd_search_results
 from partify.queue import track_from_spotify_url
+from partify.queue import track_info_from_mpd_search_results
 from partify.queue import track_info_from_spotify_url
 from testing.data.sample_tracks import sample_tracks
 from testing.mocks.mock_mpd_client import MockMPDClient
@@ -34,6 +41,10 @@ class QueueTestCase(LoggedInUserTestCase):
 	@setup
 	def _with_mpd_client(self):
 		self.mpd = MockMPDClient()
+
+	@teardown
+	def _without_mpd_client(self):
+		self.mpd.stop_idle()
 
 	def test_queue_add(self):
 		track_to_add = self.random_sample_track()
@@ -78,7 +89,6 @@ class QueueTestCase(LoggedInUserTestCase):
 		
 		assert response.status_code == 200
 		assert response_data['status'] == 'ok'
-		assert not any([track['spotify_url'] == track_to_add['file'] for track in response_data['queue']])
 		assert track_to_add not in self.mpd.playlistinfo()
 
 	def test_queue_remove_bad_track(self):
@@ -198,7 +208,7 @@ class QueueTestCase(LoggedInUserTestCase):
 		assert track.artist == 'Stars'
 		assert track.album == 'Heart'
 		assert track.length == 243.147
-		assert track.date == '2003'
+		assert track.date == '2003' or track.date == '2003-01-01'
 		assert track.spotify_url == 'spotify:track:6LDYVzxjDSAO92UZ5veM3u'
 
 	def test_track_info_from_spotify_url(self):
@@ -209,8 +219,131 @@ class QueueTestCase(LoggedInUserTestCase):
 		assert track_info['artist'] == 'Stars'
 		assert track_info['album'] == 'Heart'
 		assert track_info['length'] == 243.147
-		assert track_info['date'] == '2003'
+		assert track_info['date'] == '2003' or track.date == '2003-01-01'
 		assert track_info['spotify_url'] == 'spotify:track:6LDYVzxjDSAO92UZ5veM3u'
+
+	def test_track_from_mpd_search_results(self):
+		track = track_from_mpd_search_results('spotify:track:6LDYVzxjDSAO92UZ5veM3u', self.mpd)
+		assert track is not None
+		assert track.title == 'Elevator Love Letter'
+		assert track.artist == 'Stars'
+		assert track.album == 'Heart'
+		assert track.length == 243.147
+		assert track.date == '2003-01-01' or track.date == '2003'
+		assert track.spotify_url == 'spotify:track:6LDYVzxjDSAO92UZ5veM3u'
+
+	def test_track_info_from_mpd_search_results(self):
+		track_info = track_info_from_spotify_url('spotify:track:6LDYVzxjDSAO92UZ5veM3u')
+		assert track_info is not None
+		assert all(k in track_info for k in ('title', 'artist', 'album', 'spotify_url', 'date', 'length'))
+		assert track_info['title'] == 'Elevator Love Letter'
+		assert track_info['artist'] == 'Stars'
+		assert track_info['album'] == 'Heart'
+		assert track_info['length'] == 243.147
+		assert track_info['date'] == '2003' or track.date == '2003-01-01'
+		assert track_info['spotify_url'] == 'spotify:track:6LDYVzxjDSAO92UZ5veM3u'
+
+	def test_nxtrack_purge(self):
+		self.mpd.clear()
+		track = track_from_spotify_url("spotify:track:6LDYVzxjDSAO92UZ5veM3u")
+		self.db.session.add(PlayQueueEntry(track=track, mpd_id=0))
+		self.db.session.commit()
+		_ensure_mpd_playlist_consistency(self.mpd)
+		assert len(self.mpd.playlistinfo()) == 0
+		assert len(PlayQueueEntry.query.all()) == 0
+
+	def test_add_anon_track(self):
+		self.mpd.clear()
+		_ensure_mpd_playlist_consistency(self.mpd)
+		self.mpd.addid("spotify:track:6LDYVzxjDSAO92UZ5veM3u")
+		_ensure_mpd_playlist_consistency(self.mpd)
+		assert len(self.mpd.playlistinfo()) == 1
+		assert len(PlayQueueEntry.query.all()) == 1
+		db_entry = PlayQueueEntry.query.first()
+		assert db_entry.track.spotify_url == "spotify:track:6LDYVzxjDSAO92UZ5veM3u"
+		assert db_entry.user is None
+
+	def test_round_robin_selection(self):
+		set_config_value('SELECTION_SCHEME', 'ROUND_ROBIN')
+		load_config_from_db()
+		self.mpd.clear()
+		_ensure_mpd_playlist_consistency(self.mpd)
+		assert len(self.mpd.playlistinfo()) == 0
+		assert len(PlayQueueEntry.query.all()) == 0
+
+		print get_config_value('SELECTION_SCHEME')
+
+		# Simulate 5 users queueing up 10 tracks each in serial
+		users = []
+		for i in range(1, 4):
+			user = self.create_test_user()
+			users.append(user)
+			for ii in range(1, 4):
+				track = self.random_sample_track()
+				add_track_from_spotify_url(self.mpd, track['file'], user.id)
+
+		first_user = users[0]
+		users = sorted(users, key=lambda x: x.username)
+		users = cycle(users)
+		users = dropwhile(lambda x: x != first_user, users)
+
+		# Simulate the callback chain that would occur in the wild
+		last_order = []
+		while last_order != [i['id'] for i in self.mpd.playlistinfo()]:
+			last_order = [i['id'] for i in self.mpd.playlistinfo()]
+			_ensure_mpd_playlist_consistency(self.mpd)
+
+		mpd_playlist = self.mpd.playlistinfo()
+		db_tracks = PlayQueueEntry.query.order_by(PlayQueueEntry.playback_priority.asc()).all()
+
+		for (pqe, mpd_track) in zip(db_tracks, mpd_playlist):
+			try:
+				assert pqe.playback_priority == mpd_track['pos']
+			except:
+				import ipdb; ipdb.set_trace()
+				raise
+		
+		for (pqe, prop_user) in zip(db_tracks, users):
+			try:
+				assert pqe.user == prop_user
+			except:
+				import ipdb; ipdb.set_trace()
+				raise
+
+	def test_fcfs_selection(self):
+		set_config_value('SELECTION_SCHEME', 'FCFS')
+		load_config_from_db()
+		self.mpd.clear()
+		_ensure_mpd_playlist_consistency(self.mpd)
+		assert len(self.mpd.playlistinfo()) == 0
+		assert len(PlayQueueEntry.query.all()) == 0
+
+		# Simulate 5 users queueing up 10 tracks each in serial
+		users = []
+		for i in range(1, 4):
+			user = self.create_test_user()
+			for i in range(1, 4):
+				users.append(user)
+				track = self.random_sample_track()
+				add_track_from_spotify_url(self.mpd, track['file'], user.id)
+
+		# Simulate the callback chain that would occur in the wild
+		last_order = []
+		while last_order != [i['id'] for i in self.mpd.playlistinfo()]:
+			last_order = [i['id'] for i in self.mpd.playlistinfo()]
+			_ensure_mpd_playlist_consistency(self.mpd)
+
+		mpd_playlist = self.mpd.playlistinfo()
+		db_tracks = PlayQueueEntry.query.order_by(PlayQueueEntry.playback_priority.asc()).all()
+
+		for (pqe, mpd_track) in zip(db_tracks, mpd_playlist):
+			assert pqe.playback_priority == mpd_track['pos']
+		
+		for (pqe, prop_user) in zip(db_tracks, users):
+			assert pqe.user == prop_user
+
+	def test_fcfs_with_voting_selection(self):
+		raise NotImplemented
 
 	def random_sample_track(self):
 		r = random.Random()

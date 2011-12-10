@@ -15,6 +15,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Partify.  If not, see <http://www.gnu.org/licenses/>."""
 
+import time
+
 from multiprocessing import Lock, Manager
 
 # State that should only be managed from within the functions in this script
@@ -58,6 +60,7 @@ def init_times():
 		manager = Manager()
 	if last_updated_times is None:
 		last_updated_times = manager.dict()
+	last_updated_times["playlist"] = time.time()
 
 def update_time(key, time):
 	global manager

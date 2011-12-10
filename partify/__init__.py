@@ -50,8 +50,9 @@ def on_startup():
     ipc.update_time('playlist', time.time())
 
     # Start the process which subscribes to MPD events using the IDLE command
-    mpd_event_listener = Process(target=on_playlist_update)
-    mpd_event_listener.start()
+    if not app.config['TESTING']:
+        mpd_event_listener = Process(target=on_playlist_update)
+        mpd_event_listener.start()
 
 def start():
     """Starts the WebApp."""

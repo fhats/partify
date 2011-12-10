@@ -140,7 +140,10 @@ def list_user_queue():
     user_queue = get_user_queue(session['user']['id'])
     return jsonify(status="ok", result=user_queue)
 
-def add_track_from_spotify_url(mpd, spotify_url):
+def add_track_from_spotify_url(mpd, spotify_url, user_id=None):
+    if user_id is None:
+        user_id = session['user']['id']
+
     track = track_from_spotify_url(spotify_url)
 
     if track is None:
@@ -150,7 +153,7 @@ def add_track_from_spotify_url(mpd, spotify_url):
 
     # Add the track to the play queue
     # Disabling this for now since the playlist consistency function should figure it out
-    db.session.add( PlayQueueEntry(track=track, user_id=session['user']['id'], mpd_id=mpd_id) )
+    db.session.add( PlayQueueEntry(track=track, user_id=user_id, mpd_id=mpd_id) )
     db.session.commit()
 
     return track
@@ -255,7 +258,7 @@ def _ensure_mpd_playlist_consistency(mpd):
     """
     playlist_tracks = mpd.playlistinfo()
     playlist_ids = [track['id'] for track in playlist_tracks]
-    
+
     # Purge all the database entries that don't have IDs present
     purge_entries = PlayQueueEntry.query.filter(not_(PlayQueueEntry.mpd_id.in_(playlist_ids))).all()
     for purge_entry in purge_entries:
@@ -267,7 +270,6 @@ def _ensure_mpd_playlist_consistency(mpd):
             else:
                 v.pqe = None
         db.session.delete(purge_entry)
-        app.logger.debug("Removing Play Queue Entry %r" % purge_entry)
     db.session.commit()
 
     # Next, make sure that we have a database entry for each track in the MPD queue
@@ -279,6 +281,7 @@ def _ensure_mpd_playlist_consistency(mpd):
             # Do some checking here to make sure that all of the information is correct...
             # Ensure that the playback position is correct
             queue_track.playback_priority = track['pos']
+            db.session.add(queue_track)
         else:
             # We need to add the track to the Partify representation of the Play Queue
             new_track = track_from_spotify_url(track['file'])
@@ -300,6 +303,8 @@ def _ensure_mpd_playlist_consistency(mpd):
     if status['state'] != ipc.get_desired_player_state()[0]:
         tn_fn = getattr(mpd, ipc.get_desired_player_state()[1])
         tn_fn()
+
+    db.session.commit()
         
 
 def _ensure_mpd_player_state_consistency(mpd):
@@ -342,7 +347,7 @@ def on_playlist_update(mpd):
     """The subprocess that continuously IDLEs against the Mopidy server and ensures playlist consistency on playlist update."""
     while True:
         changed = mpd.idle()
-        app.logger.debug("Received change event from Mopidy: %s" % changed)
+        #app.logger.debug("Received change event from Mopidy: %s" % changed)
         if 'playlist' in changed:
             _ensure_mpd_playlist_consistency(mpd)
             _update_track_history(mpd)
@@ -352,4 +357,4 @@ def on_playlist_update(mpd):
         # Update the dict which assists caching
         for changed_system in changed:
             ipc.update_time('playlist', time.time())
-            app.logger.debug(ipc.get_time('playlist'))
+            #app.logger.debug(ipc.get_time('playlist'))

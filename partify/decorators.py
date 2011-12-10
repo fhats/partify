@@ -72,8 +72,13 @@ def with_mpd_lock(f):
     @wraps(f)
     def wrapped(*args, **kwargs):
         get_mpd_lock()
-        rv = f(*args, **kwargs)
-        release_mpd_lock()
+        try:
+            rv = f(*args, **kwargs)
+        except:
+            release_mpd_lock()
+            raise
+        else:        
+            release_mpd_lock()
         return rv
     return wrapped
 

@@ -78,8 +78,6 @@ def set_config_value(field, value):
     
     db.session.commit()
 
-    app.logger.debug("Set configuration field %r to %r" % (field, value))
-
 def get_config_value(field):
     config_field = ConfigurationField.query.filter_by(field_name=field).first()
 

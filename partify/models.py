@@ -38,7 +38,7 @@ class User(db.Model):
         self.privs = 0
 
     def __repr__(self):
-        return "<User %r>" % (self.name)
+        return "<User %r with id %d>" % (self.name, self.id)
 
 class Track(db.Model):
     """Represents track metadata. Used as a foreign key in PlayQueueEntry."""
