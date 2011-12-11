@@ -1,21 +1,23 @@
-"""Copyright 2011 Fred Hatfull
+# Copyright 2011 Fred Hatfull
+#
+# This file is part of Partify.
+#
+# Partify is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Partify is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Partify.  If not, see <http://www.gnu.org/licenses/>.
 
-This file is part of Partify.
+"""Provides endpoints for queue management as well as synchronization
+of the queue with the MPD server."""
 
-Partify is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Partify is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Partify.  If not, see <http://www.gnu.org/licenses/>."""
-
-"""This file provides endpoints for queue management as well as queue-related algorithms and internal management."""
 import itertools
 import json
 import logging
@@ -48,7 +50,13 @@ from partify.selection import get_selection_scheme
 @with_mpd
 @with_mpd_lock
 def add_to_queue(mpd):
-    """Takes a Spotify URL and adds it to the current play queue."""
+    """Takes a Spotify URL and adds it to the current play queue.
+
+    :param spotify_uri: The spotify URI of the track to add
+    :type spotify_uri: string
+    :returns: The status of the request, the user's queue, and the spotify url of the track added.
+    :rtype: JSON string
+    """
 
     spotify_uri = request.form['spotify_uri']
     
@@ -64,7 +72,13 @@ def add_to_queue(mpd):
 @with_mpd
 @with_mpd_lock
 def add_album_from_track(mpd):
-    """Takes a Spotify track URL, finds its corresponding album, and adds it to the user's queue."""
+    """Takes a Spotify track URL, finds its corresponding album, and adds it to the user's queue.
+
+    :param spotify_files: a list of spotify urls of the tracks in the album to add
+    :type spotify_files: list of strings
+    :returns: The status of the request and the user's queue.
+    :rtype: JSON string
+    """
 
     spotify_files = request.form.getlist('spotify_files')
 
@@ -81,6 +95,13 @@ def add_album_from_track(mpd):
 @with_mpd
 @with_mpd_lock
 def remove_from_queue(mpd):
+    """Removes the specified track from the user's play queue.
+    
+    :param track_id: The ID of :class:`PlayQueueEntry` to remove
+    :type track_id: integer
+    :returns: The status of the request and the user's queue
+    :rtype: JSON string
+    """
     track_id = request.form.get('track_id', None)
 
     if track_id is None:
@@ -109,10 +130,12 @@ def remove_from_queue(mpd):
 def reorder_queue():
     """Reorders the user's play queue.
 
-    I *think* for right now this can essentially take a list of PlayQueueEntry IDs and new priorities and write to the DB.
-    I guess then track order ends up being ensured as part of the consistency function...? In which case the first comment is no longer true."""
-    # I think this logic will probably change based on plug-and-play queue management schemes...
-
+    :param track_list: A dictionary with keys of :class:`PlayQueueEntry`s to be moved and
+        values that are the positions to move the queue entry to.
+    :type track_list: dictionary(integer, integer)
+    :returns: The status of the request and the user's queue
+    :rtype: JSON String
+    """
     new_order_list = request.form.get('track_list')
 
     # expecting a dictionary of request parameters with the key as the PQE id and the value as the new priority
@@ -137,10 +160,27 @@ def reorder_queue():
 @app.route('/queue/list', methods=['GET'])
 @with_authentication
 def list_user_queue():
+    """Gets the user's queue.
+
+    :returns: The status of the request and the user's queue.
+    :rtype: JSON string
+    """
     user_queue = get_user_queue(session['user']['id'])
     return jsonify(status="ok", result=user_queue)
 
 def add_track_from_spotify_url(mpd, spotify_url, user_id=None):
+    """Adds a track to the user's queue from the specified spotify URL.
+    If user_id is None then the current user is assumed.
+
+    :param mpd: The MPD instance to add the track to
+    :type mpd: ``MPDClient``
+    :param spotify_url: The Spotify URL of the track
+    :type spotify_url: string
+    :param user_id: The ID of the :class:`User` to add the track for
+    :type user_id: integer
+    :returns: The :class:`Track` of the :class:`PlayQueueEntry` that was added
+    :rtype: :class:`Track`
+    """
     if user_id is None:
         user_id = session['user']['id']
 
@@ -160,7 +200,13 @@ def add_track_from_spotify_url(mpd, spotify_url, user_id=None):
 
 # These *_from_spotify_url functions should probably move to a kind of util file
 def track_from_spotify_url(spotify_url):
-    """Returns a Track object from the Spotify metadata associated with the given Spotify URI."""
+    """Returns a Track object from the Spotify metadata associated with the given Spotify URI.
+
+    :param spotify_url: The Spotify URL of the track to get metadata for
+    :type spotify_url: string
+    :returns: A :class:`Track` with the metadata from ``spotify_url``
+    :rtype: :class:`Track`
+    """
     existing_tracks = Track.query.filter(Track.spotify_url == spotify_url).all()
 
     if len(existing_tracks) == 0:
@@ -180,6 +226,15 @@ def track_from_spotify_url(spotify_url):
     return track
 
 def track_from_mpd_search_results(spotify_url, mpd):
+    """Returns a Track object from the MPD metadata associated with the given Spotify URI.
+
+    :param spotify_url: The Spotify URL of the track to get metadata for
+    :type spotify_url: string
+    :param mpd: The MPD server from which to retrieve the metadata
+    :type mpd: ``MPDClient``
+    :returns: A :class:`Track` with the metadata from ``spotify_url``
+    :rtype: :class:`Track`
+    """
     existing_tracks = Track.query.filter(Track.spotify_url == spotify_url).all()
 
     if len(existing_tracks) == 0:
@@ -197,6 +252,15 @@ def track_from_mpd_search_results(spotify_url, mpd):
 
 
 def track_info_from_mpd_search_results(spotify_url, mpd):
+    """Returns metadata for the given spotify_url from the specified MPD server.
+
+    :param spotify_url: The Spotify URL of the track to get metadata for
+    :type spotify_url: string
+    :param mpd: The MPD server from which to retrieve the metadata
+    :type mpd: ``MPDClient``
+    :returns: Metadata about the ``spotify_url``
+    :rtype: dictionary(string,string)
+    """
     results = mpd.search('filename', spotify_url)
 
     result = results[0]
@@ -213,7 +277,13 @@ def track_info_from_mpd_search_results(spotify_url, mpd):
     return track_info
 
 def track_info_from_spotify_url(spotify_url):
-    """Returns track information from the Spotify metadata API from the given Spotify URI."""
+    """Returns track information from the Spotify metadata API from the given Spotify URI.
+
+    :param spotify_url: The Spotify URL of the track to get metadata for
+    :type spotify_url: string
+    :returns: A dictionary with the metadata from ``spotify_url``
+    :rtype: dictionary(string, string)
+    """
     spotify_request_url = "http://ws.spotify.com/lookup/1/.json?uri=%s" % spotify_url
     
     try:
@@ -236,6 +306,13 @@ def track_info_from_spotify_url(spotify_url):
     return track_info
 
 def _raw_info_from_spotify_url(spotify_url):
+    """Gets a raw response from the Spotify metadata API for a given URI
+
+    :param spotify_url: The Spotify URL to look up
+    :type: string
+    :returns: The raw response from the Spotify metadata API
+    :rtype: string
+    """
     spotify_request_url = "http://ws.spotify.com/lookup/1/.json?uri=%s" % spotify_url
     raw_response = urllib2.urlopen(spotify_request_url).read()
 
@@ -255,6 +332,17 @@ def _ensure_mpd_playlist_consistency(mpd):
     This function should ensure consistency according to the following criteria:
     * The Mopidy playlist is authoritative.
     * The function should be lightweight and should not make undue modifications to the database.
+
+    The function first checks to make sure there are no :class:`PlayQueueEntry`s that have mpd_ids that are
+    no longer in the MPD play queue. If there are, remove those :class:`PlayQueueEntry`s.
+    Then the playback_priority of each :class:`PlayQueueEntry` is adjusted to reflect the MPD queue.
+    Next, the selection scheme corresponding to the 'SELECTION_SCHEME' configuration value is run. Note that this
+    function is likely to only make one modification to the MPD queue, which will cause a cascading playlist change
+    event which will trigger this function again (through :func:`on_playlist_update`).
+    Finally the player state is checked for consistency and corrected if inconsistent.
+
+    :param mpd: The MPD client used to manipulate the MPD queue
+    :type mpd: ``MPDClient``
     """
     playlist_tracks = mpd.playlistinfo()
     playlist_ids = [track['id'] for track in playlist_tracks]
@@ -308,7 +396,11 @@ def _ensure_mpd_playlist_consistency(mpd):
         
 
 def _ensure_mpd_player_state_consistency(mpd):
-    """Ensure that the Mopidy server's options are consistent with options that make sense for Partify."""
+    """Ensure that the Mopidy server's options are consistent with options that make sense for Partify.
+
+    :param mpd: The MPD client used to manipulate the MPD queue
+    :type mpd: ``MPDClient``
+    """
     ideal_player_state = {'consume': '1', 'random': '0', 'repeat': '0', 'single': '0'}
     status = _get_status(mpd)
 
@@ -318,7 +410,11 @@ def _ensure_mpd_player_state_consistency(mpd):
             option_method(value)
 
 def _update_track_history(mpd):
-    """Responsible for making sure that the currently playing track gets logged to the track history."""
+    """Responsible for making sure that the currently playing track gets logged to the track history.
+
+    :param mpd: The MPD client used to manipulate the MPD queue
+    :type mpd: ``MPDClient``
+    """
     
     # Get the currently playing track
     currently_playing_track = PlayQueueEntry.query.order_by(PlayQueueEntry.playback_priority.asc()).first()

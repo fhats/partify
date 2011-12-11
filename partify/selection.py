@@ -1,19 +1,21 @@
-"""Copyright 2011 Fred Hatfull
+# Copyright 2011 Fred Hatfull
+#
+# This file is part of Partify.
+#
+# Partify is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Partify is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Partify.  If not, see <http://www.gnu.org/licenses/>.
 
-This file is part of Partify.
-
-Partify is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Partify is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Partify.  If not, see <http://www.gnu.org/licenses/>."""
+"""Contains the selection schemes that are used to negotiate the ordering of the global queue."""
 
 import itertools
 from itertools import izip_longest
@@ -23,12 +25,41 @@ from sqlalchemy import and_
 from partify.models import PlayQueueEntry, User, Vote
 
 def get_selection_scheme(scheme):
+    """Gets the selection function for the scheme corresponding to ``scheme``.
+
+    :param scheme: the scheme to get the selection function of
+    :type scheme: string
+    :returns: the selection scheme
+    :rtype: callable
+    """
     return selection_schemes[scheme]
 
 def get_users_next_pqe_entry_after_playback_priority(user_id, playback_priority):
+    """Gets the user's next :class:`PlayQueueEntry` that has a playback priority higher than the given priority.
+    Useful for determining if a user's tracks are out-of-order w.r.t. the user's queue priorities.
+
+    :param user_id: The id of the :class:`User` to examine
+    :type user_id: :class:`User`
+    :param playback_priority: The priority after which to look for the user's next track
+    :type playback_priority: integer
+    :return: The next :class:`PlayQueueEntry` in the user's queue
+    :rtype: :class:`PlayQueueEntry`
+    """
+
     return PlayQueueEntry.query.filter(and_(PlayQueueEntry.user_id == user_id, PlayQueueEntry.playback_priority > playback_priority)).order_by(PlayQueueEntry.user_priority.asc()).first()
 
 def _match_tracks_with_users(mpd, db_tracks, user_list):
+    """Given a list of tracks in the database and a list of users in the order their tracks should be played,
+    orders the tracks in the MPD queue to reflect the user_list. Makes a maximum of one move each time it is run,
+    and relies on :func:`on_playlist_update` to get run again.
+
+    :param mpd: An MPD client to use to manipulate the MPD list
+    :type mpd: ``MPDClient``
+    :param db_tracks: A list of tracks in the database to be compared against
+    :type db_tracks: list of :class:`PlayQueueEntry`s
+    :param user_list: A list of users reflecting the order in which their tracks should be played
+    :type user_list: list of :class:`User`s
+    """
     for (track,user) in zip(db_tracks, user_list):
         # Check to make sure the next track's user matches the user being looked at.
         # If it doesn't, reorder to move that user's track to this position
@@ -55,6 +86,16 @@ def _match_tracks_with_users(mpd, db_tracks, user_list):
             break
 
 def round_robin(mpd, db_tracks):
+    """Organizes a round-robin arrangement of tracks in the global play queue. Generates a list of users in round-robin
+    order starting with the user playing the current track and proceeding in alphabetical order by username. Sends the user
+    list and ``db_tracks`` off to :func:`_match_tracks_with_users` to be reordered.
+
+    :param mpd: An MPD client to use to manipulate the MPD list
+    :type mpd: ``MPDClient``
+    :param db_tracks: A list of tracks in the database to be compared against
+    :type db_tracks: list of :class:`PlayQueueEntry`s
+    """
+
     # First, grab a list of all users that currently have PlayQueueEntrys (we can interpret this as active users)
     users = set([pqe.user for pqe in PlayQueueEntry.query.all()])
     unique_users = users = sorted(users, key=lambda d: getattr(d, 'username', 'anonymous'))
@@ -80,11 +121,27 @@ def round_robin(mpd, db_tracks):
     _match_tracks_with_users(mpd, db_tracks, user_list)
 
 def first_come_first_served(mpd, db_tracks):
+    """Simple first-come first-served ordering. Generates a list of users based on when they queued tracks
+    and then lets :func:`_match_tracks_with_users` do the legwork.
+
+    :param mpd: An MPD client to use to manipulate the MPD list
+    :type mpd: ``MPDClient``
+    :param db_tracks: A list of tracks in the database to be compared against
+    :type db_tracks: list of :class:`PlayQueueEntry`s
+    """
     user_list = [pqe.user for pqe in PlayQueueEntry.query.order_by(PlayQueueEntry.time_added.asc()).all()]
 
     _match_tracks_with_users(mpd, db_tracks, user_list)
 
 def first_come_first_served_with_voting(mpd, db_tracks):
+    """First-come first-served with voting. Sorts the :class:`PlayQueueEntry`s in the database and shuffles
+    tracks until their order matches the correct DB ordering.
+
+    :param mpd: An MPD client to use to manipulate the MPD list
+    :type mpd: ``MPDClient``
+    :param db_tracks: A list of tracks in the database to be compared against
+    :type db_tracks: list of :class:`PlayQueueEntry`s
+    """
     # TODO: replace this with a nice SQLAlchemy query
     def sort_fn(x,y):
         votes_x = sum([v.direction for v in Vote.query.filter(Vote.pqe_id==x.id).all()])

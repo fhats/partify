@@ -1,19 +1,21 @@
-"""Copyright 2011 Fred Hatfull
+# Copyright 2011 Fred Hatfull
+#
+# This file is part of Partify.
+#
+# Partify is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Partify is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Partify.  If not, see <http://www.gnu.org/licenses/>.
 
-This file is part of Partify.
-
-Partify is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Partify is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Partify.  If not, see <http://www.gnu.org/licenses/>."""
+"""Contains functions and endpoints for administrative facilities."""   
 
 from flask import redirect, render_template, request, session, url_for
 
@@ -31,6 +33,11 @@ from partify.priv import dump_user_privileges, give_user_privilege, privs, revok
 @with_authentication
 @with_privileges(["ADMIN_INTERFACE"], "redirect")
 def admin_console():
+    """Shows the admin console.
+    admin.html expects a list of forms for the admin_admin functions,
+    a dict of user ids and names, a configuration form, the current user,
+    and the privileges a user has.
+    """
     user = User.query.get(session['user']['id'])
 
     form_object = dict( ( (k.lower(),v) for k,v in app.config.iteritems()) )
@@ -51,6 +58,9 @@ def admin_console():
 @with_authentication
 @with_privileges(["ADMIN_INTERFACE", "ADMIN_CONFIG"], "redirect")
 def configuration_update():
+    """Updates the configuration values provided by the configuration form
+    presented by :func:`admin_console`.
+    """
     configuration_form = ConfigurationForm(request.form)
     
     if configuration_form.validate():
@@ -65,6 +75,9 @@ def configuration_update():
 @with_authentication
 @with_privileges(["ADMIN_INTERFACE", "ADMIN_ADMIN"], "redirect")
 def admin_admin_update():
+    """Updates the administrative privileges of other users given the input from
+    the form presented by :func:`admin_console`.
+    """
     forms = create_admin_admin_form(request.form)
 
     for user_id, form in forms.iteritems():
@@ -84,6 +97,8 @@ def admin_admin_update():
 @with_mpd_lock
 @with_privileges(["ADMIN_INTERFACE", "ADMIN_PLAYBACK"], "redirect")
 def admin_playback_play(mpd):
+    """Attempts to tell Mopidy to play, regardless of Mopidy's current play state.
+    """
     ipc.update_desired_player_state("play", "play")
     mpd.play()
 
@@ -94,6 +109,7 @@ def admin_playback_play(mpd):
 @with_mpd
 @with_privileges(["ADMIN_INTERFACE", "ADMIN_PLAYBACK"], "redirect")
 def admin_playback_pause(mpd):
+    """Attempts to tell Mopidy to pause, regardless of Mopidy's current play state."""
     ipc.update_desired_player_state("paused", "pause")
     mpd.pause()
     
@@ -105,6 +121,7 @@ def admin_playback_pause(mpd):
 @with_mpd_lock
 @with_privileges(["ADMIN_INTERFACE", "ADMIN_PLAYBACK"], "redirect")
 def admin_playback_skip(mpd):
+    """Skips the current track."""
     status = _get_status(mpd)
     rm_id = status['id']
 
@@ -118,12 +135,15 @@ def admin_playback_skip(mpd):
 @with_mpd_lock
 @with_privileges(["ADMIN_INTERFACE", "ADMIN_PLAYBACK"], "redirect")
 def admin_queue_clear(mpd):
+    """Clears the global play queue."""
     mpd.clear()
 
     return redirect(url_for('admin_console'))    
 
 def create_admin_admin_form(data=None):
-    """Returns a list of SingleUserAdminAdminForms - one for each user."""
+    """Returns a list of SingleUserAdminAdminForms - one for each user.
+    This is useful for the Admin Admin section of the admin page, where
+    one form per user is needed (due to the way WTForms does things)."""
 
     users = User.query.all()
     forms = {}
@@ -138,6 +158,7 @@ def create_admin_admin_form(data=None):
     return forms
 
 def make_admin_admin_form_object(user):
+    """Returns information about the user for use with an AdminAdminForm."""
     user_form_obj = {}
     user_privs = dump_user_privileges(user)
 

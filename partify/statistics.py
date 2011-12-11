@@ -1,19 +1,22 @@
-"""Copyright 2011 Fred Hatfull
+# Copyright 2011 Fred Hatfull
+#
+# This file is part of Partify.
+#
+# Partify is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Partify is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Partify.  If not, see <http://www.gnu.org/licenses/>.
 
-This file is part of Partify.
-
-Partify is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Partify is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Partify.  If not, see <http://www.gnu.org/licenses/>."""
+"""An endpoint and helper functions for computing statistics from the play history
+in the database."""
 
 from datetime import datetime
 from datetime import timedelta
@@ -27,6 +30,13 @@ from partify.models import Track
 
 @app.route("/statistics", methods=['GET'])
 def statistics():
+    """Provides some statistics about the :class:`PlayHistoryEntry`s in the database.
+
+    :returns: The status of the request, the time the statistics were generated, and the statistics.
+        The statistics are divided up into segments by time.
+    :rtype: JSON string
+
+    """
     # TODO: At some point, allow for statistics to be requested by key
     # For now, just dump a bunch of stats back out
 
@@ -57,8 +67,14 @@ def statistics():
 
 def compute_stats_over_segment(segment):
     """Computes some statistics over a segment of history.
+    Note that this could be pretty slow to start. May be worth finding a way to speed this up eventually.
 
-    Note that this could be pretty slow to start. May be worth finding a way to speed this up eventually."""
+    :param segment: A list of :class:`PlayHistoryEntry`s to compute statistics over.
+    :type segment: list of :class:`PlayHistoryEntry`s
+    :returns: A dictionary of statistics for this segment.
+    :rtype: dictionary
+    """
+    
     stats = {}
 
     stats["total_tracks"] = len(segment)

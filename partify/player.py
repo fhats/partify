@@ -1,19 +1,21 @@
-"""Copyright 2011 Fred Hatfull
+# Copyright 2011 Fred Hatfull
+#
+# This file is part of Partify.
+#
+# Partify is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Partify is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Partify.  If not, see <http://www.gnu.org/licenses/>.
 
-This file is part of Partify.
-
-Partify is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Partify is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Partify.  If not, see <http://www.gnu.org/licenses/>."""
+"""Functions for showing the player page and getting player status."""
 
 import json
 import random
@@ -56,7 +58,17 @@ def player():
 @with_authentication
 @with_mpd
 def status(mpd):
-    """An endpoint for poll-based player status updates."""
+    """An endpoint for poll-based player status updates.
+
+    :param current: The timestamp in seconds of the last time the client got a playlist update.
+        Useful for minimizing responses so that the entire party queue isn't being shuffled around
+        every time an update is requested.
+    :type current: float or string
+    :returns: A structure containing the current MPD status. Contains the ``global_queue``,
+        ``user_queue``, and ``last_global_playlist_update`` keys if ``current`` was not specified
+        or was before the time of the last playlist update.
+    :rtype: JSON string
+    """
     client_current = request.args.get('current', None)
     if client_current is not None:
         client_current = float(client_current)
@@ -80,7 +92,10 @@ def idle(mpd):
     """An endpoint for push-based player events.
 
     The function issues an MPD IDLE command to Mopidy and blocks on response back from Mopidy. Once a response is received, a Server-Sent Events (SSE) transmission is prepared
-    and returned as the response to the request."""
+    and returned as the response to the request.
+
+    **Note:** This endpoint is not currently in use but sticking around
+    until SSEs are implemented better or long-polling is needed."""
     mpd.send_idle()
     select.select([mpd], [], [])
     changed = mpd.fetch_idle()
@@ -90,15 +105,29 @@ def idle(mpd):
     return Response(event, mimetype='text/event-stream', direct_passthrough=True)
 
 def get_global_queue():
+    """A convenience function for retrieving the global play queue.
+
+    :returns: A list of :class:`PlayQueueEntry`s in their dictionary representation.
+    :rtype: list of dicts
+    """
     db_queue = PlayQueueEntry.query.order_by(PlayQueueEntry.playback_priority).all()
     return [track.as_dict() for track in db_queue]
 
 def get_user_queue(user):
+    """A convenience function for getting a specific user's queue.
+
+    :returns: A list of :class:PlayQueueEntry`s in their dictionary representation.
+    :rtype: list of dicts
+    """
     db_queue = PlayQueueEntry.query.filter(PlayQueueEntry.user_id == user).order_by(PlayQueueEntry.user_priority)
     return [track.as_dict() for track in db_queue]
 
 def _get_status(mpd):
-    """Get the entire player status needed for the front end."""
+    """Get the entire player status needed for the front end.
+
+    :returns: A dictionary containing the player status.
+    :rtype: dictionary
+    """
     # Get the player status
     player_status = mpd.status()
     # Get the current song

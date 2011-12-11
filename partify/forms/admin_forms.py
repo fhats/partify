@@ -1,19 +1,21 @@
-"""Copyright 2011 Fred Hatfull
+# Copyright 2011 Fred Hatfull
+#
+# This file is part of Partify.
+#
+# Partify is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Partify is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Partify.  If not, see <http://www.gnu.org/licenses/>.
 
-This file is part of Partify.
-
-Partify is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Partify is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Partify.  If not, see <http://www.gnu.org/licenses/>."""
+"""Contains forms used for gathering input for administrative features."""
 
 from wtforms import BooleanField
 from wtforms import Form 
@@ -28,7 +30,7 @@ from partify.priv import priv_in_english
 class ConfigurationForm(Form):
     """A WTForm for configuration information.
 
-    Each of these fields should be the loweredcased name of the corresponding configuration field.
+    Each of the fields should be the loweredcased name of the corresponding configuration field.
     """
     
     selection_scheme = SelectField("Track Selection", [validators.Required()], choices=[('ROUND_ROBIN', 'Round Robin'), ('FCFS_VOTE', 'First-Come, First-Served with Voting'), ('FCFS', 'First-Come, First-Served')])

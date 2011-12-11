@@ -1,19 +1,21 @@
-"""Copyright 2011 Fred Hatfull
+# Copyright 2011 Fred Hatfull
+#
+# This file is part of Partify.
+#
+# Partify is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Partify is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Partify.  If not, see <http://www.gnu.org/licenses/>.
 
-This file is part of Partify.
-
-Partify is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Partify is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Partify.  If not, see <http://www.gnu.org/licenses/>."""
+"""Contains an endpoint for retrieving play history as JSON."""
 
 import datetime
 from math import ceil
@@ -25,10 +27,15 @@ from partify.models import PlayHistoryEntry
 
 @app.route("/history", methods=['GET'])
 def history():
-    """Returns a JSON structure representing the track history for a period specified by the client.
-
-    If ipp is specified, the return value is at most ipp items long. If page is specified, then ipp items are shown starting at page page.
-    ipp defaults to 25, page defaults to 1."""
+    """An endpoint that provides playback history.
+    
+    :param ipp: Specifies the number of history items per page. Defaults to 25.
+    :type ipp: string or integer
+    :param page: Specifies the page of history items to get. Defaults to 1.
+    :type page: string or integer
+    :returns: A JSON structure representing the track history for the period specified by the client.
+    :rtype: A JSON string
+    """
 
     ipp = request.args.get('ipp', 25)
     ipp = int(ipp)
@@ -64,3 +71,4 @@ def history():
         result_history.append(history_entry)
 
     return jsonify(status='ok', tracks=result_history, num_items=len(result_history), page=page, pages=int(total_pages), response_time=(datetime.datetime.now()).isoformat())
+    

@@ -18,9 +18,13 @@
 all:
 	cd partify; make
 
+docs:
+	cd docs; make
+
 test:
 	testify tests
 
 clean:
 	find ./ -name "*.pyc" -delete
-	cd partify; make clean
+	cd partify; make clean; cd ..
+	cd docs; make clean; cd ..
