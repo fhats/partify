@@ -18,10 +18,17 @@ HTTP status code is OK, the response will typically contain a ``status`` member 
 If ``status`` is ``error`` then a ``message`` field will also exist in the root of the response describing the error that occurred. If ``status`` is OK, the rest of the response is dependent
 on the endpoint returning the response.
 
+Some API features require authentication. There is no JSON API for User authentication right now, so the best you can do is login via the :func:`/login <partify.user.login_post>` endpoint and
+store the cookie that is handed back to you upon successful authentication. A full JSON authentication API should be available from v0.5 onwards.
+
 Concepts
 --------
 
-User queue vs global queue etc.
+Some terms are referenced throughout the API documentation that you'll need to understand for the docs to make sense. Those terms are described here.
+
+Partify segregates the queue data into two different kinds of queues. A **user queue** is simply a queue of tracks belonging to the user that they would like to hear, ranked chronologically.
+The **party queue** is the global queue which mimicks the contents of the Mopidy playback queue and into which tracks from **user queues** are placed, ordered by whatever selection scheme
+is chosen in the ``SELECTION_SCHEME`` configuration variable.
    
 
 API Reference
@@ -36,4 +43,3 @@ API Reference
    vote
    history
    statistics
-   user

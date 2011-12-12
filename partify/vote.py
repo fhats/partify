@@ -32,7 +32,7 @@ from partify.queue import ensure_mpd_playlist_consistency
 def vote_status():
     """Gets the logged-in user's vote status for a certain track.
 
-    :param pqe: The ID of the PlayQueueEntry
+    :param pqe: The ID of the :class:`~partify.models.PlayQueueEntry`
     :type pqe: integer
     :returns: The status of the request and the direction of any existing vote.
     :rtype: JSON string 
@@ -56,7 +56,9 @@ def vote_status():
 @with_authentication
 def vote_up():
     """Records a vote in the up direction for the logged-in user.
-
+    
+    :param pqe: The ID of the :class:`~partify.models.PlayQueueEntry`
+    :type pqe: integer
     :returns: The status of the request.
     :rtype: JSON string 
     """
@@ -83,6 +85,8 @@ def vote_up():
 def vote_down():
     """Records a vote in the down direction for the logged-in user.
 
+    :param pqe: The ID of the :class:`~partify.models.PlayQueueEntry`
+    :type pqe: integer
     :returns: The status of the request.
     :rtype: JSON string 
     """
@@ -109,9 +113,9 @@ def vote_total():
     """Retreives the total vote score for the specified track. One of pqe or phe must be 
     specified, but not both.
 
-    :param pqe: The ID of the PlayQueueEntry
+    :param pqe: The ID of the :class:`~partify.models.PlayQueueEntry`
     :type pqe: integer, optional
-    :param phe: The ID of the PlayHistoryEntry
+    :param phe: The ID of the :class:`~partify.models.PlayHistoryEntry`
     :type phe: integer, optional
     :returns: The status of the request and the total vote score of the specified track.
     :rtype: JSON string

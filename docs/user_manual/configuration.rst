@@ -17,7 +17,7 @@ Stuff You'll Need to Change
 * **Underlying Server Software** - Set this to ``Tornado``
 
 Stuff You Might Want to Change
----------------------------
+------------------------------
 
 * **Port to Listen to On** - Set this to ``80`` if you want to be able to access your Partify installation by simply going to http://server instead of http://server:5000
 * **Last.fm API Key** - Needed for retrieving images of the currently playing artist. Can be obtained from http://www.last.fm/api/account . If you don't have an API key from Last.fm, go ahead and apply for one. The application process is easy and will immediately approve you for a non-commercial account, which is all you need.

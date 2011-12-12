@@ -2,6 +2,8 @@
 Player
 ******
 
+.. contents::
+
 .. _api_get_player_status:
 
 Getting Player Status
@@ -16,6 +18,7 @@ The built-in Partify client hits this endpoint every 3 seconds to maintain synch
 to become unresponsive.
 
 .. autofunction:: partify.player.status
+   :noindex:
 
 
 .. note:: This endpoint does not currently return a status key in the root of the JSON response. This will change in the future.
@@ -134,54 +137,6 @@ Without ``current``::
 	      "id": 27, 
 	      "user": "Fred"
 	    }, 
-	    {
-	      "album": "Maladroit", 
-	      "username": "fred", 
-	      "playback_priority": 5, 
-	      "user_id": 1, 
-	      "artist": "Weezer", 
-	      "spotify_url": "spotify:track:6E6rY8reP0d4HU0xDiC264", 
-	      "length": 158.56, 
-	      "mpd_id": 106, 
-	      "user_priority": 28, 
-	      "date": "2002", 
-	      "title": "Death And Destruction", 
-	      "time_added": "Sun Dec 11 20:07:08 2011", 
-	      "id": 28, 
-	      "user": "Fred"
-	    }, 
-	    {
-	      "album": "Heart", 
-	      "username": "fred", 
-	      "playback_priority": 6, 
-	      "user_id": 1, 
-	      "artist": "Stars", 
-	      "spotify_url": "spotify:track:6LDYVzxjDSAO92UZ5veM3u", 
-	      "length": 243.147, 
-	      "mpd_id": 107, 
-	      "user_priority": 29, 
-	      "date": "2003", 
-	      "title": "Elevator Love Letter", 
-	      "time_added": "Sun Dec 11 20:08:17 2011", 
-	      "id": 29, 
-	      "user": "Fred"
-	    }, 
-	    {
-	      "album": "Champ", 
-	      "username": "fred", 
-	      "playback_priority": 7, 
-	      "user_id": 1, 
-	      "artist": "Tokyo Police Club", 
-	      "spotify_url": "spotify:track:4Hu4EbfAOFltkX4unAOPpM", 
-	      "length": 158.173, 
-	      "mpd_id": 108, 
-	      "user_priority": 30, 
-	      "date": "2010", 
-	      "title": "Favourite Colour", 
-	      "time_added": "Sun Dec 11 20:09:28 2011", 
-	      "id": 30, 
-	      "user": "Fred"
-	    }
 	  ], 
 	  "consume": "1", 
 	  "pqe_id": 23, 
@@ -269,54 +224,7 @@ Without ``current``::
 	      "id": 27, 
 	      "user": "Fred"
 	    }, 
-	    {
-	      "album": "Maladroit", 
-	      "username": "fred", 
-	      "playback_priority": 5, 
-	      "user_id": 1, 
-	      "artist": "Weezer", 
-	      "spotify_url": "spotify:track:6E6rY8reP0d4HU0xDiC264", 
-	      "length": 158.56, 
-	      "mpd_id": 106, 
-	      "user_priority": 28, 
-	      "date": "2002", 
-	      "title": "Death And Destruction", 
-	      "time_added": "Sun Dec 11 20:07:08 2011", 
-	      "id": 28, 
-	      "user": "Fred"
-	    }, 
-	    {
-	      "album": "Heart", 
-	      "username": "fred", 
-	      "playback_priority": 6, 
-	      "user_id": 1, 
-	      "artist": "Stars", 
-	      "spotify_url": "spotify:track:6LDYVzxjDSAO92UZ5veM3u", 
-	      "length": 243.147, 
-	      "mpd_id": 107, 
-	      "user_priority": 29, 
-	      "date": "2003", 
-	      "title": "Elevator Love Letter", 
-	      "time_added": "Sun Dec 11 20:08:17 2011", 
-	      "id": 29, 
-	      "user": "Fred"
-	    }, 
-	    {
-	      "album": "Champ", 
-	      "username": "fred", 
-	      "playback_priority": 7, 
-	      "user_id": 1, 
-	      "artist": "Tokyo Police Club", 
-	      "spotify_url": "spotify:track:4Hu4EbfAOFltkX4unAOPpM", 
-	      "length": 158.173, 
-	      "mpd_id": 108, 
-	      "user_priority": 30, 
-	      "date": "2010", 
-	      "title": "Favourite Colour", 
-	      "time_added": "Sun Dec 11 20:09:28 2011", 
-	      "id": 30, 
-	      "user": "Fred"
-	    }
+
 	  ], 
 	  "single": "0", 
 	  "repeat": "0", 

@@ -16,6 +16,7 @@ Getting the User's Queue
 The user's queue can be retrieved by utilizing either the :func:`/player/status/poll <partify.player.status>` or :func:`/queue/list <partify.queue.list_user_queue>` endpoints.
 
 .. autofunction:: partify.queue.list_user_queue
+   :noindex:
 
 **Examples**
 
@@ -166,8 +167,10 @@ Adding Tracks to the Queue
 Tracks are added to the user's play queue using the :func:`/queue/add <partify.queue.add_to_queue>` or :func:`/queue/add_album <partify.queue.add_album_from_track>` endpoints.
 
 .. autofunction:: partify.queue.add_to_queue
+   :noindex:
 
 .. autofunction:: partify.queue.add_album_from_track
+   :noindex:
 
 **Examples**
 
@@ -572,6 +575,7 @@ The new positions will be updated in the database and will be updated in the Mop
    priority in the user's queue (this is what the built-in client currently does).
 
 .. autofunction:: partify.queue.reorder_queue
+   :noindex:
 
 **Examples**
 
@@ -798,6 +802,7 @@ Removing Tracks from the Queue
 Tracks can be removed from the user's play queue by sending the queue entry's ID in a ``POST`` request to :func:`/queue/remove <partify.queue.remove_from_queue>`.
 
 .. autofunction:: partify.queue.remove_from_queue
+   :noindex:
 
 **Examples**
 
