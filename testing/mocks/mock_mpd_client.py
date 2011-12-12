@@ -39,13 +39,20 @@ except NameError:
     idle_event = Event()
 
 
-
 class MockMPDClient(object):
     """A mock MPD client which does not actually connect to an MPD server but acts like it does."""
+
+    instance = None
+    def __new__(cls, *args, **kwargs):
+        if not cls.instance:
+            cls.instance = super(MockMPDClient, cls).__new__(cls, *args, **kwargs)
+        return cls.instance
 
     connected = False
 
     track_list = []
+
+    state = "play"
 
     def send_idle(self):
         global idle_event
@@ -63,6 +70,12 @@ class MockMPDClient(object):
     def disconnect(self):
         connected = False
         return connected
+
+    def play(self):
+        state = "play"
+
+    def pause(self):
+        state = "pause"
 
     def search(self, *args):
         search_keys = args[::2]
@@ -124,11 +137,14 @@ class MockMPDClient(object):
         #ipc.update_time('playlist', time.time())
 
     def deleteid(self, track_id):
-        removal_track = [track for track in self.track_list if track['id']==track_id][0]
-        self.track_list.remove(removal_track)
-        #ipc.update_time('playlist', time.time())
-        self.send_idle()
-        return removal_track
+        if len(self.track_list) > 0:
+            removal_track = [track for track in self.track_list if track['id']==track_id][0]
+            self.track_list.remove(removal_track)
+            #ipc.update_time('playlist', time.time())
+            self.send_idle()
+            return removal_track
+        else:
+            return None
 
     def playlistinfo(self):
         return self.track_list

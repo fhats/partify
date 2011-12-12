@@ -46,6 +46,7 @@ def give_user_privilege(user, priv):
         user = User.query.get(user)
     # Set the appropriate bit in the user's privileges bitfield
     user.privs |= privs[priv]
+    db.session.add(user)
     db.session.commit()
 
 def revoke_user_privilege(user, priv):
@@ -59,12 +60,13 @@ def revoke_user_privilege(user, priv):
     if not isinstance(user, User):
         user = User.query.get(user)
     user.privs &= (~privs[priv])
+    db.session.add(user)
     db.session.commit()
 
 def user_has_privilege(user, priv):
     """Tests whether or not the user has a certain privilege.
 
-    :param user: The user from whom to revoke the privilege
+    :param user: The user to check
     :type user: :class:`User` or a user ID
     :param priv: The privilege to test for.
     :type priv: string
@@ -78,7 +80,7 @@ def user_has_privilege(user, priv):
 def dump_user_privileges(user):
     """Lists the user's privileges.
 
-    :param user: The user from whom to revoke the privilege
+    :param user: The user to get privileges for
     :type user: :class:`User` or a user ID
     :returns: The privileges the user has
     :rtype: list of strings

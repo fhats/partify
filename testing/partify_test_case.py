@@ -44,8 +44,9 @@ class PartifyTestCase(TestCase):
 
     @class_teardown
     def _cleanup(self):
-        os.close(self.db_fd[0])
-        os.unlink(self.db_fd[1])
+        #os.close(self.db_fd[0])
+        #os.unlink(self.db_fd[1])
+        pass
 
     @setup
     def _setup(self):
@@ -69,4 +70,9 @@ class PartifyTestCase(TestCase):
     def assert_endpoint_works(self, endpoint):
         response = self.app.get(endpoint, follow_redirects=True)
         assert response.status_code == 200
+        return response
+
+    def assert_endpoint_fails(self, endpoint):
+        response = self.app.get(endpoint, follow_redirects=False)
+        assert response.status_code != 200
         return response

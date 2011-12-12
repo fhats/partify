@@ -20,7 +20,8 @@ from flask import jsonify
 from testify import *
 
 from partify import app
-from partify.decorators import with_authentication, with_mpd
+from partify.decorators import with_authentication, with_mpd, with_mpd_lock, with_privileges
+from partify.priv import give_user_privilege
 from testing.partify_test_case import PartifyTestCase
 
 class DecoratorTestCase(PartifyTestCase):
@@ -57,3 +58,36 @@ class DecoratorTestCase(PartifyTestCase):
 			return mpd is not None
 
 		assert _tested_wrapped_fn() is True
+
+	def test_with_mpd_lock(self):
+		# Just make sure the decorator doesn't crash
+		@with_mpd_lock
+		def _wrapped_fn():
+			pass
+		
+		_wrapped_fn()
+
+	def test_with_privileges(self):
+		@app.route('/privileged_zone')
+		@with_privileges(["ADMIN_INTERFACE"], "redirect")
+		def _tested_wrapped_fn():
+			return jsonify(status='ok')
+		
+		# create a test user to use
+		user = self.create_test_user()
+		response = self.app.post('/login',
+			data = {'username': user.username, 'password': user.username},
+			follow_redirects = True)
+		assert response.status_code == 200
+
+		# Make sure we can't get to the restricted endpoint
+		response = self.app.get('/privileged_zone', follow_redirects=False)
+		assert response.status_code != 200
+
+		# Now grab some privileges
+		give_user_privilege(user, "ADMIN_INTERFACE")
+
+		response = self.app.get('/privileged_zone', follow_redirects=False)
+		assert response.status_code == 200
+		json_data = json.loads(response.data)
+		assert json_data['status'] == "ok"

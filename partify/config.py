@@ -89,7 +89,7 @@ def set_config_value(field, value):
         db.session.commit()
     else:
         config_field.field_value = value
-    
+        
     db.session.commit()
 
 def get_config_value(field):

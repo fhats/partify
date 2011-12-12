@@ -24,7 +24,8 @@ from testify import *
 
 from partify import app
 from partify.config import get_config_value, load_config_from_db, set_config_value
-from partify.models import PlayQueueEntry
+from partify.database import db
+from partify.models import PlayQueueEntry, Vote
 from partify.queue import add_track_from_spotify_url
 from partify.queue import _ensure_mpd_playlist_consistency
 from partify.queue import track_from_mpd_search_results
@@ -263,6 +264,7 @@ class QueueTestCase(LoggedInUserTestCase):
 		assert db_entry.track.spotify_url == "spotify:track:6LDYVzxjDSAO92UZ5veM3u"
 		assert db_entry.user is None
 
+	@suite('transient')
 	def test_round_robin_selection(self):
 		set_config_value('SELECTION_SCHEME', 'ROUND_ROBIN')
 		load_config_from_db()
@@ -270,8 +272,6 @@ class QueueTestCase(LoggedInUserTestCase):
 		_ensure_mpd_playlist_consistency(self.mpd)
 		assert len(self.mpd.playlistinfo()) == 0
 		assert len(PlayQueueEntry.query.all()) == 0
-
-		print get_config_value('SELECTION_SCHEME')
 
 		# Simulate 5 users queueing up 10 tracks each in serial
 		users = []
@@ -297,19 +297,12 @@ class QueueTestCase(LoggedInUserTestCase):
 		db_tracks = PlayQueueEntry.query.order_by(PlayQueueEntry.playback_priority.asc()).all()
 
 		for (pqe, mpd_track) in zip(db_tracks, mpd_playlist):
-			try:
-				assert pqe.playback_priority == mpd_track['pos']
-			except:
-				import ipdb; ipdb.set_trace()
-				raise
+			assert pqe.playback_priority == mpd_track['pos']
 		
 		for (pqe, prop_user) in zip(db_tracks, users):
-			try:
-				assert pqe.user == prop_user
-			except:
-				import ipdb; ipdb.set_trace()
-				raise
+			assert pqe.user == prop_user
 
+	@suite('transient')
 	def test_fcfs_selection(self):
 		set_config_value('SELECTION_SCHEME', 'FCFS')
 		load_config_from_db()
@@ -342,8 +335,66 @@ class QueueTestCase(LoggedInUserTestCase):
 		for (pqe, prop_user) in zip(db_tracks, users):
 			assert pqe.user == prop_user
 
+	@suite('transient')
 	def test_fcfs_with_voting_selection(self):
-		raise NotImplemented
+		set_config_value('SELECTION_SCHEME', 'FCFS_VOTE')
+		load_config_from_db()
+		self.mpd.clear()
+		_ensure_mpd_playlist_consistency(self.mpd)
+		assert len(self.mpd.playlistinfo()) == 0
+		assert len(PlayQueueEntry.query.all()) == 0
+
+		user1 = self.create_test_user()
+		user2 = self.create_test_user()
+
+		tracks = []
+
+		for i in range(1,11):
+			st = self.random_sample_track()
+			tracks.append(add_track_from_spotify_url(self.mpd, st['file'], user1.id))
+		
+		# Simulate the callback chain that would occur in the wild
+		last_order = []
+		while last_order != [i['id'] for i in self.mpd.playlistinfo()]:
+			last_order = [i['id'] for i in self.mpd.playlistinfo()]
+			_ensure_mpd_playlist_consistency(self.mpd)
+
+		for mpd_track, expected_track in zip(self.mpd.playlistinfo(), tracks):
+			assert mpd_track['file'] == expected_track.spotify_url
+
+		r = random.Random()
+		pqes = PlayQueueEntry.query.order_by(PlayQueueEntry.time_added).all()
+		up_voted = []
+		down_voted = []
+		for i in range(1,4):
+			pqe = r.choice(pqes)
+			pqes.remove(pqe)
+			up_voted.append(pqe)
+			vote = Vote(user=user2, pqe=pqe, direction=1)
+			db.session.add(vote)
+
+		for i in range(1,4):
+			pqe = r.choice(pqes)
+			pqes.remove(pqe)
+			down_voted.append(pqe)
+			vote = Vote(user=user2, pqe=pqe, direction=-1)
+			db.session.add(vote)
+		
+		db.session.commit()
+
+		up_voted = sorted(up_voted, key=lambda x: x.time_added)
+		down_voted = sorted(down_voted, key=lambda x: x.time_added)
+		expected_order = up_voted + pqes + down_voted
+
+		# Simulate the callback chain that would occur in the wild
+		last_order = []
+		while last_order != [i['id'] for i in self.mpd.playlistinfo()]:
+			last_order = [i['id'] for i in self.mpd.playlistinfo()]
+			_ensure_mpd_playlist_consistency(self.mpd)
+
+		for mpd_track, expected_track in zip(self.mpd.playlistinfo(), expected_order):
+			assert mpd_track['file'] == expected_track.track.spotify_url
+
 
 	def random_sample_track(self):
 		r = random.Random()
