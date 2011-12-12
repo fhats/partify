@@ -1,20 +1,9 @@
-*************
-API Reference
-*************
+#################
+API Documentation
+#################
 
 Partify exposes an HTTP API that allows third-party software to interact with a Partify installation. This is useful for developing clients and
 services that interact with Partify.
-
-.. toctree::
-   :maxdepth: 2
-
-   player
-   queue
-   search
-   vote
-   history
-   statistics
-   user
 
 .. note:: Not all elements of Partify have been API'd yet. Full API completion is scheduled for the release of 0.5. See https://github.com/fxh32/partify/issues/88 for more information
 
@@ -34,3 +23,17 @@ Concepts
 
 User queue vs global queue etc.
    
+
+API Reference
+-------------
+
+.. toctree::
+   :maxdepth: 2
+
+   player
+   queue
+   search
+   vote
+   history
+   statistics
+   user
