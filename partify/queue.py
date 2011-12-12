@@ -72,7 +72,7 @@ def add_to_queue(mpd):
 @with_mpd
 @with_mpd_lock
 def add_album_from_track(mpd):
-    """Takes a Spotify track URL, finds its corresponding album, and adds it to the user's queue.
+    """Takes a list of Spotify track URLs corresponding to an album and adds them to the user's play queue.
 
     :param spotify_files: a list of spotify urls of the tracks in the album to add
     :type spotify_files: list of strings
@@ -130,7 +130,7 @@ def remove_from_queue(mpd):
 def reorder_queue():
     """Reorders the user's play queue.
 
-    :param track_list: A dictionary with keys of :class:`PlayQueueEntry`s to be moved and
+    :param track_list: A dictionary with keys of :class:`partify.models.PlayQueueEntry` to be moved and
         values that are the positions to move the queue entry to.
     :type track_list: dictionary(integer, integer)
     :returns: The status of the request and the user's queue
@@ -333,8 +333,8 @@ def _ensure_mpd_playlist_consistency(mpd):
     * The Mopidy playlist is authoritative.
     * The function should be lightweight and should not make undue modifications to the database.
 
-    The function first checks to make sure there are no :class:`PlayQueueEntry`s that have mpd_ids that are
-    no longer in the MPD play queue. If there are, remove those :class:`PlayQueueEntry`s.
+    The function first checks to make sure there are no :class:`partify.models.PlayQueueEntry` that have mpd_ids that are
+    no longer in the MPD play queue. If there are, remove those :class:`partify.models.PlayQueueEntry`.
     Then the playback_priority of each :class:`PlayQueueEntry` is adjusted to reflect the MPD queue.
     Next, the selection scheme corresponding to the 'SELECTION_SCHEME' configuration value is run. Note that this
     function is likely to only make one modification to the MPD queue, which will cause a cascading playlist change

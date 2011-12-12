@@ -107,7 +107,7 @@ def idle(mpd):
 def get_global_queue():
     """A convenience function for retrieving the global play queue.
 
-    :returns: A list of :class:`PlayQueueEntry`s in their dictionary representation.
+    :returns: A list of :class:`partify.models.PlayQueueEntry` in their dictionary representation.
     :rtype: list of dicts
     """
     db_queue = PlayQueueEntry.query.order_by(PlayQueueEntry.playback_priority).all()
@@ -116,7 +116,7 @@ def get_global_queue():
 def get_user_queue(user):
     """A convenience function for getting a specific user's queue.
 
-    :returns: A list of :class:PlayQueueEntry`s in their dictionary representation.
+    :returns: A list of :class:`partify.models.PlayQueueEntry` in their dictionary representation.
     :rtype: list of dicts
     """
     db_queue = PlayQueueEntry.query.filter(PlayQueueEntry.user_id == user).order_by(PlayQueueEntry.user_priority)

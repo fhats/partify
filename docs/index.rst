@@ -22,7 +22,7 @@ Resources
 
 **Support**
     
-* `User Documentation <https://github.com/fxh32/partify/wiki>`_
+* `Additional Documentation <https://github.com/fxh32/partify/wiki>`_
 * `Issue Tracker <https://github.com/fxh32/partify/issues>`_ (for bug reports and feature requests)
 * ``#partify`` on `irc.freenode.net <http://freenode.net>`_ for support via IRC
 
@@ -30,6 +30,13 @@ Resources
 
 * `Source Code <https://github.com/fxh32/partify>`_
 
+User Manual
+===========
+
+.. toctree::
+   :maxdepth: 3
+   
+   user_manual/index
 
 API Documentation
 =================

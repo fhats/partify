@@ -56,7 +56,7 @@ def _match_tracks_with_users(mpd, db_tracks, user_list):
     :param mpd: An MPD client to use to manipulate the MPD list
     :type mpd: ``MPDClient``
     :param db_tracks: A list of tracks in the database to be compared against
-    :type db_tracks: list of :class:`PlayQueueEntry`s
+    :type db_tracks: list of :class:`partify.models.PlayQueueEntry`
     :param user_list: A list of users reflecting the order in which their tracks should be played
     :type user_list: list of :class:`User`s
     """
@@ -93,7 +93,7 @@ def round_robin(mpd, db_tracks):
     :param mpd: An MPD client to use to manipulate the MPD list
     :type mpd: ``MPDClient``
     :param db_tracks: A list of tracks in the database to be compared against
-    :type db_tracks: list of :class:`PlayQueueEntry`s
+    :type db_tracks: list of :class:`partify.models.PlayQueueEntry`
     """
 
     # First, grab a list of all users that currently have PlayQueueEntrys (we can interpret this as active users)
@@ -127,20 +127,20 @@ def first_come_first_served(mpd, db_tracks):
     :param mpd: An MPD client to use to manipulate the MPD list
     :type mpd: ``MPDClient``
     :param db_tracks: A list of tracks in the database to be compared against
-    :type db_tracks: list of :class:`PlayQueueEntry`s
+    :type db_tracks: list of :class:`partify.models.PlayQueueEntry`
     """
     user_list = [pqe.user for pqe in PlayQueueEntry.query.order_by(PlayQueueEntry.time_added.asc()).all()]
 
     _match_tracks_with_users(mpd, db_tracks, user_list)
 
 def first_come_first_served_with_voting(mpd, db_tracks):
-    """First-come first-served with voting. Sorts the :class:`PlayQueueEntry`s in the database and shuffles
+    """First-come first-served with voting. Sorts the :class:`partify.models.PlayQueueEntry` in the database and shuffles
     tracks until their order matches the correct DB ordering.
 
     :param mpd: An MPD client to use to manipulate the MPD list
     :type mpd: ``MPDClient``
     :param db_tracks: A list of tracks in the database to be compared against
-    :type db_tracks: list of :class:`PlayQueueEntry`s
+    :type db_tracks: list of :class:`partify.models.PlayQueueEntry`
     """
     # TODO: replace this with a nice SQLAlchemy query
     def sort_fn(x,y):

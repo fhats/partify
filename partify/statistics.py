@@ -30,7 +30,7 @@ from partify.models import Track
 
 @app.route("/statistics", methods=['GET'])
 def statistics():
-    """Provides some statistics about the :class:`PlayHistoryEntry`s in the database.
+    """Provides some statistics about the :class:`partify.models.PlayHistoryEntry` in the database.
 
     :returns: The status of the request, the time the statistics were generated, and the statistics.
         The statistics are divided up into segments by time.
@@ -69,8 +69,8 @@ def compute_stats_over_segment(segment):
     """Computes some statistics over a segment of history.
     Note that this could be pretty slow to start. May be worth finding a way to speed this up eventually.
 
-    :param segment: A list of :class:`PlayHistoryEntry`s to compute statistics over.
-    :type segment: list of :class:`PlayHistoryEntry`s
+    :param segment: A list of :class:`partify.models.PlayHistoryEntry` to compute statistics over.
+    :type segment: list of :class:`partify.models.PlayHistoryEntry`
     :returns: A dictionary of statistics for this segment.
     :rtype: dictionary
     """
