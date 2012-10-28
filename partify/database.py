@@ -20,7 +20,7 @@
 import os
 import os.path
 
-from flaskext.sqlalchemy import SQLAlchemy
+from flask.ext.sqlalchemy import SQLAlchemy
 
 from partify import app
 
