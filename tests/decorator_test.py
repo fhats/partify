@@ -25,69 +25,69 @@ from partify.priv import give_user_privilege
 from testing.partify_test_case import PartifyTestCase
 
 class DecoratorTestCase(PartifyTestCase):
-	"""A quick and dirty test of the decorators used in Partify."""
+    """A quick and dirty test of the decorators used in Partify."""
 
-	def test_with_authentication(self):
-		"""Adds a new route to the app on-the-fly to test the authentication decorator."""
-		@app.route('/test_auth')
-		@with_authentication
-		def _tested_wrapped_fn():
-			return jsonify(status='ok')
-		
-		response = self.app.get('/test_auth', follow_redirects=True)
-		assert response.status_code == 200
-		assert """<form method="POST" action="/login">""" in response.data
-		assert "Account settings" not in response.data
-		
-		# Now test logging in
-		user = self.create_test_user()
+    def test_with_authentication(self):
+        """Adds a new route to the app on-the-fly to test the authentication decorator."""
+        @app.route('/test_auth')
+        @with_authentication
+        def _tested_wrapped_fn():
+            return jsonify(status='ok')
 
-		response = self.app.post('/login',
-			data = {'username': user.username, 'password': user.username},
-			follow_redirects = True)
-		assert response.status_code == 200
-		response = self.app.get('/test_auth', follow_redirects=True)
-		assert response.status_code == 200
-		response_data = json.loads(response.data)
-		assert 'status' in response_data
-		assert response_data['status'] == 'ok'
+        response = self.app.get('/test_auth', follow_redirects=True)
+        assert response.status_code == 200
+        assert """<form method="POST" action="/login">""" in response.data
+        assert "Account settings" not in response.data
 
-	def test_with_mpd(self):
-		@with_mpd
-		def _tested_wrapped_fn(mpd):
-			return mpd is not None
+        # Now test logging in
+        user = self.create_test_user()
 
-		assert _tested_wrapped_fn() is True
+        response = self.app.post('/login',
+            data = {'username': user.username, 'password': user.username},
+            follow_redirects = True)
+        assert response.status_code == 200
+        response = self.app.get('/test_auth', follow_redirects=True)
+        assert response.status_code == 200
+        response_data = json.loads(response.data)
+        assert 'status' in response_data
+        assert response_data['status'] == 'ok'
 
-	def test_with_mpd_lock(self):
-		# Just make sure the decorator doesn't crash
-		@with_mpd_lock
-		def _wrapped_fn():
-			pass
-		
-		_wrapped_fn()
+    def test_with_mpd(self):
+        @with_mpd
+        def _tested_wrapped_fn(mpd):
+            return mpd is not None
 
-	def test_with_privileges(self):
-		@app.route('/privileged_zone')
-		@with_privileges(["ADMIN_INTERFACE"], "redirect")
-		def _tested_wrapped_fn():
-			return jsonify(status='ok')
-		
-		# create a test user to use
-		user = self.create_test_user()
-		response = self.app.post('/login',
-			data = {'username': user.username, 'password': user.username},
-			follow_redirects = True)
-		assert response.status_code == 200
+        assert _tested_wrapped_fn() is True
 
-		# Make sure we can't get to the restricted endpoint
-		response = self.app.get('/privileged_zone', follow_redirects=False)
-		assert response.status_code != 200
+    def test_with_mpd_lock(self):
+        # Just make sure the decorator doesn't crash
+        @with_mpd_lock
+        def _wrapped_fn():
+            pass
 
-		# Now grab some privileges
-		give_user_privilege(user, "ADMIN_INTERFACE")
+        _wrapped_fn()
 
-		response = self.app.get('/privileged_zone', follow_redirects=False)
-		assert response.status_code == 200
-		json_data = json.loads(response.data)
-		assert json_data['status'] == "ok"
+    def test_with_privileges(self):
+        @app.route('/privileged_zone')
+        @with_privileges(["ADMIN_INTERFACE"], "redirect")
+        def _tested_wrapped_fn():
+            return jsonify(status='ok')
+
+        # create a test user to use
+        user = self.create_test_user()
+        response = self.app.post('/login',
+            data = {'username': user.username, 'password': user.username},
+            follow_redirects = True)
+        assert response.status_code == 200
+
+        # Make sure we can't get to the restricted endpoint
+        response = self.app.get('/privileged_zone', follow_redirects=False)
+        assert response.status_code != 200
+
+        # Now grab some privileges
+        give_user_privilege(user, "ADMIN_INTERFACE")
+
+        response = self.app.get('/privileged_zone', follow_redirects=False)
+        assert response.status_code == 200
+        json_data = json.loads(response.data)
+        assert json_data['status'] == "ok"

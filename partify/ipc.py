@@ -30,103 +30,103 @@ manager = None
 
 # Functions to manage the player state shared information
 def init_desired_player_state():
-	"""Initializes the Manager for the ``desired_player_state``
-	information."""
-	global manager
-	global desired_player_state
+    """Initializes the Manager for the ``desired_player_state``
+    information."""
+    global manager
+    global desired_player_state
 
-	if manager is None:
-		manager = Manager()
-	if desired_player_state is None:
-		desired_player_state = manager.dict()
-	
-	desired_player_state['state'] = "play"
-	desired_player_state['trans_fn'] = "play"
+    if manager is None:
+        manager = Manager()
+    if desired_player_state is None:
+        desired_player_state = manager.dict()
+
+    desired_player_state['state'] = "play"
+    desired_player_state['trans_fn'] = "play"
 
 def update_desired_player_state(state, transition_fn):
-	"""Updates the state that we want the player to be in for the next
-	call to the consistency function.
+    """Updates the state that we want the player to be in for the next
+    call to the consistency function.
 
-	:param state: The state we want the player to be in
-	:type state: string
-	:param transition_fn: The function to call to get the player into the desired state
-	:type transition_fn: callable
-	"""
-	global manager
-	global desired_player_state
+    :param state: The state we want the player to be in
+    :type state: string
+    :param transition_fn: The function to call to get the player into the desired state
+    :type transition_fn: callable
+    """
+    global manager
+    global desired_player_state
 
-	desired_player_state['state'] = state
-	desired_player_state['trans_fn'] = transition_fn
+    desired_player_state['state'] = state
+    desired_player_state['trans_fn'] = transition_fn
 
 def get_desired_player_state():
-	"""Tells us what state we want the player to be in.
+    """Tells us what state we want the player to be in.
 
-	:returns: A tuple containing the desired state and the function to get there.
-	:rtype: tuple (string, callable)
-	"""
+    :returns: A tuple containing the desired state and the function to get there.
+    :rtype: tuple (string, callable)
+    """
 
-	global manager
-	global desired_player_state
+    global manager
+    global desired_player_state
 
-	return desired_player_state['state'], desired_player_state['trans_fn']
+    return desired_player_state['state'], desired_player_state['trans_fn']
 
 desired_player_state = None
 
 # Functions to manage the update times shared information
 def init_times():
-	"""Initializes the Manager for the ``last_updated_times`` dict 
-	which tracks the times that certain events happen, such as 
-	playlist updates."""
-	global manager
-	global last_updated_times
-	if manager is None:
-		manager = Manager()
-	if last_updated_times is None:
-		last_updated_times = manager.dict()
-	last_updated_times["playlist"] = time.time()
+    """Initializes the Manager for the ``last_updated_times`` dict
+    which tracks the times that certain events happen, such as
+    playlist updates."""
+    global manager
+    global last_updated_times
+    if manager is None:
+        manager = Manager()
+    if last_updated_times is None:
+        last_updated_times = manager.dict()
+    last_updated_times["playlist"] = time.time()
 
 def update_time(key, time):
-	"""Updates ``last_updated_times`` with a key and the value for that
-	key.
+    """Updates ``last_updated_times`` with a key and the value for that
+    key.
 
-	:param key: The key in ``last_updated_times`` to update
-	:type key: string
-	:param time: The time to store for ``key``
-	:type time: float"""
-	global manager
-	global last_updated_times
-	last_updated_times[key] = time
+    :param key: The key in ``last_updated_times`` to update
+    :type key: string
+    :param time: The time to store for ``key``
+    :type time: float"""
+    global manager
+    global last_updated_times
+    last_updated_times[key] = time
 
 def get_time(key):
-	"""Gets the value for ``key`` in ``last_updated_times``.
+    """Gets the value for ``key`` in ``last_updated_times``.
 
-	:param key: The key in ``last_updated_times`` to get
-	:type key: string
-	:returns: The time corresponding to ``key`` in ``last_updated_times``
-	:rtype: float
-	"""
-	global manager
-	global last_updated_times
-	if key not in last_updated_times:
-		last_updated_times[key] = 0
-	return last_updated_times[key]
+    :param key: The key in ``last_updated_times`` to get
+    :type key: string
+    :returns: The time corresponding to ``key`` in ``last_updated_times``
+    :rtype: float
+    """
+    global manager
+    global last_updated_times
+    if key not in last_updated_times:
+        last_updated_times[key] = 0
+    return last_updated_times[key]
 
 mpd_lock = None
 
 # Functions to manage the locking mechanism between requests and playlist update callbacks
 def init_mpd_lock():
-	"""Initializes the Lock that is used to prevent badness in accessing MPD."""
-	global mpd_lock
-	if mpd_lock is None:
-		mpd_lock = Lock()
-	
+    """Initializes the Lock that is used to prevent badness in accessing MPD."""
+    global mpd_lock
+    if mpd_lock is None:
+        mpd_lock = Lock()
+
 def get_mpd_lock():
-	"""Acquires the lock needed to access MPD."""
-	global mpd_lock
-	mpd_lock.acquire()
+    """Acquires the lock needed to access MPD."""
+    global mpd_lock
+    mpd_lock.acquire()
 
 def release_mpd_lock():
-	"""Releases the MPD lock."""
-	global mpd_lock
-	mpd_lock.release()
-	
+    """Releases the MPD lock."""
+    global mpd_lock
+    mpd_lock.release()
+
