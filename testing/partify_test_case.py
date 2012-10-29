@@ -25,14 +25,17 @@ from testify import *
 from partify import app
 # TODO: Figure out these imports and how to remove duplication between this and run.py
 from partify import ipc, on_startup, player, queue, track, user
-from partify.config import set_config_value
+from partify.config import load_config_from_yaml, set_config_value
 from partify.database import init_db, db
 from partify.models import User
 
 class PartifyTestCase(TestCase):
     @class_setup
     def _prepare(self):
-        self.db_fd = tempfile.mkstemp() 
+        self.db_fd = tempfile.mkstemp()
+        self.config_fd = tempfile.mkstemp()
+        self.config_path = self.config_fd[1]
+        load_config_from_yaml(self.config_path)
         app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///%s" % self.db_fd[1]
         init_db()
         set_config_value("TESTING", True)
@@ -46,12 +49,13 @@ class PartifyTestCase(TestCase):
     def _cleanup(self):
         #os.close(self.db_fd[0])
         #os.unlink(self.db_fd[1])
-        pass
+        os.close(self.config_fd[0])
+        os.unlink(self.config_fd[1])
 
     @setup
     def _setup(self):
         self.app = app.test_client()
-    
+
     @teardown
     def _teardown(self):
         pass

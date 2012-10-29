@@ -17,24 +17,23 @@
 
 import json
 import random
-import time
 from itertools import cycle, dropwhile
 
 from testify import *
 
 from partify import app
-from partify.config import get_config_value, load_config_from_db, set_config_value
+from partify.config import set_config_value
 from partify.database import db
 from partify.models import PlayQueueEntry, Vote
 from partify.queue import add_track_from_spotify_url
 from partify.queue import _ensure_mpd_playlist_consistency
 from partify.queue import track_from_mpd_search_results
 from partify.queue import track_from_spotify_url
-from partify.queue import track_info_from_mpd_search_results
 from partify.queue import track_info_from_spotify_url
 from testing.data.sample_tracks import sample_tracks
 from testing.mocks.mock_mpd_client import MockMPDClient
 from testing.logged_in_user_test_case import LoggedInUserTestCase
+
 
 class QueueTestCase(LoggedInUserTestCase):
     """Tests all of the functions pertaining to queue management (queue.py)."""
@@ -267,7 +266,6 @@ class QueueTestCase(LoggedInUserTestCase):
     @suite('transient')
     def test_round_robin_selection(self):
         set_config_value('SELECTION_SCHEME', 'ROUND_ROBIN')
-        load_config_from_db()
         self.mpd.clear()
         _ensure_mpd_playlist_consistency(self.mpd)
         assert len(self.mpd.playlistinfo()) == 0
@@ -305,7 +303,6 @@ class QueueTestCase(LoggedInUserTestCase):
     @suite('transient')
     def test_fcfs_selection(self):
         set_config_value('SELECTION_SCHEME', 'FCFS')
-        load_config_from_db()
         self.mpd.clear()
         _ensure_mpd_playlist_consistency(self.mpd)
         assert len(self.mpd.playlistinfo()) == 0
@@ -338,7 +335,6 @@ class QueueTestCase(LoggedInUserTestCase):
     @suite('transient')
     def test_fcfs_with_voting_selection(self):
         set_config_value('SELECTION_SCHEME', 'FCFS_VOTE')
-        load_config_from_db()
         self.mpd.clear()
         _ensure_mpd_playlist_consistency(self.mpd)
         assert len(self.mpd.playlistinfo()) == 0

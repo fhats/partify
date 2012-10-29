@@ -73,7 +73,7 @@ class Track(db.Model):
 
     def __repr__(self):
         return "<%r by %r (from %r) - %r>" % (self.title, self.artist, self.album, self.spotify_url)
-    
+
 class PlayQueueEntry(db.Model):
     """Represents a playlist queue entry. These only live until the track they represent is played,
     then they are deleted.
@@ -87,7 +87,7 @@ class PlayQueueEntry(db.Model):
     * **playback_priority**: The playback priority in the global queue
     """
     __tablename__ = "play_queue_entry"
-    
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     track_id = db.Column(db.Integer, db.ForeignKey('track.id'))
     track = db.relationship("Track")
@@ -124,14 +124,14 @@ class PlayHistoryEntry(db.Model):
     * **time_played**: The datetime that the :class:`Track` started playing
     """
     __tablename__ = "play_history_entry"
-    
+
     id = db.Column(db.Integer, primary_key = True, autoincrement=True)
-    
+
     track_id = db.Column(db.Integer, db.ForeignKey('track.id'))
     track = db.relationship("Track")
-    
+
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship("User") 
+    user = db.relationship("User")
 
     time_played = db.Column(db.DateTime, default=datetime.datetime.now)
 
@@ -153,7 +153,7 @@ class Vote(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship("User") 
+    user = db.relationship("User")
 
     pqe_id = db.Column(db.Integer, db.ForeignKey('play_queue_entry.id'))
     pqe = db.relationship('PlayQueueEntry')
@@ -162,19 +162,3 @@ class Vote(db.Model):
     phe = db.relationship('PlayHistoryEntry')
 
     direction = db.Column(db.Integer, default=0)
-
-class ConfigurationField(db.Model):
-    """Represents a configuration field.
-
-    * **id**: The :class:`ConfigurationField`'s unique ID
-    * **field_name**: The name of the configuration field
-    * **field_value**: The value the configuration field should have.
-    """
-    __tablename__ = "configuration_field"
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    field_name = db.Column(db.Text)
-    field_value = db.Column(db.Text)
-
-    def __repr__(self):
-        return "<ConfigurationField %r with value %r>" % (self.field_name, self.field_value)

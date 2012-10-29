@@ -16,9 +16,8 @@
 # along with Partify.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-from functools import wraps
 import time
-from multiprocessing import Manager, Process
+from multiprocessing import Process
 
 from werkzeug.contrib.profiler import MergeStream
 from werkzeug.contrib.profiler import ProfilerMiddleware
@@ -26,12 +25,13 @@ from werkzeug.serving import run_simple
 
 from flask import Flask, jsonify, redirect, session, url_for
 
+
 class FlaskWithRouteDocs(Flask):
     """A subclass of Flask to allow using :route: and :methods: in docstrings, a la Sphinx."""
     def route(self, rule, **options):
         """Overrides the @app.route decorator provided by Flask. Takes the opportunity to replace
-        instances of :route: or :methods: in the wrapped function's docstring with information from 
-        the app.route() decorator. If :route: or :methods: are not present in the docstring at the 
+        instances of :route: or :methods: in the wrapped function's docstring with information from
+        the app.route() decorator. If :route: or :methods: are not present in the docstring at the
         time of wrapping, then append route and methods to bottom of the docstring for nicer documentation."""
         def decorator(f):
             route_dec = super(FlaskWithRouteDocs, self).route(rule, **options)
@@ -47,13 +47,15 @@ class FlaskWithRouteDocs(Flask):
                 f.__doc__ = "%s\n\n    **Methods:** ``%s``" % (f.__doc__, methods_str)
             return route_dec(f)
         return decorator
-        
+
 
 app = FlaskWithRouteDocs("partify")
 
-from partify.config import load_config_from_db
+from partify import ipc
+from partify.config import load_config_from_yaml
 from partify.database import init_db
 from partify.queue import on_playlist_update, ensure_mpd_playlist_consistency
+
 
 @app.route("/")
 def main():
@@ -61,13 +63,14 @@ def main():
     Just sweeps the user off to the player page (which redirects to login if there is no user authenticated)."""
     return redirect(url_for('player'))
 
+
 def on_startup():
     """Performs all of the actions needed to get the web server up and running."""
     try:
-        load_config_from_db()
+        load_config_from_yaml()
     except:
         init_db()
-        load_config_from_db()
+        load_config_from_yaml()
     ipc.init_times()
     ipc.init_desired_player_state()
     ipc.init_mpd_lock()
@@ -79,13 +82,14 @@ def on_startup():
         mpd_event_listener = Process(target=on_playlist_update)
         mpd_event_listener.start()
 
+
 def start():
     """Starts the WebApp."""
     # TODO: Figure out these imports
     from partify import admin, history, player, queue, statistics, track, user, vote
     init_db()
     on_startup()
-    
+
     app.logger.debug(app.config)
 
     if app.config.get('PROFILE', False):
