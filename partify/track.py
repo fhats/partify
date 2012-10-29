@@ -14,11 +14,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Partify.  If not, see <http://www.gnu.org/licenses/>.
+import re
 
 from flask import jsonify, request, session, url_for
 
 from partify import app
 from partify.decorators import with_mpd
+
+
+TRACK_RE = re.compile(r'(\d+)/\d+')
+
 
 @app.route('/track/search', methods=['GET'])
 @with_mpd
@@ -40,7 +45,7 @@ def track_search(mpd):
         if term in request.args:
             mpd_search_terms.append(term)
             mpd_search_terms.append(request.args[term])
-      
+
     response = {}
 
     if len(mpd_search_terms) > 0:
@@ -66,7 +71,17 @@ def _process_results(results, search_terms):
     :returns: A list of search results grouped appropriately
     :rtype: list of dictionaries
     """
-    
+
+    # Sometimes with the local storage backend we get weird track numbers
+    # e.g. "2/10" instead of 2
+    # This quick hack tries to get the track number so it can be int'd
+    for result in results:
+        raw_track_num = result['track'].strip()
+        match = TRACK_RE.match(raw_track_num)
+        if match:
+            track_num = match.group(1)
+            result['track'] = track_num
+
     # Build a dict out of the search_terms list
     search_terms = dict( (k,v) for k,v in zip(search_terms[::2], search_terms[1::2]) )
 

@@ -59,12 +59,12 @@ def add_to_queue(mpd):
     """
 
     spotify_uri = request.form['spotify_uri']
-    
+
     result = add_track_from_spotify_url(mpd, spotify_uri)
 
     if result is None:
         return jsonify(status='error', message='The Spotify URL you specified is invalid.')
-    
+
     return jsonify(status='ok', queue=get_user_queue(session['user']['id']), file=spotify_uri)
 
 @app.route('/queue/add_album', methods=['POST'])
@@ -96,7 +96,7 @@ def add_album_from_track(mpd):
 @with_mpd_lock
 def remove_from_queue(mpd):
     """Removes the specified track from the user's play queue.
-    
+
     :param track_id: The ID of :class:`PlayQueueEntry` to remove
     :type track_id: integer
     :returns: The status of the request and the user's queue
@@ -106,7 +106,7 @@ def remove_from_queue(mpd):
 
     if track_id is None:
         return jsonify(status='error', message="No track specified for removal!")
-    
+
     try:
         track_id = int(track_id)
     except ValueError:
@@ -119,7 +119,7 @@ def remove_from_queue(mpd):
 
     if track.user.id != session['user']['id']:
         return jsonify(status='error', message="You are not authorized to remove this track!")
-    
+
     # Remove the track! All of the details will follow for now.... later we'll need to be watching the reordering of tracks (#20)
     mpd.deleteid(track_id)
 
@@ -184,7 +184,7 @@ def add_track_from_spotify_url(mpd, spotify_url, user_id=None):
     if user_id is None:
         user_id = session['user']['id']
 
-    track = track_from_spotify_url(spotify_url)
+    track = track_from_mpd_search_results(spotify_url, mpd)
 
     if track is None:
         return None
@@ -193,7 +193,7 @@ def add_track_from_spotify_url(mpd, spotify_url, user_id=None):
 
     # Add the track to the play queue
     # Disabling this for now since the playlist consistency function should figure it out
-    db.session.add( PlayQueueEntry(track=track, user_id=user_id, mpd_id=mpd_id) )
+    db.session.add(PlayQueueEntry(track=track, user_id=user_id, mpd_id=mpd_id))
     db.session.commit()
 
     return track
@@ -211,7 +211,7 @@ def track_from_spotify_url(spotify_url):
 
     if len(existing_tracks) == 0:
         # If we have a track that does not already have a Track entry with the same spotify URI, then we need get the information from Spotify and add one.
-        
+
         # Look up the info from the Spotify metadata API
         track_info = track_info_from_spotify_url(spotify_url)
         if track_info is None:
@@ -241,7 +241,7 @@ def track_from_mpd_search_results(spotify_url, mpd):
         track_info = track_info_from_mpd_search_results(spotify_url, mpd)
         if track_info is None:
             return None
-        
+
         track = Track(**track_info)
         db.session.add( track )
         db.session.commit()
@@ -285,7 +285,7 @@ def track_info_from_spotify_url(spotify_url):
     :rtype: dictionary(string, string)
     """
     spotify_request_url = "http://ws.spotify.com/lookup/1/.json?uri=%s" % spotify_url
-    
+
     try:
         raw_response = urllib2.urlopen(spotify_request_url).read()
     except HTTPError:
@@ -372,7 +372,7 @@ def _ensure_mpd_playlist_consistency(mpd):
             db.session.add(queue_track)
         else:
             # We need to add the track to the Partify representation of the Play Queue
-            new_track = track_from_spotify_url(track['file'])
+            new_track = track_from_mpd_search_results(track['file'], mpd)
             new_track_entry = PlayQueueEntry(track=new_track, user_id=None, mpd_id=track['id'], playback_priority=track['pos'])
             db.session.add(new_track_entry)
 
@@ -387,13 +387,13 @@ def _ensure_mpd_playlist_consistency(mpd):
     _ensure_mpd_player_state_consistency(mpd)
 
     status = _get_status(mpd)
-        
+
     if status['state'] != ipc.get_desired_player_state()[0]:
         tn_fn = getattr(mpd, ipc.get_desired_player_state()[1])
         tn_fn()
 
     db.session.commit()
-        
+
 
 def _ensure_mpd_player_state_consistency(mpd):
     """Ensure that the Mopidy server's options are consistent with options that make sense for Partify.
@@ -415,14 +415,14 @@ def _update_track_history(mpd):
     :param mpd: The MPD client used to manipulate the MPD queue
     :type mpd: ``MPDClient``
     """
-    
+
     # Get the currently playing track
     currently_playing_track = PlayQueueEntry.query.order_by(PlayQueueEntry.playback_priority.asc()).first()
 
     if currently_playing_track is not None:
-        history_entry = PlayHistoryEntry.query.filter( 
+        history_entry = PlayHistoryEntry.query.filter(
             and_(PlayHistoryEntry.user == currently_playing_track.user,
-                PlayHistoryEntry.track == currently_playing_track.track 
+                PlayHistoryEntry.track == currently_playing_track.track
             )
         ).first()
 
