@@ -4,7 +4,7 @@ Partify
 
 Partify is a social music collaboration project aimed at allowing multiple users to collectively play music streamed from Spotify. Partify relies on Mopidy to perform the music streaming and provides a web interface on top of Mopidy.
 
-For more information, please see the wiki at https://github.com/fxh32/partify/wiki
+For more information, please see the wiki at https://github.com/fhats/partify/wiki
 
 Partify depends on the following projects:
 
