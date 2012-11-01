@@ -116,4 +116,8 @@ def set_config_value(field, value):
 
     if value != old_value:
         with open(app.config['config_path'], 'w') as config_file:
-            config_file.write(yaml.dump(app.config))
+            # app.config is actually an object, not just a dict
+            # Let's copy out all the keys/values and make a new dict so
+            # we don't serialize anything nasty
+            config_dict = dict(app.config.items())
+            config_file.write(yaml.dump(config_dict))

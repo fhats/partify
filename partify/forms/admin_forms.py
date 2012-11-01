@@ -18,7 +18,7 @@
 """Contains forms used for gathering input for administrative features."""
 
 from wtforms import BooleanField
-from wtforms import Form 
+from wtforms import Form
 from wtforms import HiddenField
 from wtforms import IntegerField
 from wtforms import SelectField
@@ -32,7 +32,7 @@ class ConfigurationForm(Form):
 
     Each of the fields should be the loweredcased name of the corresponding configuration field.
     """
-    
+
     selection_scheme = SelectField("Track Selection", [validators.Required()], choices=[('ROUND_ROBIN', 'Round Robin'), ('FCFS_VOTE', 'First-Come, First-Served with Voting'), ('FCFS', 'First-Come, First-Served')])
     mpd_server_hostname = TextField("MPD Server Hostname", [validators.Required()])
     mpd_server_port = IntegerField("MPD Server Port", [validators.Required(), validators.NumberRange(min=0, max=65535)])
@@ -47,7 +47,7 @@ def create_single_user_admin_admin_form(user_id):
 
     class SingleUserAdminAdminForm(Form):
         pass
-    
+
     setattr(SingleUserAdminAdminForm, "%d_admin_config" % user_id, BooleanField(priv_in_english("ADMIN_CONFIG"), [validators.Required()]))
     setattr(SingleUserAdminAdminForm, "%d_admin_playback" % user_id, BooleanField(priv_in_english("ADMIN_PLAYBACK"), [validators.Required()]))
     setattr(SingleUserAdminAdminForm, "%d_admin_admin" % user_id, BooleanField(priv_in_english("ADMIN_ADMIN"), [validators.Required()]))
