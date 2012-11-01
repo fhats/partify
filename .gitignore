@@ -6,3 +6,4 @@ partify/static/js/partify/*
 *.db
 *.db-journal
 docs/_build
+partify.yaml
