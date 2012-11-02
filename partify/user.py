@@ -18,7 +18,6 @@
 from flask import flash
 from flask import jsonify
 from flask import redirect
-from flask import render_template
 from flask import request
 from flask import session
 from flask import url_for
@@ -32,6 +31,7 @@ from partify.decorators import with_authentication
 from partify.priv import dump_user_privileges
 from partify.priv import give_user_privilege
 from partify.priv import privs
+from partify.util import render_template
 from forms.user_forms import RegistrationForm
 from forms.user_forms import LoginForm
 from forms.user_forms import SettingsForm
@@ -58,7 +58,7 @@ def account_settings_update():
     else:
         return render_template("account_settings.html", user=user, form=form, user_privs=dump_user_privileges(user))
 
-    
+
     db.session.commit()
 
     return redirect(url_for('account_settings_page'))

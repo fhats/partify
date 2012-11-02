@@ -184,7 +184,7 @@ def add_track_from_spotify_url(mpd, spotify_url, user_id=None):
     if user_id is None:
         user_id = session['user']['id']
 
-    track = track_from_mpd_search_results(spotify_url, mpd)
+    track = track_from_backend(spotify_url, mpd)
 
     if track is None:
         return None
@@ -197,6 +197,13 @@ def add_track_from_spotify_url(mpd, spotify_url, user_id=None):
     db.session.commit()
 
     return track
+
+def track_from_backend(uri, mpd):
+    """Gets a track from its provided backend."""
+    if uri.startswith("spotify:"):
+        return track_from_spotify_url(uri)
+    else:
+        return track_from_mpd_search_results(uri, mpd)
 
 # These *_from_spotify_url functions should probably move to a kind of util file
 def track_from_spotify_url(spotify_url):

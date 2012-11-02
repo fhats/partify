@@ -15,9 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Partify.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Contains functions and endpoints for administrative facilities."""   
+"""Contains functions and endpoints for administrative facilities."""
 
-from flask import redirect, render_template, request, session, url_for
+from flask import redirect, request, session, url_for
 
 from partify import app
 from partify import ipc
@@ -28,6 +28,7 @@ from partify.decorators import with_authentication, with_mpd, with_mpd_lock, wit
 from partify.models import User
 from partify.player import _get_status
 from partify.priv import dump_user_privileges, give_user_privilege, privs, revoke_user_privilege
+from partify.util import render_template
 
 @app.route("/admin", methods=["GET"])
 @with_authentication
@@ -50,8 +51,8 @@ def admin_console():
     return render_template("admin.html",
         admin_admin_forms=admin_admin_forms,
         user_ids_to_names=user_ids_to_names,
-        configuration_form=configuration_form, 
-        user=user, 
+        configuration_form=configuration_form,
+        user=user,
         user_privs=dump_user_privileges(user))
 
 @app.route("/admin/config_update", methods=["POST"])
@@ -62,13 +63,13 @@ def configuration_update():
     presented by :func:`admin_console`.
     """
     configuration_form = ConfigurationForm(request.form)
-    
+
     if configuration_form.validate():
         for key,val in configuration_form.data.iteritems():
             key = key.upper()
             set_config_value(key, val)
         load_config_from_db()
-        
+
     return redirect(url_for('admin_console'))
 
 @app.route("/admin/admin_admin_update", methods=["POST"])
@@ -102,7 +103,7 @@ def admin_playback_play(mpd):
     ipc.update_desired_player_state("play", "play")
     mpd.play()
 
-    return redirect(url_for('admin_console'))    
+    return redirect(url_for('admin_console'))
 
 @app.route("/admin/playback/pause", methods=["GET"])
 @with_authentication
@@ -112,8 +113,8 @@ def admin_playback_pause(mpd):
     """Attempts to tell Mopidy to pause, regardless of Mopidy's current play state."""
     ipc.update_desired_player_state("paused", "pause")
     mpd.pause()
-    
-    return redirect(url_for('admin_console'))    
+
+    return redirect(url_for('admin_console'))
 
 @app.route("/admin/playback/skip", methods=["GET"])
 @with_authentication
@@ -138,7 +139,7 @@ def admin_queue_clear(mpd):
     """Clears the global play queue."""
     mpd.clear()
 
-    return redirect(url_for('admin_console'))    
+    return redirect(url_for('admin_console'))
 
 def create_admin_admin_form(data=None):
     """Returns a list of SingleUserAdminAdminForms - one for each user.

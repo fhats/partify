@@ -28,7 +28,8 @@ setup(
         "Flask == 0.9",
         "Flask-WTF == 0.8",
         "Flask-SQLAlchemy == 0.16",
-        "tornado == 2.4"
+        "tornado == 2.4",
+        "useragent == 0.1.1"
     ],
 )
 

@@ -19,10 +19,6 @@ along with Partify.  If not, see <http://www.gnu.org/licenses/>.
 
 $ = jQuery
 
-$ ->
-	window.Partify = window.Partify || {}
-	window.Partify.Statistics = new Statistics($("#stats_widget"))
-
 class Statistics
 	constructor: (widget_div) ->
 		@widget_div = widget_div
@@ -121,7 +117,7 @@ class Statistics
 		</div>
 		"
 		this._buildAlbumImage artist, album, $("img##{label}_top_album_#{rank}")
-	
+
 	_buildTopUser: (username, user, plays, rank, segment_container, label) ->
 		segment_container.append "
 		<div class='span-5'>
@@ -146,17 +142,17 @@ class Statistics
 					target_size = preferred_sizes[0]
 					img_url = (image['#text'] for image in images when image.size == target_size)
 					img_url = img_url[0]
-					
+
 					img_element.attr 'src', img_url
 			, error: (code, message) =>
 				console.log "#{code} - #{message}"
 		}
 
 	_buildAlbumImage: (artist, album, img_element) ->
-		window.Partify.LastFM.album.getInfo 
+		window.Partify.LastFM.album.getInfo
 			artist: artist
 			album: album
-		, 
+		,
 		{
 			success: (data) ->
 				images = data.album?.image
@@ -167,7 +163,7 @@ class Statistics
 					target_size = preferred_sizes[0]
 					img_url = (image['#text'] for image in images when image.size == target_size)
 					img_url = img_url[0]
-					
+
 					img_element.attr 'src', img_url
 			, error: (code, message) =>
 				console.log "#{code} - #{message}"

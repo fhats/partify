@@ -19,11 +19,6 @@ along with Partify.  If not, see <http://www.gnu.org/licenses/>.
 
 $ = jQuery
 
-$ ->
-    window.Partify = window.Partify || {}
-    window.Partify.Search = new Search()
-    window.Partify.Search.skin_add_btns()
-
 class Search
     @results = new Array()
     @results_display
@@ -57,12 +52,12 @@ class Search
                         @sortmode.category = category
                         @sortmode.asc = true
                     this.sortResultsBy @sortmode.category, "artist", "album", "track", @sortmode.asc
-        
+
     sortResultsBy: (categories..., is_ascending) ->
-        sortfn = (a,b) -> 
+        sortfn = (a,b) ->
             cmp_val = 0
             for category in categories when cmp_val is 0
-                do (category) ->     
+                do (category) ->
                     if a[category] < b[category]
                         cmp_val = -1
                     if a[category] > b[category]
@@ -87,7 +82,7 @@ class Search
         this._show_wait_spinner()
         this.clearSortIndicators()
         @sortmode = {category: "", asc: true}
-        
+
         request_data = {}
         if title != ""
             request_data['title'] = title
@@ -126,9 +121,9 @@ class Search
                     this._addTrackFail(btn)
             error: () =>
                 this._addTrackFail(row.children('td.result_add').children('button'))
-            
+
         )
-    
+
     addAlbum: (spotify_url, album_tracks) ->
         this.disableButton $("tr[id='#{album_tracks[0].file}'] > td.result_album > button")
         this.disableRow $("tr[id='#{track.file}']") for track in album_tracks
@@ -155,12 +150,12 @@ class Search
                 this._addTrackFail $("tr[id='#{album_tracks[0].file}'] > td.result_album > button")
                 this._addTrackFail $("tr[id='#{track.file}'] > td.result_add > button") for track in album_tracks
         )
-    
+
     _addTrackFail: (btn) ->
         btn.addClass 'ui-state-error'
         btn.button 'option', 'icons',
            primary: 'ui-icon-alert'
-    
+
     updateResultsDisplay: () ->
         # TODO: Clean this up...
         @results_display.empty()
@@ -175,10 +170,10 @@ class Search
                         end_pos = pos
                         while start_pos > 0
                             if @results[start_pos-1].album == track.album
-                                start_pos -= 1 
+                                start_pos -= 1
                             else
                                 break
-                        
+
                         while end_pos < @results.length - 1
                             if @results[end_pos+1].album == track.album
                                 end_pos += 1
@@ -187,21 +182,21 @@ class Search
 
                         #console.log start_pos
                         #console.log end_pos
-                        
+
                         #album_length = (t for t in @results when t.album == track.album).length
-                        
+
                         album_length = (end_pos - start_pos) + 1
 
                         if album_length > 4
                             if track.album == @results[Math.max(pos-1, 0)].album and track.file != @results[Math.max(pos-1, 0)].file
                                 $("tr[id='#{track.file}'] > td.result_album").remove()
                             else
-                                $("tr[id='#{track.file}'] > td.result_album").attr 'rowspan', album_length 
+                                $("tr[id='#{track.file}'] > td.result_album").attr 'rowspan', album_length
                                 $("tr[id='#{track.file}'] > td.result_album").addClass 'album_details'
                                 $("tr[id='#{track.file}'] > td.result_album")
                                 year = yearFromDateString(track.date)
                                 year_str = if year != "" and year > 0 then "(" + year + ")" else ""
-                                
+
                                 $("tr[id='#{track.file}'] > td.result_album").prepend "
                                 <img id='#{track.file}' src='/static/img/loading.gif' />"
                                 $("tr[id='#{track.file}'] > td.result_album > a").wrap "<p></p>"
@@ -209,40 +204,19 @@ class Search
                                 $("tr[id='#{track.file}'] > td.result_album").append "
                                 <button class='album_add_btn'>Add Album</button>
                                 "
-                                
+
                                 # This needs to be bound for later because of the stupid way Javascript handles 'this'
                                 # Apparently Coffeescript doesn't handle this, either...
                                 last_track = @results[(pos + album_length - 1)]
+                                img_element = $("tr[id='#{track.file}'] > td.result_album img[id='#{track.file}']")
 
-                                # Find album art from Last.fm
-                                window.Partify.LastFM.album.getInfo 
-                                    artist: track.artist,
-                                    album: track.album
-                                , 
-                                {
-                                    success: (data) ->
-                                        images = data.album?.image
-                                        if images?
-                                            image_sizes = (image.size for image in images)
-                                            target_size = "large"
-                                            if target_size in image_sizes
-                                                img_url = (image['#text'] for image in images when image.size == target_size)
-                                                img_url = img_url[0]
-                                                img_element = $("tr[id='#{track.file}'] > td.result_album img[id='#{track.file}']")
-                                                img_element.attr 'src', img_url
-                                                img_element.bind 'load', (e) ->
-                                                    img_element.addClass 'album_image'
-                                                    img_element.attr 'width', 174
-                                                    img_element.attr 'height', 174
-                                                    if 4 < album_length < 8
-                                                        $("tr[id='#{last_track.file}']").after "<tr class='album_padding'><td colspan=5>&nbsp;</td></tr>"
-                                                        $("tr[id='#{track.file}'] > td.result_album").attr 'rowspan', album_length + 1
-                                                if img_url == ""
-                                                    img_element.remove()
-                                    , error: (code, message) =>
-                                        img_element.remove()
-                                }
-                                
+                                getAlbumImage(track, "large",
+                                    (img_url) =>
+                                        this.albumImageCallback(img_url, img_element, track, album_length, last_track)
+                                    , (code, message) =>
+                                        this.albumImageError(img_element)
+                                )
+
                                 # Set up the button to add the album to the queue
                                 $("tr[id='#{track.file}'] > td.result_album > button").button(
                                     icons:
@@ -263,10 +237,26 @@ class Search
             , (e) =>
                 $(e.currentTarget).parents("tr").first().children("td:not(.album_details)").removeClass 'highlight'
             )
-                        
+
         else
             this.buildEmptyResultRow()
         this.skin_add_btns()
+
+    albumImageCallback: (img_url, img_element, track, album_length, last_track) ->
+        img_element.attr 'src', img_url
+        img_element.bind 'load', (e) ->
+            img_element.addClass 'album_image'
+            img_element.attr 'width', 174
+            img_element.attr 'height', 174
+            if 4 < album_length < 8
+                $("tr[id='#{last_track.file}']").after "<tr class='album_padding'><td colspan=5>&nbsp;</td></tr>"
+                $("tr[id='#{track.file}'] > td.result_album").attr 'rowspan', album_length + 1
+        if img_url == ""
+            img_element.remove()
+
+    albumImageError: (img_element) ->
+        img_element.remove()
+
 
     buildResultRow: (track) ->
         row_html = "
@@ -278,7 +268,7 @@ class Search
             <td class='small result_track'>#{track.track}</td>
             <td class='small result_add'><button class='add_btn'></button></td>
         </tr>
-        "        
+        "
         @results_display.append row_html
 
         # Set up the links to start corresponding searches
@@ -288,14 +278,14 @@ class Search
             $("input#search_album").val(track.album)
             $("input#search_title").val("")
             this.processSearch "", track.artist, track.album
-        
+
         $("tr[id='#{track.file}'] td.result_artist a").click (e) =>
             e.stopPropagation()
             $("input#search_artist").val(track.artist)
             $("input#search_title").val("")
             $("input#search_album").val("")
             this.processSearch "", track.artist, ""
-    
+
     buildEmptyResultRow: () ->
         row_html = "
         <tr>
@@ -307,7 +297,7 @@ class Search
 
     skin_add_btns: () ->
         $("button.add_btn").button(
-            icons: 
+            icons:
                 primary: 'ui-icon-plus'
             , text: false
         )
@@ -319,7 +309,7 @@ class Search
 
     disableRow: (row) ->
         this.disableButton row.children('td.result_add').children('button')
-        
+
     disableButton: (btn) ->
         btn.button 'disable'
         btn.button 'option', 'icons',
@@ -335,6 +325,51 @@ class Search
             </td>
         </tr>
         ")
+
+
+getAlbumImage = (track, size, success, failure) ->
+    # Find album art from Last.fm
+    window.Partify.LastFM.album.getInfo
+        artist: track.artist,
+        album: track.album
+    ,
+    {
+        success: (data) =>
+            images = data.album?.image
+            if images?
+                image_sizes = (image.size for image in images)
+                target_size = size
+                if target_size in image_sizes
+                    img_url = (image['#text'] for image in images when image.size == target_size)
+                    img_url = img_url[0]
+                    success(img_url)
+
+        , error: (code, message) =>
+            failure(code, message)
+    }
+
+getArtistImage = (track, size, success, failure) ->
+    # Find album art from Last.fm
+    window.Partify.LastFM.artist.getInfo
+        artist: track.artist
+    ,
+    {
+        success: (data) =>
+            images = data.artist.image
+            if images?
+                image_sizes = (image.size for image in images)
+                target_size = size
+                if target_size in image_sizes
+                    img_url = (image['#text'] for image in images when image.size == target_size)
+                    img_url = img_url[0]
+                    success(img_url)
+                else
+                    console.log "Couldn't retrieve image with size #{target_size} (sizes are #{image_sizes})"
+
+        , error: (code, message) =>
+            failure(code, message)
+    }
+
 
 class Track
     @id = 0

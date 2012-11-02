@@ -1,0 +1,101 @@
+<!--
+Copyright 2011 Fred Hatfull
+
+This file is part of Partify.
+
+Partify is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Partify is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Partify.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+{% macro page_common() %}
+<div data-role="header" data-id="header-common">
+	<h1 class="partify-header">Partify</h1>
+</div>
+<div data-role="footer" data-id="nav-common" data-position="fixed">
+	<div data-role="navbar" class="navbar">
+		<ul>
+			<li><a href="#now_playing">Now Playing</a></li>
+			<li><a href="#my_queue">My Queue</a></li>
+			<li><a href="#search">Search</a></li>
+		</ul>
+	</div>
+</div>
+{% endmacro %}
+
+{% extends "mobile/base.html" %}
+
+{% from "_util.html" import js_include %}
+
+{% block extra_js %}
+{{ js_include('js/lib/mustache-0.7.js') }}
+{{ js_include('js/lib/jquery-Mustache.js') }}
+{{ js_include('m/js/partify/player.js') }}
+{{ js_include('js/lib/lastfm.api.md5.js') }}
+{{ js_include('js/lib/lastfm.api.js') }}
+{{ js_include('js/lib/lastfm.api.cache.js') }}
+<script type="text/javascript">
+    config_lastfm_api_key = '{{ config.lastfm_api_key }}';
+    config_lastfm_api_secret = '{{ config.lastfm_api_secret }}';
+    config_user_id = {{ user.id }};
+    config_voting_enabled = {{ voting_enabled | lower }}
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div data-role="page" id="now_playing">
+	{{page_common()}}
+	<div data-role="content">
+		<h1>Now Playing</h1>
+		<div>
+			<div class="left">
+				<img id="now_playing_artist_image" class="album_image bordered_image" src="http://debbiefong.com/images/10%20t.jpg" />
+			</div>
+			<div class="left" id="now_playing_info">
+				<p class="overflowing_info"><strong>Track:</strong> <span id="player_info_title"></span></p>
+				<p class="overflowing_info"><strong>Artist:</strong> <span id="player_info_artist"></span></p>
+				<p class="overflowing_info"><strong>Album:</strong> <span id="player_info_album"></span></p>
+			</div>
+		</div>
+		<div class="times clear">
+			<span class="left" id="player_info_elapsed"></span>
+			<span class="right" id="player_info_time"></span>
+		</div>
+		<div class="progress_bar clear" id="player_progress"><div class="progress_fill">&nbsp;</div></div>
+		<div id="played_by_container">
+			<strong>Queued by:</strong>
+			<img height="25" width="25" class="avatar_image middle_image" src="" />
+			<span id="player_info_user_name"></span>
+		</div>
+	</div>
+	<div data-role="content">
+		<h1>Up Next</h1>
+		<ul data-role="listview" id="up_next_list">
+		</ul>
+		<ol data-role="listview" id="global_queue" start="4">
+		</ol>
+	</div>
+</div>
+
+<div data-role="page" id="my_queue">
+	{{page_common()}}
+	b
+</div>
+
+<div data-role="page" id="search">
+	{{page_common()}}
+	c
+</div>
+
+
+{% endblock %}

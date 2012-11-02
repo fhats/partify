@@ -1,0 +1,43 @@
+<!--
+Copyright 2011 Fred Hatfull
+
+This file is part of Partify.
+
+Partify is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Partify is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Partify.  If not, see <http://www.gnu.org/licenses/>.
+-->
+{% from "_util.html" import css_include %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Partify</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
+	<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+	{% block extra_js %}{% endblock %}
+	<script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
+
+	<!-- Google Web Fonts -->
+    <link href='http://fonts.googleapis.com/css?family=Patrick+Hand' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Andika' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Comfortaa' rel='stylesheet' type='text/css'>
+
+    <!-- Other Stylesheets -->
+    {{ css_include('m/css/base.css') }}
+</head>
+<body>
+
+{% block body %}
+{% endblock %}
+</body>
+</html>

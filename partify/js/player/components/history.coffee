@@ -19,10 +19,6 @@ along with Partify.  If not, see <http://www.gnu.org/licenses/>.
 
 $ = jQuery
 
-$ ->
-	window.Partify = window.Partify || {}
-	window.Partify.History = new History($("#history_widget"))
-
 class History
 	# A widget for displaying paginated, automatically updating history
 	constructor: (widget_div) ->
@@ -34,12 +30,12 @@ class History
 		@in_flight_xhr = undefined
 
 		@widget_div.append "<span id='history_last_updated' class='small darker left'><span id='history_update_prefix'>Last updated </span><span class='timeago' id='timeago'>never</span></span>"
-		
+
 		this._buildIppSelectors()
 
 		@widget_div.append "<ul id='history_queue'></ul>"
 		@widget_div.append "<span id='page_info' class='small darker left'></span>"
-	
+
 		this._buildPageSelector()
 
 		@queue = new HistoryQueue($("ul#history_queue"))
@@ -95,7 +91,7 @@ class History
 			page_right_btn.button 'disable'
 		else
 			page_right_btn.button 'enable'
-		
+
 		page_display.text @page
 
 
@@ -105,7 +101,7 @@ class History
 			<img src='/static/img/loading.gif' class='left' style='margin-right: 5px' />
 			Updating...
 		"
-	
+
 	_updateUpdateTime: () ->
 		$("span#history_last_updated > span").empty()
 		$("span#history_last_updated > span#history_update_prefix").append "Last updated "
@@ -152,14 +148,14 @@ class History
 			@page = Math.min(@page + 1, @total_pages)
 			this._updatePageSelector()
 			this.update()
-		
+
 	_buildIppSelectorLinks: () ->
 		$("span#ipp_selector a").click (e) =>
 			e.stopPropagation()
 			$("span#ipp_selector > span#ipp_#{@ipp}").wrap "<a href='#'></a>"
 			ipp_span = $(e.currentTarget).children("span").first()
 			ipp_span.unwrap()
-			
+
 			# Figure out what the page would be given the new IPP
 			proposed_ipp = parseInt(ipp_span.text())
 			@page = (Math.floor(((@page-1) * @ipp) / proposed_ipp)) + 1

@@ -18,21 +18,20 @@
 """Functions for showing the player page and getting player status."""
 
 import json
-import random
 import select
 import time
-from math import ceil
 
-from flask import Response, jsonify, redirect, render_template, request, session, url_for
+from flask import Response, jsonify, redirect, request, session, url_for
 
 from decorators import with_authentication, with_mpd
 from partify import app
 from partify import ipc
 from partify.models import PlayQueueEntry
-from partify.models import Track
 from partify.models import User
 from partify.priv import dump_user_privileges, user_has_privilege
 from partify.selection import needs_voting
+from partify.util import render_template as render_template
+
 
 @app.route('/player', methods=['GET'])
 @with_authentication
@@ -53,6 +52,7 @@ def player():
             return redirect(url_for("admin_console"))
 
     return render_template("player.html", user=user, user_play_queue=users_tracks, global_play_queue=global_queue, config=config, voting_enabled=needs_voting[app.config['SELECTION_SCHEME']], user_privs=dump_user_privileges(user))
+
 
 @app.route('/player/status/poll', methods=['GET'])
 @with_authentication

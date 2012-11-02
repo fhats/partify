@@ -1,0 +1,44 @@
+<!--
+Copyright 2011 Fred Hatfull
+
+This file is part of Partify.
+
+Partify is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Partify is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Partify.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+{% extends "mobile/base.html" %}
+
+{% from "mobile/_util.html" import render_field %}
+
+{% block body %}
+<div data-role="page">
+	<div data-role="content">
+		<h1>Partify</h1>
+		<h2>Social Music at Your Control</h2>
+	</div>
+	{% if form.errors %}
+	<div data-role="content" data-theme="e">
+		Incorrect username or password.
+	</div>
+	{% endif %}
+	<div data-role="content">
+		<form method="POST" action="{{url_for('login_post')}}" data-ajax="false">
+			{{ render_field(form.username) }}
+	        {{ render_field(form.password) }}
+	        <input type="submit" value="Login">
+	    	<a href="{{url_for('register_form')}}" data-role="button">Register</a>
+	    </form>
+	</div>
+</div>
+{% endblock %}

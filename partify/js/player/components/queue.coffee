@@ -19,22 +19,6 @@ along with Partify.  If not, see <http://www.gnu.org/licenses/>.
 
 $ = jQuery
 
-$ ->
-    window.Partify = window.Partify || {}
-    window.Partify.Queues = window.Partify.Queues || {}
-    window.Partify.Queues.GlobalQueue = new GlobalQueue($("#party_queue"), $("#up_next_tracks"))
-    window.Partify.Queues.UserQueue = new UserQueue($("#user_queue"))
-    window.Partify.Config = window.Partify.Config || {};
-    window.Partify.Config.lastFmApiKey = config_lastfm_api_key;
-    window.Partify.Config.lastFmApiSecret = config_lastfm_api_secret;
-    window.Partify.Config.user_id = config_user_id;
-    window.Partify.Config.voting_enabled = config_voting_enabled;
-    window.Partify.LastCache = new LastFMCache()
-    window.Partify.LastFM = new LastFM
-        apiKey: window.Partify.Config.lastFmApiKey
-        apiSecret: window.Partify.Config.lastFmApiSecret
-        cache: window.Partify.LastCache
-
 class Queue
     # Class responsible for encapsulating the tracks in each queue and for updating the display of those queues
     constructor: (queue_div) ->
@@ -60,7 +44,7 @@ class Queue
         @queue_div.append this._buildDisplayHeader()
         @queue_div.append this._buildDisplayItem(track) for track in @tracks
         @queue_div.append this._buildDisplayFooter()
-    
+
     _buildDisplayHeader: () ->
         "
         <li class='queue_header span-23 last'>
@@ -90,7 +74,7 @@ class Queue
             this._buildQueueSummary()
         else
             this._buildNoItemsRow()
-        
+
     _buildQueueSummary: () ->
         total_queue_time = (t.length for t in @tracks).reduce (a,b) -> a + b
         "
@@ -131,7 +115,7 @@ class GlobalQueue extends Queue
         super queue_div
         @up_next_div = up_next_div
         @queue_div.sortable 'option', 'disabled', true
-    
+
     updateDisplay: () ->
         super()
         @up_next_div.empty()
@@ -160,9 +144,9 @@ class GlobalQueue extends Queue
                 this._buildPlayerVoteButtons(@tracks[0].id)
 
             # Update the now playing artist picture
-            window.Partify.LastFM.artist.getInfo 
+            window.Partify.LastFM.artist.getInfo
                 artist: @tracks[0].artist
-            , 
+            ,
             {
                 success: (data) =>
                     images = data.artist?.image
@@ -238,7 +222,7 @@ class GlobalQueue extends Queue
             $(up_btn).button
                 icons:
                     primary: "ui-icon-circle-arrow-n"
-            
+
             $(up_btn).click (e) ->
                 e.stopPropagation()
                 btn = $(e.currentTarget)
@@ -272,7 +256,7 @@ class GlobalQueue extends Queue
             $(dwn_btn).button
                 icons:
                     primary: "ui-icon-circle-arrow-s"
-            
+
             $(dwn_btn).click (e) ->
                 e.stopPropagation()
                 btn = $(e.currentTarget)
@@ -318,7 +302,7 @@ class GlobalQueue extends Queue
                     if data.direction == 1
                         $(id_input).parents("li").first().children("span").children("button.vote_up_button").button 'disable'
                         if id == window.Partify.Queues.GlobalQueue.tracks[0].id
-                            console.log 
+                            console.log
                             $("button#player_info_vote_up").button 'disable'
                             $("button#player_info_vote_down").button 'enable'
             )
@@ -383,7 +367,7 @@ class GlobalQueue extends Queue
                     btn.button 'enable'
                     btn.button 'option', 'icons',
                         primary: "ui-icon-circle-arrow-n"
-            )   
+            )
         $("button#player_info_vote_down").click (e) ->
             e.stopPropagation()
             btn = $(e.currentTarget)
@@ -408,7 +392,7 @@ class GlobalQueue extends Queue
                     btn.button 'enable'
                     btn.button 'option', 'icons',
                         primary: "ui-icon-circle-arrow-s"
-            )    
+            )
 
 class UserQueue extends Queue
     constructor: (queue_div) ->
@@ -445,7 +429,7 @@ class UserQueue extends Queue
 
         # Load the user's queue on page load
         this.loadPlayQueue()
-    
+
     loadPlayQueue: () ->
         $.ajax(
             url: 'queue/list'
@@ -456,7 +440,7 @@ class UserQueue extends Queue
             error: () =>
                 console.log "Failed to populate user play queue!"
         )
-    
+
     updateDisplay: () ->
         @queue_div.empty()
         @queue_div.append this._buildDisplayHeader()
@@ -515,7 +499,7 @@ class HistoryQueue extends Queue
         @queue_div.append this._buildDisplayItem(track) for track in @tracks
         if @tracks.length == 0
             @queue_div.append this._buildNoItemsRow()
-    
+
     _buildDisplayHeader: () ->
         "
         <li class='queue_header span-23 last'>
